@@ -38,7 +38,7 @@ module "instance" {
   source = "../.."
   # In order to perform a stack update, replace the contents
   # at this URL; changing the URL will plan to recreate the entire stack
-  template_url = "https://EXAMPLE.com/foo/bar/template.yaml"
+  template_url = "https://EXAMPLE.yaml"
   stack_name   = "EXAMPLE"
   parameters = merge(
     var.parameters,
