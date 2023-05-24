@@ -20,9 +20,19 @@ locals {
   domain_parts    = regex("^(.*?)(\\..*)", var.parameters["QuiltWebHost"])
   domain_first    = local.domain_parts[0]
   domain_rest     = local.domain_parts[1]
-  build_file      = "LOCAL/PATH/TO/TEMPLATE.yaml"
+  build_file      = "../../cftemplates/example.yaml"
 }
 
+resource "aws_s3_object" "cft" {
+  bucket = "EXAMPLE"
+  key    = "EXAMPLE.yaml"
+  source = local.build_file
+  etag   = filemd5(local.build_file)
+}
+
+resource "aws_s3_bucket" "test_bucket" {
+  bucket = "test-bucket-${module.instance.stack_name}"
+}
 
 module "instance" {
   source = "../.."
@@ -44,4 +54,40 @@ module "instance" {
     Author      = "EXAMPLE"
     Description = "EXAMPLE"
   }
+}
+
+output "host" { value = "https://${var.parameters["QuiltWebHost"]}" }
+output "bucket_name" { value = aws_s3_bucket.test_bucket.bucket }
+
+resource "aws_route53_record" "catalog" {
+  depends_on = [module.instance]
+  zone_id    = "Z3APXKSZI7PV1N"
+  name       = var.parameters["QuiltWebHost"]
+  type       = "CNAME"
+  ttl        = 60
+  records = [
+    module.instance.alb_dns_name
+  ]
+}
+
+resource "aws_route53_record" "registry" {
+  depends_on = [module.instance]
+  zone_id    = "EXAMPLE"
+  name       = format("%s-registry%s", local.domain_first, local.domain_rest)
+  type       = "CNAME"
+  ttl        = 60
+  records = [
+    module.instance.alb_dns_name
+  ]
+}
+
+resource "aws_route53_record" "s3-proxy" {
+  depends_on = [module.instance]
+  zone_id    = "EXAMPLE"
+  name       = format("%s-s3-proxy%s", local.domain_first, local.domain_rest)
+  type       = "CNAME"
+  ttl        = 60
+  records = [
+    module.instance.alb_dns_name
+  ]
 }
