@@ -3,8 +3,7 @@ A stub for deploying Quilt stacks via Terraform.
 
 ## Updating stacks
 1. You must place a new template at the existing location of `template_url=` and
-then `terraform apply`. So this means copying templates out of the standard build
-location somewhere into an S3 bucket.
+then `terraform apply`. `instance.tf` shows how to sync a local file to S3.
 
 > Changing `template_url=` on an existing stack will confuse Terraform into
 > attempting to replace the entire stack because reasons.
