@@ -61,7 +61,7 @@ output "bucket_name" { value = aws_s3_bucket.test_bucket.bucket }
 
 resource "aws_route53_record" "catalog" {
   depends_on = [module.instance]
-  zone_id    = "Z3APXKSZI7PV1N"
+  zone_id    = "EXAMPLE"
   name       = var.parameters["QuiltWebHost"]
   type       = "CNAME"
   ttl        = 60
