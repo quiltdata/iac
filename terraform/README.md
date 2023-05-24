@@ -1,11 +1,5 @@
 # What is this repo?
-It houses developer TF stacks.
-
-# How do I use this?
-1. Create your own folder under instances
-1. Copy `variables.tf`, `instance.tf` **only** into your folder
-from existing instance like `akarve-genentech-private/`.
-1. Now you can `terraform plan` etc.
+Inclues a stub for deploying Quilt stacks via Terraform.
 
 ## Updating stacks
 1. You must place a new template at the existing location of `template_url=` and
@@ -14,10 +8,6 @@ location somewhere into an S3 bucket.
 
 > Changing `template_url=` on an existing stack will confuse Terraform into
 > attempting to replace the entire stack because reasons.
-
-# Risks
-* For now, without remote state, secrets are here in git
-so **keep this repo private**.
 
 # Terraform primer
 
