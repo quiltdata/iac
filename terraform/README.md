@@ -1,5 +1,5 @@
 # What is this repo?
-Inclues a stub for deploying Quilt stacks via Terraform.
+A stub for deploying Quilt stacks via Terraform.
 
 ## Updating stacks
 1. You must place a new template at the existing location of `template_url=` and
