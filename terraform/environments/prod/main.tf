@@ -20,7 +20,7 @@ locals {
   domain_parts    = regex("^(.*?)(\\..*)", var.parameters["QuiltWebHost"])
   domain_first    = local.domain_parts[0]
   domain_rest     = local.domain_parts[1]
-  build_file      = "../../cftemplates/example.yaml"
+  build_file      = "../../cf-templates/example.yaml"
 }
 
 resource "aws_s3_object" "cft" {
@@ -35,7 +35,7 @@ resource "aws_s3_bucket" "test_bucket" {
 }
 
 module "instance" {
-  source = "../.."
+  source = "../../modules/cloudformation_stack"
   # In order to perform a stack update, replace the contents
   # at this URL; changing the URL will plan to recreate the entire stack
   template_url = "https://EXAMPLE.yaml"
