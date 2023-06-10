@@ -21,12 +21,6 @@ module "vpc" {
   public_subnets  = [for cidr in local.subnet_cidrs : cidrsubnet(cidr, 2, 2)]
   private_subnets = [for cidr in local.subnet_cidrs : cidrsubnet(cidr, 1, 0)]
   intra_subnets   = [for cidr in local.subnet_cidrs : cidrsubnet(cidr, 3, 6)]
-  public_subnet_ipv6_prefixes  = [for k, v in local.azs : k]
-  private_subnet_ipv6_prefixes = [for k, v in local.azs : k + 2]
-  intra_subnet_ipv6_prefixes   = [for k, v in local.azs : k + 4]
-
-  enable_ipv6                                   = true
-  public_subnet_assign_ipv6_address_on_creation = true
 
   enable_dns_hostnames   = true
   enable_dns_support     = true
