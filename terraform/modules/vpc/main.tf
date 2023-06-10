@@ -30,6 +30,11 @@ module "vpc" {
   enable_ipv6                                   = true
   public_subnet_assign_ipv6_address_on_creation = true
 
+  # Disable DNS64. We don't need it, and it breaks IPv4-only services like VPC endpoints.
+  public_subnet_enable_dns64  = false
+  private_subnet_enable_dns64 = false
+  intra_subnet_enable_dns64   = false
+
   enable_dns_hostnames   = true
   enable_dns_support     = true
   enable_nat_gateway     = true
