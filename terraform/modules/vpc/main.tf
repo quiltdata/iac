@@ -27,8 +27,10 @@ module "vpc" {
   private_subnet_ipv6_prefixes = [for k, v in local.azs : k + 2]
   intra_subnet_ipv6_prefixes   = [for k, v in local.azs : k + 4]
 
-  enable_ipv6                                   = true
-  public_subnet_assign_ipv6_address_on_creation = true
+  enable_ipv6                                    = true
+  public_subnet_assign_ipv6_address_on_creation  = true
+  private_subnet_assign_ipv6_address_on_creation = true
+  intra_subnet_assign_ipv6_address_on_creation   = true
 
   # Disable DNS64. We don't need it, and it breaks IPv4-only services like VPC endpoints.
   public_subnet_enable_dns64  = false
