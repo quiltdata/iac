@@ -21,9 +21,19 @@ resource "random_password" "admin_password" {
   length = 16
 }
 
+resource "aws_s3_object" "cft" {
+  count  = var.template_local_file == null ? 0 : 1
+
+  bucket = var.template_bucket
+  key    = var.template_key
+  source = var.template_local_file
+  etag   = filemd5(var.template_local_file)
+}
+
 resource "aws_cloudformation_stack" "stack" {
   name         = var.name
   template_url = var.template_url
+  depends_on   = [aws_s3_object.cft]
   capabilities = ["CAPABILITY_NAMED_IAM"]
 
   parameters = merge(
