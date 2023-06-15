@@ -43,6 +43,9 @@ module "db" {
   allocated_storage = 100
   storage_encrypted = true
   instance_class    = var.instance_class
+  multi_az          = var.multi_az
+
+  apply_immediately = true
 
   db_name  = "quilt"
   username = "root"

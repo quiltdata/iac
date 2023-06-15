@@ -22,3 +22,8 @@ variable "instance_class" {
   type     = string
   nullable = false
 }
+
+variable "multi_az" {
+  type     = bool
+  nullable = false
+}
