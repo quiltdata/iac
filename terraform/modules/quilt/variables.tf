@@ -26,6 +26,12 @@ variable "db_instance_class" {
   default  = "db.t3.small"
 }
 
+variable "db_multi_az" {
+  type     = bool
+  nullable = true
+  default  = true
+}
+
 variable "template_url" {
   type     = string
   nullable = false

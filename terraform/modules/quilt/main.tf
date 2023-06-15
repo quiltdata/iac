@@ -14,6 +14,7 @@ module "db" {
   subnet_ids = module.vpc.vpc.intra_subnets
   instance_class = var.db_instance_class
   snapshot_identifier = var.db_snapshot_identifier
+  multi_az = var.db_multi_az
 }
 
 resource "random_password" "admin_password" {
