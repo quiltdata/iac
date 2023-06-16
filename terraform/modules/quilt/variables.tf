@@ -38,31 +38,11 @@ variable "db_multi_az" {
   description = "Whether to enable Multi-AZ for the DB"
 }
 
-variable "template_url" {
-  type        = string
-  nullable    = false
-  description = "S3 URL of the CloudFormation template"
-}
-
-variable "template_local_file" {
+variable "template_file" {
   type        = string
   nullable    = true
   default     = null
-  description = "(Dev-only) local file to upload to S3 to use as the CloudFormation template"
-}
-
-variable "template_bucket" {
-  type        = string
-  nullable    = true
-  default     = null
-  description = "(Dev-only) S3 bucket to use for the template upload; must match template_url"
-}
-
-variable "template_key" {
-  type     = string
-  nullable = true
-  default  = null
-  description = "(Dev-only) S3 key to use for the template upload; must match template_url"
+  description = "Local file to upload to S3 to use as the CloudFormation template"
 }
 
 variable "parameters" {

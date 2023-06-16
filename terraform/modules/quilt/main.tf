@@ -1,3 +1,8 @@
+locals {
+  template_key = "quilt.yaml"
+  template_url = "https://${aws_s3_bucket.cft_bucket.bucket_regional_domain_name}/${local.template_key}"
+}
+
 module "vpc" {
   source = "../vpc"
 
@@ -21,18 +26,23 @@ resource "random_password" "admin_password" {
   length = 16
 }
 
-resource "aws_s3_object" "cft" {
-  count  = var.template_local_file == null ? 0 : 1
+resource "aws_s3_bucket" "cft_bucket" {
+  bucket_prefix = "quilt-templates-${var.name}-"
 
-  bucket = var.template_bucket
-  key    = var.template_key
-  source = var.template_local_file
-  etag   = filemd5(var.template_local_file)
+  # Nothing valuable in this bucket, so make the cleanup easier.
+  force_destroy = true
+}
+
+resource "aws_s3_object" "cft" {
+  bucket = aws_s3_bucket.cft_bucket.id
+  key    = local.template_key
+  source = var.template_file
+  etag   = filemd5(var.template_file)
 }
 
 resource "aws_cloudformation_stack" "stack" {
   name         = var.name
-  template_url = var.template_url
+  template_url = local.template_url
   depends_on   = [aws_s3_object.cft]
   capabilities = ["CAPABILITY_NAMED_IAM"]
 
