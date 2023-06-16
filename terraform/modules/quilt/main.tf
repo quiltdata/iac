@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 1.5.0"
+}
+
 locals {
   template_key = "quilt.yaml"
   template_url = "https://${aws_s3_bucket.cft_bucket.bucket_regional_domain_name}/${local.template_key}"
