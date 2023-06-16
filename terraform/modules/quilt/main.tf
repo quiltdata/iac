@@ -56,10 +56,12 @@ resource "aws_cloudformation_stack" "stack" {
 
       ApiGatewayVPCEndpoint = var.internal ? module.vpc.api_endpoint.id : null
 
-      DBUser     = module.db.db.db_instance_username
-      DBPassword = module.db.db.db_instance_password
-      DBEndpoint = module.db.db.db_instance_endpoint
-      DBName     = module.db.db.db_instance_name
+      DBUrl = format("postgresql://%s:%s@%s/%s",
+        module.db.db.db_instance_username,
+        module.db.db.db_instance_password,
+        module.db.db.db_instance_endpoint,
+        module.db.db.db_instance_name,
+      )
 
       DBAccessorSecurityGroup = module.db.db_accessor_security_group.security_group_id
 
