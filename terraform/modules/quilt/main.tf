@@ -19,11 +19,32 @@ module "db" {
   source = "../db"
 
   identifier = var.name
-  vpc_id = module.vpc.vpc.vpc_id
-  subnet_ids = module.vpc.vpc.intra_subnets
-  instance_class = var.db_instance_class
+
   snapshot_identifier = var.db_snapshot_identifier
-  multi_az = var.db_multi_az
+
+  vpc_id     = module.vpc.vpc.vpc_id
+  subnet_ids = module.vpc.vpc.intra_subnets
+
+  instance_class = var.db_instance_class
+  multi_az       = var.db_multi_az
+}
+
+module "search" {
+  source = "../search"
+
+  domain_name = var.name
+
+  vpc_id     = module.vpc.vpc.vpc_id
+  subnet_ids = module.vpc.vpc.intra_subnets
+
+  instance_count           = var.search_instance_count
+  instance_type            = var.search_instance_type
+  dedicated_master_enabled = var.search_dedicated_master_enabled
+  dedicated_master_count   = var.search_dedicated_master_count
+  dedicated_master_type    = var.search_dedicated_master_type
+  zone_awareness_enabled   = var.search_zone_awareness_enabled
+  volume_size              = var.search_volume_size
+  volume_type              = var.search_volume_type
 }
 
 resource "random_password" "admin_password" {
@@ -68,6 +89,11 @@ resource "aws_cloudformation_stack" "stack" {
       )
 
       DBAccessorSecurityGroup = module.db.db_accessor_security_group.security_group_id
+
+      SearchDomainEndpoint = module.search.search.endpoint
+      SearchDomainArn      = module.search.search.arn
+
+      SearchClusterAccessorSecurityGroup = module.search.search_accessor_security_group.security_group_id
 
       AdminPassword = random_password.admin_password.result
     }

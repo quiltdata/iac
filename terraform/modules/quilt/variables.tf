@@ -38,6 +38,62 @@ variable "db_multi_az" {
   description = "Whether to enable Multi-AZ for the DB"
 }
 
+variable "search_instance_count" {
+  type        = number
+  nullable    = false
+  default     = 2
+  description = "Number of instances in the ElasticSearch cluster"
+}
+
+variable "search_instance_type" {
+  type        = string
+  nullable    = false
+  default     = "m5.xlarge.elasticsearch"
+  description = "Instance type of data nodes in the ElasticSearch cluster"
+}
+
+variable "search_dedicated_master_enabled" {
+  type        = bool
+  nullable    = false
+  default     = true
+  description = "Whether dedicated main nodes are enabled for the ElasticSearch cluster"
+}
+
+variable "search_dedicated_master_count" {
+  type        = number
+  nullable    = false
+  default     = 3
+  description = "Number of dedicated main nodes in the ElasticSearch cluster"
+}
+
+variable "search_dedicated_master_type" {
+  type        = string
+  nullable    = false
+  default     = "m5.large.elasticsearch"
+  description = "Instance type of the dedicated main nodes in the ElasticSearch cluster"
+}
+
+variable "search_zone_awareness_enabled" {
+  type        = bool
+  nullable    = false
+  default     = true
+  description = "Whether to enable Multi-AZ for the ElasticSearch cluster"
+}
+
+variable "search_volume_size" {
+  type        = number
+  nullable    = false
+  default     = 100
+  description = "Size of EBS volumes attached to data nodes in the ElasticSearch cluster"
+}
+
+variable "search_volume_type" {
+  type        = string
+  nullable    = false
+  default     = "gp2"
+  description = "Type of EBS volumes attached to data nodes in the ElasticSearch cluster"
+}
+
 variable "template_file" {
   type        = string
   nullable    = true
