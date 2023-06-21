@@ -1,4 +1,4 @@
-# internal deploy hash: 99d1f06ad11c7a0ad48e5402f32506b20e3f30a8
+# defaults match internal deployment repo as of commit 99d1f06ad11c7a0ad48e5402f32506b20e3f30a8
 
 variable "name" {
   type        = string
