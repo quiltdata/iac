@@ -75,7 +75,6 @@ resource "aws_cloudformation_stack" "stack" {
     var.parameters,
     {
       VPC           = module.vpc.vpc.vpc_id
-      IntraSubnets  = join(",", module.vpc.vpc.intra_subnets)
       Subnets       = join(",", module.vpc.vpc.private_subnets)
       PublicSubnets = var.internal ? null : join(",", module.vpc.vpc.public_subnets)
 
