@@ -16,7 +16,7 @@ module "search_accessor_security_group" {
 module "search_security_group" {
   source = "terraform-aws-modules/security-group/aws"
 
-  name = "${var.domain_name}-serch"
+  name = "${var.domain_name}-search"
   description = "For search cluster resources"
   vpc_id = var.vpc_id
 
