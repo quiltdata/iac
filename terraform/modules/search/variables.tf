@@ -13,6 +13,11 @@ variable "subnet_ids" {
   nullable = false
 }
 
+variable "auto_tune_desired_state" {
+  type     = string
+  nullable = false
+}
+
 variable "instance_count" {
   type     = number
   nullable = false

@@ -40,6 +40,13 @@ variable "db_multi_az" {
   description = "Whether to enable Multi-AZ for the DB"
 }
 
+variable "search_auto_tune_desired_state" {
+  type        = string
+  nullable    = false
+  default     = "DISABLED"
+  description = "The Auto-Tune desired state for the ElasticSearch domain"
+}
+
 variable "search_instance_count" {
   type        = number
   nullable    = false

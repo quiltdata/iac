@@ -37,6 +37,7 @@ module "search" {
   vpc_id     = module.vpc.vpc.vpc_id
   subnet_ids = module.vpc.vpc.intra_subnets
 
+  auto_tune_desired_state  = var.search_auto_tune_desired_state
   instance_count           = var.search_instance_count
   instance_type            = var.search_instance_type
   dedicated_master_enabled = var.search_dedicated_master_enabled
