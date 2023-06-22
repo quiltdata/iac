@@ -32,6 +32,10 @@ resource "aws_elasticsearch_domain" "search" {
   domain_name = var.domain_name
   elasticsearch_version = "6.7"
 
+  auto_tune_options {
+    desired_state = var.auto_tune_desired_state
+  }
+
   cluster_config {
     instance_count           = var.instance_count
     instance_type            = var.instance_type
