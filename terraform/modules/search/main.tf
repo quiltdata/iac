@@ -34,6 +34,8 @@ resource "aws_elasticsearch_domain" "search" {
 
   auto_tune_options {
     desired_state = var.auto_tune_desired_state
+    # https://github.com/hashicorp/terraform-provider-aws/issues/25712
+    rollback_on_disable = "DEFAULT_ROLLBACK"
   }
 
   cluster_config {
