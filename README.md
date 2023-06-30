@@ -1,1 +1,1 @@
-# Infrastrucure as code for Quilt stack deployments
+# Infrastructure as code for Quilt stack deployments
