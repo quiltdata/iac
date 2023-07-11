@@ -71,6 +71,7 @@ resource "aws_cloudformation_stack" "stack" {
   template_url = local.template_url
   depends_on   = [aws_s3_object.cft]
   capabilities = ["CAPABILITY_NAMED_IAM"]
+  timeout_in_minutes = 60
 
   parameters = merge(
     var.parameters,
