@@ -19,7 +19,6 @@ variable "ttl" {
 
 variable "zone_id" {
   description = "Hosted zone id"
-  default     = "Z08925852XFGELN33FZFQ"
   type        = string
   nullable    = false
 }
