@@ -59,6 +59,13 @@ resource "aws_s3_bucket" "cft_bucket" {
   force_destroy = true
 }
 
+resource "aws_s3_bucket_versioning" "versioning_example" {
+  bucket = aws_s3_bucket.cft_bucket.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 resource "aws_s3_object" "cft" {
   bucket = aws_s3_bucket.cft_bucket.id
   key    = local.template_key
