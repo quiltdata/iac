@@ -4,6 +4,10 @@ variable "name" {
   type        = string
   nullable    = false
   description = "Name to use for the VPC, DB, and CloudFormation stack, as well as a prefix for other resources"
+  validation {
+    condition     = length(var.name) <= 20
+    error_message = "Name too long for downstream resources like bucket_prefix"
+  }
 }
 
 variable "cidr" {
