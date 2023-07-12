@@ -27,8 +27,3 @@ variable "multi_az" {
   type     = bool
   nullable = false
 }
-
-variable "backup_retention_period" {
-  type = number
-  default = 35
-}
