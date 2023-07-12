@@ -1,9 +1,72 @@
-# What is this repo?
-A stub for deploying Quilt stacks via Terraform.
+# Modules deploying Quilt stacks via Terraform
+
+## Example
+
+```hcl
+provider "aws" {
+  profile             = "YOUR_PROFILE"
+  allowed_account_ids = ["YOUR_ACCOUNT"]
+}
+
+locals {
+  name           = "YOUR_STACK_NAME"
+  build_file     = "/local/path/to/cf-template/from/quilt.yaml"
+  quilt_web_host = lookup(module.quilt.stack.parameters, "QuiltWebHost")
+}
+
+module "quilt" {
+  source = "github.com/quiltdata/iac//terraform/modules/quilt"
+
+  name     = local.name
+  internal = false
+
+  template_file = local.build_file
+
+  parameters = {
+    AdminEmail               = "ADMIN_EMAIL"
+    CertificateArnELB        = "arn:aws:acm:us-east-1:1234:certificate/abcd"
+    QuiltWebHost             = "quilt.YOUR_DOMAIN.com"
+    PasswordAuth             = "Disabled"
+    SingleSignOnProvider     = ""
+    SingleSignOnClientSecret = ""
+    SingleSignOnDomains      = ""
+    SingleSignOnClientId     = ""
+    SingleSignOnBaseUrl      = ""
+  }
+}
+
+module "cnames" {
+  providers = {
+    aws = aws.staging
+  }
+  source = "/Users/akarve/code/iac/terraform/modules/cnames"
+
+  lb_dns_name    = lookup(module.quilt.stack.outputs, "LoadBalancerDNSName")
+  quilt_web_host = local.quilt_web_host
+  zone_id        = "YOUR_ZONE_ID"
+}
+
+output "admin_password" {
+  description = "Admin password"
+  sensitive   = true
+  value       = module.quilt.admin_password
+}
+
+output "admin_email" {
+  value       = lookup(module.quilt.stack.parameters, "AdminEmail")
+  description = "Admin email"
+}
+
+output "quilt_web_host" {
+  description = "Catalog URL"
+  value       = local.quilt_web_host
+}
+```
 
 ## Updating stacks
-1. You must place a new template at the existing location of `template_url=` and
-then `terraform apply`. `instance.tf` shows how to sync a local file to S3.
+
+1. For certain (older) versions of Terraform you must place a new template
+at the existing location of `template_url=` and then `terraform apply`.
 
 > Changing `template_url=` on an existing stack will confuse Terraform into
 > attempting to replace the entire stack because reasons.
