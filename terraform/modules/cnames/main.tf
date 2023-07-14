@@ -8,7 +8,7 @@ terraform {
 }
 
 locals {
-  match     = regex("(^[^.]+)(\\..*)", var.quilt_web_host)
+  match     = regex("^([^.]+)(\\..*)$", var.quilt_web_host)
   subdomain = local.match[0]
   remainder = local.match[1]
 }
