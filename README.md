@@ -21,7 +21,7 @@ locals {
 }
 
 module "quilt" {
-  source = "github.com/quiltdata/iac//terraform/modules/quilt"
+  source = "github.com/quiltdata/iac//modules/quilt"
 
   name     = local.name
   internal = false
@@ -45,7 +45,7 @@ module "quilt" {
 }
 
 module "cnames" {
-  source = "github.com/quiltdata/iac//terraform/modules/cnames"
+  source = "github.com/quiltdata/iac//modules/cnames"
 
   lb_dns_name    = lookup(module.quilt.stack.outputs, "LoadBalancerDNSName")
   quilt_web_host = local.quilt_web_host
