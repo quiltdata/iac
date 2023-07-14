@@ -13,7 +13,7 @@ locals {
   // You receive the build_file CloudFormation Template from your Quilt account
   // manager and check it into git
   build_file     = ""
-  quilt_web_host = lookup(module.quilt.stack.parameters, "QuiltWebHost")
+  quilt_web_host = ""
 }
 
 module "quilt" {
@@ -26,7 +26,7 @@ module "quilt" {
 
   parameters = {
     AdminEmail               = ""
-    CertificateArnELB        = "arn:aws:acm:us-east-1:1234:certificate/abcd"
+    CertificateArnELB        = ""
     QuiltWebHost             = local.quilt_web_host
     PasswordAuth             = ""
     SingleSignOnProvider     = ""
