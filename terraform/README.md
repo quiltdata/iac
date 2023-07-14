@@ -2,6 +2,10 @@
 
 ## Example
 
+> **Important pre-requisite**: You must use a Quilt Cloudformation template
+> that supports an existing database, existing search domain, and existing vpc
+> in order for these modules to function properly.
+
 ```hcl
 provider "aws" {
   profile             = ""
@@ -23,6 +27,9 @@ module "quilt" {
   internal = false
 
   template_file = local.build_file
+
+  // Optional: for users creating a template from another stack database
+  // db_snapshot_identifier = ""
 
   parameters = {
     AdminEmail               = ""
