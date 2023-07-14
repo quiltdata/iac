@@ -71,8 +71,8 @@ output "quilt_web_host" {
 
 ## Updating stacks
 
-1. For certain (older) versions of Terraform you must place a new template
-at the existing location of `template_url=` and then `terraform apply`.
+For certain (older) versions of Terraform you must change the contents stored 
+at `template_url=` without changing the URL itself.
 
 > Changing `template_url=` on an existing stack may cause Terraform to
 > replace the entire stack.
