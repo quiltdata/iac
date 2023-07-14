@@ -2,7 +2,7 @@
 
 ## Example
 
-> **Important pre-requisite**: You must use a Quilt Cloudformation template
+> **Important pre-requisite**: You must use a Quilt CloudFormation template
 > that supports an existing database, existing search domain, and existing vpc
 > in order for these modules to function properly.
 
