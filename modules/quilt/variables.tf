@@ -48,7 +48,7 @@ variable "search_auto_tune_desired_state" {
   type        = string
   nullable    = false
   default     = "DISABLED"
-  description = "The Auto-Tune desired state for the ElasticSearch domain"
+  description = "The Auto-Tune desired state for the ElasticSearch cluster"
 }
 
 variable "search_instance_count" {
