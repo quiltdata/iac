@@ -1,10 +1,16 @@
 # Modules to deploy Quilt stacks with Terraform
 
-## Example
+## Prerequisites
 
-> **Important pre-requisite**: You must use a Quilt CloudFormation template
-> that supports an existing database, existing search domain, and existing vpc
-> in order for these modules to function properly.
+1. You must use a Quilt CloudFormation template that supports an existing database,
+existing search domain, and existing vpc in order for the  `quilt` module to
+function properly.
+
+1. Rightsize your search cluster with the
+[`search_*` arguments](./modules/quilt/variables.tf)
+to the `quilt` module.
+
+## Example
 
 ```hcl
 provider "aws" {
