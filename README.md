@@ -19,11 +19,11 @@ provider "aws" {
 }
 
 locals {
-  name           = ""
+  name                = ""
   // You receive the build_file CloudFormation Template from your Quilt account
   // manager and check it into git
-  build_file     = ""
-  quilt_web_host = ""
+  build_file_path     = ""
+  quilt_web_host      = ""
 }
 
 module "quilt" {
@@ -32,7 +32,7 @@ module "quilt" {
   name     = local.name
   internal = false
 
-  template_file = local.build_file
+  template_file = local.build_file_path
 
   // Optional: for users creating a template from another stack database
   // db_snapshot_identifier = ""
