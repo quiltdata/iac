@@ -42,8 +42,8 @@ module "quilt" {
     // aws acm list-certificates --output table --query 'CertificateSummaryList[*].[DomainName,CertificateArn]'
     CertificateArnELB        = ""
     QuiltWebHost             = local.quilt_web_host
-    PasswordAuth             = ""
-    SingleSignOnProvider     = ""
+    PasswordAuth             = ""  // "Enabled" or "Disabled"
+    SingleSignOnProvider     = ""  // "(Disabled)", "Google", "Okta", "OneLogin", "Azure"
     SingleSignOnClientSecret = ""
     SingleSignOnDomains      = ""
     SingleSignOnClientId     = ""
