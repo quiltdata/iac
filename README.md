@@ -20,8 +20,8 @@ provider "aws" {
 
 locals {
   name                = ""
-  // You receive the build_file CloudFormation Template from your Quilt account
-  // manager and check it into git
+  // Place a local copy of your CloudFormation YAML Template at build_file_path
+  // and check it into git
   build_file_path     = ""
   quilt_web_host      = ""
 }
