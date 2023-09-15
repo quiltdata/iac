@@ -55,6 +55,7 @@ module "cnames" {
 
   lb_dns_name    = lookup(module.quilt.stack.outputs, "LoadBalancerDNSName")
   quilt_web_host = local.quilt_web_host
+  // aws route53 list-hosted-zones --query 'HostedZones[*].[Name,Id]' --output table
   zone_id        = ""
 }
 
