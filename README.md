@@ -20,8 +20,8 @@ provider "aws" {
 
 locals {
   name                = ""
-  // Place a local copy of your CloudFormation YAML Template at build_file_path
-  // and check it into git
+  // You receive the build_file CloudFormation Template from your Quilt account
+  // manager and check it into git
   build_file_path     = ""
   quilt_web_host      = ""
 }
@@ -39,10 +39,11 @@ module "quilt" {
 
   parameters = {
     AdminEmail               = ""
+    // aws acm list-certificates --output table --query 'CertificateSummaryList[*].[DomainName,CertificateArn]'
     CertificateArnELB        = ""
     QuiltWebHost             = local.quilt_web_host
-    PasswordAuth             = ""
-    SingleSignOnProvider     = ""
+    PasswordAuth             = ""  // "Enabled" or "Disabled"
+    SingleSignOnProvider     = ""  // "(Disabled)", "Google", "Okta", "OneLogin", "Azure"
     SingleSignOnClientSecret = ""
     SingleSignOnDomains      = ""
     SingleSignOnClientId     = ""
@@ -55,6 +56,7 @@ module "cnames" {
 
   lb_dns_name    = lookup(module.quilt.stack.outputs, "LoadBalancerDNSName")
   quilt_web_host = local.quilt_web_host
+  // aws route53 list-hosted-zones --query 'HostedZones[*].[Name,Id]' --output table
   zone_id        = ""
 }
 
