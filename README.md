@@ -39,6 +39,7 @@ module "quilt" {
 
   parameters = {
     AdminEmail               = ""
+    // aws acm list-certificates --output table --query 'CertificateSummaryList[*].[DomainName,CertificateArn]'
     CertificateArnELB        = ""
     QuiltWebHost             = local.quilt_web_host
     PasswordAuth             = ""
