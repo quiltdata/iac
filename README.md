@@ -7,8 +7,7 @@ existing search domain, and existing vpc in order for the  `quilt` module to
 function properly.
 
 1. Rightsize your search cluster with the
-[`search_*` arguments](./modules/quilt/variables.tf)
-to the `quilt` module.
+[`search_*` variables](./modules/quilt/variables.tf).
 
 ## Example
 
@@ -34,8 +33,15 @@ module "quilt" {
 
   template_file = local.build_file_path
 
-  // Optional: for users creating a template from another stack database
-  // db_snapshot_identifier = ""
+  /* Optional parameters
+  // For initializing a new stack from an existing database
+  db_snapshot_identifier = ""
+  // To run Quilt services in an existing VPC
+  api_endpoint = ""
+  intra_subnets = [ "", ""]
+  private_subnets = [ "", ""]
+  public_subnets = [ "", "",]
+  */
 
   parameters = {
     AdminEmail               = ""

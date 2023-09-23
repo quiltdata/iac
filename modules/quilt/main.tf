@@ -13,6 +13,12 @@ module "vpc" {
   name     = var.name
   cidr     = var.cidr
   internal = var.internal
+
+  existing_api_endpoint    = var.api_endpoint
+  existing_vpc_id          = var.vpc_id
+  existing_intra_subnets   = var.intra_subnets
+  existing_private_subnets = var.private_subnets
+  existing_public_subnets  = var.public_subnets
 }
 
 module "db" {
@@ -22,8 +28,8 @@ module "db" {
 
   snapshot_identifier = var.db_snapshot_identifier
 
-  vpc_id     = module.vpc.vpc.vpc_id
-  subnet_ids = module.vpc.vpc.intra_subnets
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.intra_subnets
 
   instance_class = var.db_instance_class
   multi_az       = var.db_multi_az
@@ -34,8 +40,8 @@ module "search" {
 
   domain_name = var.name
 
-  vpc_id     = module.vpc.vpc.vpc_id
-  subnet_ids = module.vpc.vpc.intra_subnets
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.intra_subnets
 
   auto_tune_desired_state  = var.search_auto_tune_desired_state
   instance_count           = var.search_instance_count
@@ -82,11 +88,13 @@ resource "aws_cloudformation_stack" "stack" {
   parameters = merge(
     var.parameters,
     {
-      VPC           = module.vpc.vpc.vpc_id
-      Subnets       = join(",", module.vpc.vpc.private_subnets)
-      PublicSubnets = var.internal ? null : join(",", module.vpc.vpc.public_subnets)
+      VPC           = module.vpc.vpc_id
+      Subnets       = join(",", module.vpc.private_subnets)
+      PublicSubnets = var.internal ? null : (
+        module.vpc.public_subnets == null ? null : join(",", module.vpc.public_subnets)
+      )
 
-      ApiGatewayVPCEndpoint = var.internal ? module.vpc.api_endpoint.id : null
+      ApiGatewayVPCEndpoint = module.vpc.api_endpoint
 
       DBUrl = format("postgresql://%s:%s@%s/%s",
         module.db.db.db_instance_username,

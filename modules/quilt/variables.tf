@@ -14,18 +14,17 @@ variable "cidr" {
   type        = string
   nullable    = false
   default     = "10.0.0.0/16"
-  description = "CIDR block for the VPC"
+  description = "CIDR block for the VPC. Set for validation even if using an existing VPC."
 }
 
 variable "internal" {
   type        = bool
   nullable    = false
-  description = "Whether CloudFormation template uses internet-facing or internal ELBs"
+  description = "If true create an inward ELBv2, else create an internet-facing ELBv2."
 }
 
 variable "db_snapshot_identifier" {
   type        = string
-  nullable    = true
   default     = null
   description = "If set, restore the DB from the given snapshot"
 }
@@ -55,7 +54,7 @@ variable "search_instance_count" {
   type        = number
   nullable    = false
   default     = 2
-  description = "Number of instances in the ElasticSearch cluster"
+  description = "Number of data instances in the ElasticSearch cluster"
 }
 
 variable "search_instance_type" {
@@ -69,21 +68,21 @@ variable "search_dedicated_master_enabled" {
   type        = bool
   nullable    = false
   default     = true
-  description = "Whether dedicated main nodes are enabled for the ElasticSearch cluster"
+  description = "Whether dedicated master nodes are enabled for the ElasticSearch cluster"
 }
 
 variable "search_dedicated_master_count" {
   type        = number
   nullable    = false
   default     = 3
-  description = "Number of dedicated main nodes in the ElasticSearch cluster"
+  description = "Number of master nodes in the ElasticSearch cluster"
 }
 
 variable "search_dedicated_master_type" {
   type        = string
   nullable    = false
   default     = "m5.large.elasticsearch"
-  description = "Instance type of the dedicated main nodes in the ElasticSearch cluster"
+  description = "Instance type of the dedicated master nodes in the ElasticSearch cluster"
 }
 
 variable "search_zone_awareness_enabled" {
@@ -118,4 +117,47 @@ variable "parameters" {
   type        = map(any)
   nullable    = false
   description = "Parameters to pass to the CloudFormation stack"
+}
+
+variable "vpc_id" {
+  type        = string
+  default     = null
+  description = "Existing VPC ID for Quilt services."
+}
+
+variable "api_endpoint" {
+  type        = string
+  default     = null
+  description = "VPC endpoint for API Gateway (api-execute) for Quilt services."
+
+}
+
+variable "intra_subnets" {
+  type        = list(string)
+  default     = null
+  description = "Intra subnets need not have Internet access as they only communicate with private subnets."
+  validation {
+    condition     = var.intra_subnets == null ? true : length(var.intra_subnets) == 2
+    error_message = "Must contain 2 string ids or be null."
+  }
+}
+
+variable "private_subnets" {
+  type        = list(string)
+  default     = null
+  description = "Private subnets have Internet access to reach public AWS services."
+  validation {
+    condition     = var.private_subnets == null ? true : length(var.private_subnets) == 2
+    error_message = "Must contain 2 string ids or be null."
+  }
+}
+
+variable "public_subnets" {
+  type        = list(string)
+  default     = null
+  description = "Public subnets are only needed when var.internal = False (for NAT & load balancer)."
+  validation {
+    condition     = var.public_subnets == null ? true : length(var.public_subnets) == 2
+    error_message = "Must contain 2 string ids or be null."
+  }
 }
