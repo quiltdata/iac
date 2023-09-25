@@ -3,7 +3,7 @@ data "aws_availability_zones" "available" {
 }
 
 data "aws_vpc" "existing_vpc" {
-  count = var.existing_vpc_id != null  ? 1 : 0
+  count = var.existing_vpc_id != null ? 1 : 0
   id    = var.existing_vpc_id
 }
 
@@ -12,8 +12,8 @@ locals {
     var.existing_vpc_id != null && try(split("/", data.aws_vpc.existing_vpc[0].cidr_block)[1] < 21, false),
     var.existing_intra_subnets != null,
     var.existing_private_subnets != null,
-    var.internal ? var.existing_public_subnets == null : var.existing_public_subnets != null,
-    var.internal ? var.existing_api_endpoint != null : var.existing_api_endpoint == null,
+    var.internal == (var.existing_public_subnets == null),
+    var.internal == (var.existing_api_endpoint != null),
   ]
   new_network_requires = [
     var.existing_vpc_id == null,
@@ -30,7 +30,7 @@ locals {
   subnet_cidrs = [for k, v in local.azs : cidrsubnet(var.cidr, 1, k)]
 }
 
-module "inner_vpc" {
+module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
   create_vpc = local.new_network_valid
@@ -75,7 +75,7 @@ module "api_gateway_security_group" {
 
   name        = "${var.name}-api-gateway"
   description = "All inbound HTTPS traffic for the API Gateway Endpoint"
-  vpc_id      = module.inner_vpc.vpc_id
+  vpc_id      = module.vpc.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["https-443-tcp"]
@@ -86,19 +86,19 @@ module "vpc_endpoints" {
 
   create = local.new_network_valid
 
-  vpc_id             = module.inner_vpc.vpc_id
+  vpc_id             = module.vpc.vpc_id
   security_group_ids = [module.api_gateway_security_group.security_group_id]
 
   endpoints = {
     s3 = {
       service         = "s3"
       service_type    = "Gateway"
-      route_table_ids = concat(module.inner_vpc.public_route_table_ids, module.inner_vpc.private_route_table_ids)
+      route_table_ids = concat(module.vpc.public_route_table_ids, module.vpc.private_route_table_ids)
     },
     api = {
       service             = "execute-api"
       private_dns_enabled = true
-      subnet_ids          = module.inner_vpc.private_subnets
+      subnet_ids          = module.vpc.private_subnets
       create              = var.internal
     },
   }

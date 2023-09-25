@@ -90,9 +90,7 @@ resource "aws_cloudformation_stack" "stack" {
     {
       VPC           = module.vpc.vpc_id
       Subnets       = join(",", module.vpc.private_subnets)
-      PublicSubnets = var.internal ? null : (
-        module.vpc.public_subnets == null ? null : join(",", module.vpc.public_subnets)
-      )
+      PublicSubnets = var.internal ? null : join(",", module.vpc.public_subnets)
 
       ApiGatewayVPCEndpoint = module.vpc.api_endpoint
 

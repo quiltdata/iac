@@ -12,7 +12,7 @@ EOH
 
 output "vpc" {
   description = "Internal VPC module. Do not depend on this output."
-  value       = module.inner_vpc
+  value       = module.vpc
 }
 
 output "api_endpoint" {
@@ -35,17 +35,17 @@ output "configuration_error" {
 }
 
 output "vpc_id" {
-  value = local.new_network_valid ? module.inner_vpc.vpc_id : var.existing_vpc_id
+  value = local.new_network_valid ? module.vpc.vpc_id : var.existing_vpc_id
 }
 
 output "intra_subnets" {
-  value = local.new_network_valid ? module.inner_vpc.intra_subnets : var.existing_intra_subnets
+  value = local.new_network_valid ? module.vpc.intra_subnets : var.existing_intra_subnets
 }
 
 output "private_subnets" {
-  value = local.new_network_valid ? module.inner_vpc.private_subnets : var.existing_private_subnets
+  value = local.new_network_valid ? module.vpc.private_subnets : var.existing_private_subnets
 }
 
 output "public_subnets" {
-  value = local.new_network_valid ? module.inner_vpc.public_subnets : var.existing_public_subnets
+  value = local.new_network_valid ? module.vpc.public_subnets : var.existing_public_subnets
 }

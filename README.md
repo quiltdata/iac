@@ -1,7 +1,6 @@
 # Modules to deploy Quilt stacks with Terraform
 
 ## Prerequisites
-
 1. You must use a Quilt CloudFormation template that supports an existing database,
 existing search domain, and existing vpc in order for the  `quilt` module to
 function properly.
@@ -10,12 +9,9 @@ function properly.
 [`search_*` variables](./modules/quilt/variables.tf).
 
 ## Example
-
 See [example.tf](./example.tf).
 
-
 ## Updating stacks
-
 For certain (older) versions of Terraform you must change the contents stored 
 at `template_url=` without changing the URL itself.
 
