@@ -20,13 +20,13 @@ module "quilt" {
   template_file = local.build_file_path
 
   /* Optional parameters
-  // For initializing a new stack from an existing database
+  // To initialize a new stack from an existing database
   db_snapshot_identifier = ""
   // To run Quilt services in an existing VPC
-  api_endpoint = ""
-  intra_subnets = ["", ""]
+  api_endpoint    = ""
+  intra_subnets   = ["", ""]
   private_subnets = ["", ""]
-  public_subnets = ["", ""]
+  public_subnets  = ["", ""]
   */
 
   parameters = {
