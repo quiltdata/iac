@@ -27,12 +27,24 @@ variable "existing_api_endpoint" {
 
 variable "existing_intra_subnets" {
   type = list(string)
+  validation {
+    condition     = var.exising_intra_subnets == null ? true : length(var.existing_intra_subnets) == 2
+    error_message = "Must contain 2 string ids or be null."
+  }
 }
 
 variable "existing_private_subnets" {
   type = list(string)
+  validation {
+    condition     = var.existing_private_subnets == null ? true : length(var.existing_private_subnets) == 2
+    error_message = "Must contain 2 string ids or be null."
+  }
 }
 
 variable "existing_public_subnets" {
   type = list(string)
+  validation {
+    condition     = var.existing_public_subnets == null ? true : length(var.existing_public_subnets) == 2
+    error_message = "Must contain 2 string ids or be null."
+  }
 }

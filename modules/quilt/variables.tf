@@ -25,6 +25,7 @@ variable "internal" {
 
 variable "db_snapshot_identifier" {
   type        = string
+  nullable = true
   default     = null
   description = "If set, restore the DB from the given snapshot"
 }
@@ -135,29 +136,17 @@ variable "api_endpoint" {
 variable "intra_subnets" {
   type        = list(string)
   default     = null
-  description = "Intra subnets need not have Internet access as they only communicate with private subnets."
-  validation {
-    condition     = var.intra_subnets == null ? true : length(var.intra_subnets) == 2
-    error_message = "Must contain 2 string ids or be null."
-  }
+  description = "Only communicate with private subnets (never the Internet)."
 }
 
 variable "private_subnets" {
   type        = list(string)
   default     = null
-  description = "Private subnets have Internet access to reach public AWS services."
-  validation {
-    condition     = var.private_subnets == null ? true : length(var.private_subnets) == 2
-    error_message = "Must contain 2 string ids or be null."
-  }
+  description = "Have Internet access to reach public AWS services."
 }
 
 variable "public_subnets" {
   type        = list(string)
   default     = null
-  description = "Public subnets are only needed when var.internal = False (for NAT & load balancer)."
-  validation {
-    condition     = var.public_subnets == null ? true : length(var.public_subnets) == 2
-    error_message = "Must contain 2 string ids or be null."
-  }
+  description = "Only needed when var.internal == False (for NAT & load balancer)."
 }
