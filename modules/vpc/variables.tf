@@ -28,7 +28,7 @@ variable "existing_api_endpoint" {
 variable "existing_intra_subnets" {
   type = list(string)
   validation {
-    condition     = var.exising_intra_subnets == null ? true : length(var.existing_intra_subnets) == 2
+    condition     = var.existing_intra_subnets == null ? true : length(var.existing_intra_subnets) == 2
     error_message = "Must contain 2 string ids or be null."
   }
 }
