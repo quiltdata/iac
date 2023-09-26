@@ -148,5 +148,5 @@ variable "private_subnets" {
 variable "public_subnets" {
   type        = list(string)
   default     = null
-  description = "Only needed when var.internal == False (for NAT & load balancer)."
+  description = "Only needed when var.internal == false (for NAT & load balancer)."
 }
