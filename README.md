@@ -1,84 +1,17 @@
 # Modules to deploy Quilt stacks with Terraform
 
 ## Prerequisites
-
 1. You must use a Quilt CloudFormation template that supports an existing database,
 existing search domain, and existing vpc in order for the  `quilt` module to
 function properly.
 
 1. Rightsize your search cluster with the
-[`search_*` arguments](./modules/quilt/variables.tf)
-to the `quilt` module.
+[`search_*` variables](./modules/quilt/variables.tf).
 
 ## Example
-
-```hcl
-provider "aws" {
-  profile             = ""
-  allowed_account_ids = [""]
-}
-
-locals {
-  name                = ""
-  // Place a local copy of your CloudFormation YAML Template at build_file_path
-  // and check it into git
-  build_file_path     = ""
-  quilt_web_host      = ""
-}
-
-module "quilt" {
-  source = "github.com/quiltdata/iac//modules/quilt"
-
-  name     = local.name
-  internal = false
-
-  template_file = local.build_file_path
-
-  // Optional: for users creating a template from another stack database
-  // db_snapshot_identifier = ""
-
-  parameters = {
-    AdminEmail               = ""
-    // aws acm list-certificates --output table --query 'CertificateSummaryList[*].[DomainName,CertificateArn]'
-    CertificateArnELB        = ""
-    QuiltWebHost             = local.quilt_web_host
-    PasswordAuth             = ""  // "Enabled" or "Disabled"
-    SingleSignOnProvider     = ""  // "(Disabled)", "Google", "Okta", "OneLogin", "Azure"
-    SingleSignOnClientSecret = ""
-    SingleSignOnDomains      = ""
-    SingleSignOnClientId     = ""
-    SingleSignOnBaseUrl      = ""
-  }
-}
-
-module "cnames" {
-  source = "github.com/quiltdata/iac//modules/cnames"
-
-  lb_dns_name    = lookup(module.quilt.stack.outputs, "LoadBalancerDNSName")
-  quilt_web_host = local.quilt_web_host
-  // aws route53 list-hosted-zones --query 'HostedZones[*].[Name,Id]' --output table
-  zone_id        = ""
-}
-
-output "admin_password" {
-  description = "Admin password"
-  sensitive   = true
-  value       = module.quilt.admin_password
-}
-
-output "admin_email" {
-  value       = lookup(module.quilt.stack.parameters, "AdminEmail")
-  description = "Admin email"
-}
-
-output "quilt_web_host" {
-  description = "Catalog URL"
-  value       = local.quilt_web_host
-}
-```
+See [example.tf](./example.tf).
 
 ## Updating stacks
-
 For certain (older) versions of Terraform you must change the contents stored 
 at `template_url=` without changing the URL itself.
 
