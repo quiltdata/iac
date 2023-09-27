@@ -23,6 +23,7 @@ module "quilt" {
   // To initialize a new stack from an existing database
   db_snapshot_identifier = ""
   // To run Quilt services in an existing VPC
+  cidr            =
   vpc_id          = ""
   api_endpoint    = ""
   intra_subnets   = ["", ""]
