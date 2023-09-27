@@ -19,6 +19,7 @@ module "quilt" {
 
   template_file = local.build_file_path
 
+  /* Optional arguments
   // To initialize a new stack from an existing database
   db_snapshot_identifier = ""
   // To run Quilt services in an existing VPC
@@ -27,6 +28,7 @@ module "quilt" {
   intra_subnets   = ["", ""]
   private_subnets = ["", ""]
   public_subnets  = ["", ""]
+  */
 
   parameters = {
     AdminEmail               = ""
