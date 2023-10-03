@@ -13,7 +13,7 @@ EOH
   ]
   status_map = zipmap(
     local.config_vars,
-    [for s in local.existing_network_requires : format("%s", s ? "✅" : "❌")],
+    [for s in sort(local.existing_network_requires) : format("%s", s ? "✅" : "❌")],
   )
   status_str = join("\n", [for k, v in local.status_map : format("%s %s", v, k)])
 }
