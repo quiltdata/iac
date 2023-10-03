@@ -1,7 +1,7 @@
 locals {
   configuration_error_msg = <<EOH
 To deploy Quilt into an existing VPC set *all* of the following attributes.
-(Or to create a new VPC all of the following attributes must be null):
+(Or to create a new VPC all of the following attributes must be null.):
 ${local.status_str}
 EOH
   config_vars = [
