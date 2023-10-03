@@ -1,13 +1,21 @@
 locals {
   configuration_error_msg = <<EOH
-To run Quilt in an existing VPC set the following attributes:
-  1) existing_vpc_id
-  2) existing_intra_subnets
-  3) existing_private_subnets
-  4) existing_public_subnets (if internal == false)
-  5) existing_api_endpoint (if internal == true)
-Or to create a new VPC, set the above to null.
+To deploy Quilt into an existing VPC set *all* of the following attributes.
+(Or to create a new VPC all of the following attributes must be null.):
+${local.status_str}
 EOH
+  config_vars = [
+    "existing_vpc_id",
+    "existing_intra_subnets",
+    "existing_private_subnets",
+    "existing_public_subnets (if internal == false)",
+    "existing_api_endpoint (if internal == true)",
+  ]
+  status_map = zipmap(
+    local.config_vars,
+    [for s in local.existing_network_requires : format("%s", s ? "✅" : "❌")],
+  )
+  status_str = join("\n", [for k, v in local.status_map : format("%s %s", v, k)])
 }
 
 output "vpc" {
@@ -30,7 +38,7 @@ output "configuration_error" {
   value = local.configuration_error ? null : local.configuration_error_msg
   precondition {
     condition     = !local.configuration_error
-    error_message = format("%s (existing_network_requires: %v)", local.configuration_error_msg, local.existing_network_requires)
+    error_message = local.configuration_error_msg
   }
 }
 
