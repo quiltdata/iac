@@ -13,6 +13,7 @@ module "vpc" {
   name     = var.name
   cidr     = var.cidr
   internal = var.internal
+  enable_ipv6 = var.enable_ipv6
 
   existing_api_endpoint    = var.api_endpoint
   existing_vpc_id          = var.vpc_id
@@ -31,7 +32,6 @@ module "db" {
   network_type = var.db_network_type
 
   vpc_id      = module.vpc.vpc_id
-  enable_ipv6 = var.enable_ipv6
   subnet_ids  = module.vpc.intra_subnets
 
   instance_class = var.db_instance_class
