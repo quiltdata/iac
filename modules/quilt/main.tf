@@ -28,7 +28,10 @@ module "db" {
 
   snapshot_identifier = var.db_snapshot_identifier
 
+  network_type = var.db_network_type
+
   vpc_id     = module.vpc.vpc_id
+  vpc_en
   subnet_ids = module.vpc.intra_subnets
 
   instance_class = var.db_instance_class

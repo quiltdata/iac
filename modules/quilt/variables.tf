@@ -25,7 +25,7 @@ variable "internal" {
 
 variable "db_snapshot_identifier" {
   type        = string
-  nullable = true
+  nullable    = true
   default     = null
   description = "If set, restore the DB from the given snapshot"
 }
@@ -120,6 +120,12 @@ variable "parameters" {
   description = "Parameters to pass to the CloudFormation stack"
 }
 
+variable "vpc_enable_ipv6" {
+  type        = bool
+  nullable    = false
+  description = "Enable IPV6 (if module.quilt is creating the VPC)"
+}
+
 variable "vpc_id" {
   type        = string
   default     = null
@@ -149,4 +155,10 @@ variable "public_subnets" {
   type        = list(string)
   default     = null
   description = "Only needed when var.internal == false (for NAT & load balancer)."
+}
+
+variable "db_network_type" {
+  type        = string
+  default     = "DUAL"
+  description = "'IPV4' or 'DUAL'"
 }
