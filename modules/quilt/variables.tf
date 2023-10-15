@@ -120,9 +120,10 @@ variable "parameters" {
   description = "Parameters to pass to the CloudFormation stack"
 }
 
-variable "vpc_enable_ipv6" {
+variable "enable_ipv6" {
   type        = bool
   nullable    = false
+  default     = true
   description = "Enable IPV6 (if module.quilt is creating the VPC)"
 }
 
