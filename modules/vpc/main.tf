@@ -9,7 +9,7 @@ data "aws_vpc" "existing_vpc" {
 
 locals {
   existing_network_requires = [
-    var.existing_vpc_id != null && try(split("/", data.aws_vpc.existing_vpc[0].cidr_block)[1] < 21, false),
+    var.existing_vpc_id != null,
     var.existing_intra_subnets != null,
     var.existing_private_subnets != null,
     var.internal == (var.existing_public_subnets == null),
