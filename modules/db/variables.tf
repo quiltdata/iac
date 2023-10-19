@@ -32,7 +32,7 @@ variable "network_type" {
   type     = string
   nullable = false
   validation {
-    condition     = var.network_type == "IPV4" || var.ip_setting == "DUAL"
+    condition     = var.network_type == "IPV4" || var.network_type == "DUAL"
     error_message = "'IPV4' or 'DUAL'"
   }
 }
