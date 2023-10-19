@@ -12,12 +12,6 @@ variable "cidr" {
   }
 }
 
-variable "enable_ipv6" {
-  type     = bool
-  nullable = false
-  default  = true
-}
-
 variable "internal" {
   type     = bool
   nullable = false

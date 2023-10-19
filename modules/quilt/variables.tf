@@ -44,6 +44,12 @@ variable "db_multi_az" {
   description = "Whether to enable Multi-AZ for the DB"
 }
 
+variable "db_network_type" {
+  type        = string
+  default     = "DUAL"
+  description = "'IPV4' (required for IPV4-only VPCs) or 'DUAL'"
+}
+
 variable "search_auto_tune_desired_state" {
   type        = string
   nullable    = false
@@ -120,13 +126,6 @@ variable "parameters" {
   description = "Parameters to pass to the CloudFormation stack"
 }
 
-variable "enable_ipv6" {
-  type        = bool
-  nullable    = false
-  default     = true
-  description = "Enable IPV6 (if module.quilt creates the VPC)"
-}
-
 variable "vpc_id" {
   type        = string
   default     = null
@@ -156,10 +155,4 @@ variable "public_subnets" {
   type        = list(string)
   default     = null
   description = "Only needed when var.internal == false (for NAT & load balancer)."
-}
-
-variable "db_network_type" {
-  type        = string
-  default     = "DUAL"
-  description = "'IPV4' or 'DUAL'"
 }

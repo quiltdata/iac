@@ -13,7 +13,6 @@ module "vpc" {
   name     = var.name
   cidr     = var.cidr
   internal = var.internal
-  enable_ipv6 = var.enable_ipv6
 
   existing_api_endpoint    = var.api_endpoint
   existing_vpc_id          = var.vpc_id
