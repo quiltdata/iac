@@ -25,7 +25,7 @@ variable "internal" {
 
 variable "db_snapshot_identifier" {
   type        = string
-  nullable = true
+  nullable    = true
   default     = null
   description = "If set, restore the DB from the given snapshot"
 }
@@ -42,6 +42,12 @@ variable "db_multi_az" {
   nullable    = true
   default     = true
   description = "Whether to enable Multi-AZ for the DB"
+}
+
+variable "db_network_type" {
+  type        = string
+  default     = "DUAL"
+  description = "'IPV4' (required for IPV4-only VPCs) or 'DUAL'"
 }
 
 variable "search_auto_tune_desired_state" {
