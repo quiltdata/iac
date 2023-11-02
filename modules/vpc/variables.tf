@@ -6,7 +6,7 @@ variable "name" {
 variable "create_new_vpc" {
   type        = bool
   nullable    = false
-  description = "Create a new VPC if true, otherwise or use an existing VPC."
+  description = "Create a new VPC if true, otherwise use an existing VPC."
 }
 
 variable "cidr" {

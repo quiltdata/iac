@@ -9,20 +9,20 @@ data "aws_vpc" "existing_vpc" {
 
 locals {
   existing_network_requires = {
-    "vpc_id (required)" : var.existing_vpc_id != null && try(split("/", data.aws_vpc.existing_vpc[0].cidr_block)[1] < 21, false),
+    "create_new_vpc == false" : var.create_new_vpc == false,
+    "vpc_id (required)" : var.existing_vpc_id != null,
     "intra_subnets (required)" : var.existing_intra_subnets != null,
     "private_subnets (required)" : var.existing_private_subnets != null,
     "public subnets (required if var.internal == false)" : var.internal == (var.existing_public_subnets == null),
     "api_endpoint (required if var.internal == true)" : var.internal == (var.existing_api_endpoint != null),
-    "create_new_vpc (required to create a new vpc)" : var.create_new_vpc == false,
   }
   new_network_requires = {
-    "vpc_id (must be null)" : var.existing_vpc_id == null,
-    "intra_subnets (must be null)" : var.existing_intra_subnets == null,
-    "private_subnets (must be null)" : var.existing_private_subnets == null,
-    "public_subnets (must be null)" : var.existing_public_subnets == null,
-    "api_endpoint (must be null)" : var.existing_api_endpoint == null,
-    "create_new_vpc (must be true)" : var.create_new_vpc == true,
+    "create_new_vpc == true" : var.create_new_vpc == true,
+    "vpc_id == null" : var.existing_vpc_id == null,
+    "intra_subnets == null" : var.existing_intra_subnets == null,
+    "private_subnets == null" : var.existing_private_subnets == null,
+    "public_subnets == null" : var.existing_public_subnets == null,
+    "api_endpoint == null" : var.existing_api_endpoint == null,
   }
   existing_network_valid = alltrue(values(local.existing_network_requires))
   new_network_valid      = alltrue(values(local.new_network_requires))
