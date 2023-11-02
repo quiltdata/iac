@@ -13,7 +13,7 @@ locals {
     "vpc_id (required)" : var.existing_vpc_id != null,
     "intra_subnets (required)" : var.existing_intra_subnets != null,
     "private_subnets (required)" : var.existing_private_subnets != null,
-    "public subnets (required if var.internal == false)" : var.internal == (var.existing_public_subnets == null),
+    "public_subnets (required if var.internal == false)" : var.internal == (var.existing_public_subnets == null),
     "api_endpoint (required if var.internal == true)" : var.internal == (var.existing_api_endpoint != null),
   }
   new_network_requires = {
