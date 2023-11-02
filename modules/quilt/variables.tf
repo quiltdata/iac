@@ -156,3 +156,15 @@ variable "public_subnets" {
   default     = null
   description = "Only needed when var.internal == false (for NAT & load balancer)."
 }
+
+variable "user_subnets" {
+  type        = list(string)
+  default     = null
+  description = "For the Quilt load balancer. Must be reachable by all Catalog users, incl. VPN clients."
+}
+
+variable "user_security_group" {
+  type        = list(string)
+  default     = null
+  description = "For the Quilt load balancer. Must allow inbound from all Catalog users, incl. VPN clients."
+}

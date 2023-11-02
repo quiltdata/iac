@@ -3,6 +3,11 @@ variable "name" {
   nullable = false
 }
 
+variable "create_new_vpc" {
+  type     = bool
+  nullable = false
+}
+
 variable "cidr" {
   type     = string
   nullable = false
@@ -45,6 +50,14 @@ variable "existing_public_subnets" {
   type = list(string)
   validation {
     condition     = var.existing_public_subnets == null ? true : length(var.existing_public_subnets) == 2
+    error_message = "Must contain 2 string ids or be null."
+  }
+}
+
+variable "existing_user_subnets" {
+  type = list(string)
+  validation {
+    condition     = var.existing_user_subnets == null ? true : length(var.existing_user_subnets) == 2
     error_message = "Must contain 2 string ids or be null."
   }
 }

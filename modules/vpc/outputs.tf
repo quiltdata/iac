@@ -1,21 +1,12 @@
 locals {
-  configuration_error_msg = <<EOH
-To deploy Quilt into an existing VPC set *all* of the following attributes.
-(Or to create a new VPC all of the following attributes must be null.):
-${local.status_str}
-EOH
-  config_vars = [
-    "existing_vpc_id",
-    "existing_intra_subnets",
-    "existing_private_subnets",
-    "existing_public_subnets (if internal == false)",
-    "existing_api_endpoint (if internal == true)",
-  ]
-  status_map = zipmap(
-    local.config_vars,
-    [for s in local.existing_network_requires : format("%s", s ? "✅" : "❌")],
+  var_msg = var.create_new_vpc ?  "In order to use an existing VPC (create_new_vpc == false)" : (
+    "In order to create a new VPC (create_new_vpc == true)"
   )
-  status_str = join("\n", [for k, v in local.status_map : format("%s %s", v, k)])
+  var_map = var.create_new_vpc ? local.existing_network_requires : local.new_network_requires
+  configuration_error_msg = <<EOH
+${local.var_msg} correct the following attributes:
+${join("\n", [for k, v in local.var_map : format("%s %s", v ? "✅" : "❌", k)])}
+EOH
 }
 
 output "vpc" {

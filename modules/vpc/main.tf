@@ -8,22 +8,24 @@ data "aws_vpc" "existing_vpc" {
 }
 
 locals {
-  existing_network_requires = [
-    var.existing_vpc_id != null,
-    var.existing_intra_subnets != null,
-    var.existing_private_subnets != null,
-    var.internal == (var.existing_public_subnets == null),
-    var.internal == (var.existing_api_endpoint != null),
-  ]
-  new_network_requires = [
-    var.existing_vpc_id == null,
-    var.existing_intra_subnets == null,
-    var.existing_private_subnets == null,
-    var.existing_public_subnets == null,
-    var.existing_api_endpoint == null,
-  ]
-  existing_network_valid = alltrue(local.existing_network_requires)
-  new_network_valid      = alltrue(local.new_network_requires)
+  existing_network_requires = {
+    "vpc_id": var.existing_vpc_id != null && try(split("/", data.aws_vpc.existing_vpc[0].cidr_block)[1] < 21, false),
+    "intra_subnets": var.existing_intra_subnets != null,
+    "private_subnets": var.existing_private_subnets != null,
+    "only provide public subnets when var.internal == false": var.internal == (var.existing_public_subnets == null),
+    "only provide api_endpoint correct for var.internal == true": var.internal == (var.existing_api_endpoint != null),
+    "create_new_vpc": var.create_new_vpc == true,
+  }
+  new_network_requires = {
+    "vpc_id": var.existing_vpc_id == null,
+    "intra_subnets": var.existing_intra_subnets == null,
+    "private_subnets": var.existing_private_subnets == null,
+    "public_subnets": var.existing_public_subnets == null,
+    "api_endpoint": var.existing_api_endpoint == null,
+    "create_new_vpc": var.create_new_vpc == false,
+  }
+  existing_network_valid = alltrue(values(local.existing_network_requires))
+  new_network_valid      = alltrue(values(local.new_network_requires))
   configuration_error    = !local.existing_network_valid && !local.new_network_valid
 
   azs          = slice(data.aws_availability_zones.available.names, 0, 2)
