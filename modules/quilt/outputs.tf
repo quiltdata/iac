@@ -19,7 +19,3 @@ output "stack" {
   description = "CloudFormation outputs"
   value       = aws_cloudformation_stack.stack
 }
-
-output "vpc_status" {
-  value = module.vpc.created_new_network != null ? module.vpc.created_new_network : module.vpc.configuration_error
-}

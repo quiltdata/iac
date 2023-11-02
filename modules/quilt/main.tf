@@ -14,6 +14,7 @@ module "vpc" {
   cidr     = var.cidr
   internal = var.internal
 
+  create_new_vpc           = var.create_new_vpc
   existing_api_endpoint    = var.api_endpoint
   existing_vpc_id          = var.vpc_id
   existing_intra_subnets   = var.intra_subnets
