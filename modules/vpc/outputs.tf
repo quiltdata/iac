@@ -1,8 +1,8 @@
 locals {
-  var_msg = var.create_new_vpc ?  "In order to use an existing VPC (create_new_vpc == false)" : (
+  var_msg = var.create_new_vpc ? "In order to use an existing VPC (create_new_vpc == false)" : (
     "In order to create a new VPC (create_new_vpc == true)"
   )
-  var_map = var.create_new_vpc ? local.existing_network_requires : local.new_network_requires
+  var_map                 = var.create_new_vpc ? local.existing_network_requires : local.new_network_requires
   configuration_error_msg = <<EOH
 ${local.var_msg} correct the following attributes:
 ${join("\n", [for k, v in local.var_map : format("%s %s", v ? "✅" : "❌", k)])}
@@ -19,10 +19,6 @@ output "api_endpoint" {
   value = !var.internal ? null : (
     local.new_network_valid ? module.vpc_endpoints.endpoints["api"].id : var.existing_api_endpoint
   )
-}
-
-output "created_new_network" {
-  value = !local.new_network_valid ? null : "Successfully created new VPC & network."
 }
 
 output "configuration_error" {
