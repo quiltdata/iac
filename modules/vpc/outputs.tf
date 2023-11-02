@@ -1,8 +1,8 @@
 locals {
-  var_msg = var.create_new_vpc ? "In order to use an existing VPC (create_new_vpc == false)" : (
-    "In order to create a new VPC (create_new_vpc == true)"
+  var_msg = var.create_new_vpc ? "In order to create a new VPC (create_new_vpc == true)" : (
+    "In order to use an existing VPC (create_new_vpc == false)"
   )
-  var_map                 = var.create_new_vpc ? local.existing_network_requires : local.new_network_requires
+  var_map                 = var.create_new_vpc ? local.new_network_requires : local.existing_network_requires
   configuration_error_msg = <<EOH
 ${local.var_msg} correct the following attributes:
 ${join("\n", [for k, v in local.var_map : format("%s %s", v ? "✅" : "❌", k)])}
