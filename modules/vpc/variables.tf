@@ -54,3 +54,17 @@ variable "existing_public_subnets" {
     error_message = "Must contain 2 string ids or be null."
   }
 }
+
+variable "existing_user_security_group" {
+  type        = string
+  description = "Security group ID to customize Quilt load balancer access. Must allow ingress from Quilt catalog users."
+}
+
+variable "existing_user_subnets" {
+  type        = list(string)
+  description = "Subnet ids for Quilt load balancer. Must be reachable by Quilt catalog users."
+  validation {
+    condition     = var.existing_user_subnets == null ? true : length(var.existing_user_subnets) == 2
+    error_message = "Must contain 2 string ids or be null."
+  }
+}

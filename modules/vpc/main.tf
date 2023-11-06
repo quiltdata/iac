@@ -14,6 +14,8 @@ locals {
     "intra_subnets (required)" : var.existing_intra_subnets != null,
     "private_subnets (required)" : var.existing_private_subnets != null,
     "public_subnets (required if var.internal == false)" : var.internal == (var.existing_public_subnets == null),
+    "user_security_group (required)" : var.existing_user_security_group != null,
+    "user_subnets (required)" : var.existing_user_subnets != null,
     "api_endpoint (required if var.internal == true)" : var.internal == (var.existing_api_endpoint != null),
   }
   new_network_requires = {
@@ -22,6 +24,8 @@ locals {
     "intra_subnets == null" : var.existing_intra_subnets == null,
     "private_subnets == null" : var.existing_private_subnets == null,
     "public_subnets == null" : var.existing_public_subnets == null,
+    "user_security_group == null" : var.existing_user_security_group == null,
+    "user_subnets == null" : var.existing_user_subnets == null,
     "api_endpoint == null" : var.existing_api_endpoint == null,
   }
   existing_network_valid = alltrue(values(local.existing_network_requires))
@@ -81,6 +85,25 @@ module "api_gateway_security_group" {
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["https-443-tcp"]
+}
+
+module "user_security_group" {
+  source = "terraform-aws-modules/security-group/aws"
+
+  create = local.new_network_valid
+
+  name        = "${var.name}-user"
+  description = "Inbound rules for Quilt catalog users to reach load balancer"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_rules       = ["https-443-tcp"]
+  lifecycle {
+    ignore_changes = [
+      # allow user to customize ingress such that terraform will never smashing drifted state
+      "ingress.*",
+    ]
+  }
 }
 
 module "vpc_endpoints" {
