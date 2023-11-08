@@ -47,6 +47,6 @@ output "public_subnets" {
 
 output "user_subnets" {
   value = local.new_network_valid ? (
-    var.internal ? module.vpc.private_subnets : module.vpc.public_subnets
+    var.internal ? module.vpc.private_subnets : null
   ) : module.vpc.existing_user_subnets
 }
