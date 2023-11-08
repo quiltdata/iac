@@ -166,11 +166,11 @@ variable "public_subnets" {
 variable "user_security_group" {
   type        = string
   default     = null
-  description = "Quilt load balancer ingress SG when providing an existing VPC."
+  description = "Quilt load balancer ingress SG. Only needed when var.create_new_vpc == false."
 }
 
 variable "user_subnets" {
   type        = list(string)
   default     = null
-  description = "Quilt load balancer subnet when var.internal == true."
+  description = "Quilt load balancer subnet. Only needed when var.internal == true and var.create_new_vpc == true ."
 }
