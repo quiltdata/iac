@@ -41,6 +41,7 @@ module "quilt" {
     SingleSignOnDomains      = ""
     SingleSignOnClientId     = ""
     SingleSignOnBaseUrl      = ""
+    UserSecurityGroup        = ""
   }
 }
 

@@ -50,7 +50,3 @@ output "user_subnets" {
     var.internal ? module.vpc.private_subnets : module.vpc.public_subnets
   ) : module.vpc.existing_user_subnets
 }
-
-output "user_security_group" {
-  value = local.new_network_valid ? module.user_security_group.security_group_id : var.existing_user_security_group
-}

@@ -57,7 +57,7 @@ variable "existing_public_subnets" {
 
 variable "existing_user_security_group" {
   type        = string
-  description = "Security group ID to customize Quilt load balancer access. Must allow ingress from Quilt catalog users."
+  description = "Security group id to customize Quilt load balancer access. Must allow ingress from Quilt catalog users on port 443."
 }
 
 variable "existing_user_subnets" {

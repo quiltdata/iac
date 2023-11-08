@@ -162,3 +162,15 @@ variable "public_subnets" {
   default     = null
   description = "Only needed when var.internal == false (for NAT & load balancer)."
 }
+
+variable "user_security_group" {
+  type        = string
+  default     = null
+  description = "Quilt load balancer ingress SG when providing an existing VPC."
+}
+
+variable "user_subnets" {
+  type        = list(string)
+  default     = null
+  description = "Quilt load balancer subnet when var.internal == true."
+}

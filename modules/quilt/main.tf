@@ -14,12 +14,14 @@ module "vpc" {
   cidr     = var.cidr
   internal = var.internal
 
-  create_new_vpc           = var.create_new_vpc
-  existing_api_endpoint    = var.api_endpoint
-  existing_vpc_id          = var.vpc_id
-  existing_intra_subnets   = var.intra_subnets
-  existing_private_subnets = var.private_subnets
-  existing_public_subnets  = var.public_subnets
+  create_new_vpc               = var.create_new_vpc
+  existing_api_endpoint        = var.api_endpoint
+  existing_vpc_id              = var.vpc_id
+  existing_intra_subnets       = var.intra_subnets
+  existing_private_subnets     = var.private_subnets
+  existing_public_subnets      = var.public_subnets
+  existing_user_security_group = var.user_security_group
+  existing_user_subnets        = var.user_subnets
 }
 
 module "db" {
@@ -93,6 +95,7 @@ resource "aws_cloudformation_stack" "stack" {
       VPC           = module.vpc.vpc_id
       Subnets       = join(",", module.vpc.private_subnets)
       PublicSubnets = var.internal ? null : join(",", module.vpc.public_subnets)
+      UserSubnets   = module.vpc.user_subnets
 
       ApiGatewayVPCEndpoint = module.vpc.api_endpoint
 
