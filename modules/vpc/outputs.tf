@@ -48,11 +48,11 @@ output "public_subnets" {
 output "user_subnets" {
   value = local.new_network_valid ? (
     var.internal ? module.vpc.private_subnets : null
-  ) : module.vpc.existing_user_subnets
+  ) : var.existing_user_subnets
 }
 
 output "ingress_security_group" {
   value = local.new_network_valid ? (
     module.api_gateway_security_group.security_group_id
-  ) : module.vpc.existing_user_security_group
+  ) : var.existing_user_security_group
 }

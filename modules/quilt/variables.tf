@@ -12,6 +12,7 @@ variable "name" {
 
 variable "create_new_vpc" {
   type        = bool
+  default     = false
   nullable    = false
   description = "Create a new VPC if true, otherwise use an existing VPC."
 }
@@ -20,7 +21,7 @@ variable "cidr" {
   type        = string
   nullable    = false
   default     = "10.0.0.0/16"
-  description = "CIDR block for the VPC. Set for validation even if using an existing VPC."
+  description = "CIDR block for the VPC. Set for validation even if create_new_vpc == false."
 }
 
 variable "internal" {
