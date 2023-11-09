@@ -79,12 +79,16 @@ module "api_gateway_security_group" {
 
   create = var.internal && local.new_network_valid
 
-  name        = "${var.name}-user-ingress"
-  description = "User HTTPS traffic for the API Gateway, ELBv2"
+  name        = "${var.name}-api-gateway"
+  description = "User HTTPS traffic for the API Gateway Endpoint"
   vpc_id      = module.vpc.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["https-443-tcp"]
+
+  tags = {
+    Note = "Also used for ELBv2 ingress"
+  }
 }
 
 module "vpc_endpoints" {
