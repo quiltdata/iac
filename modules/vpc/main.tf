@@ -80,7 +80,7 @@ module "api_gateway_security_group" {
   create = var.internal && local.new_network_valid
 
   name        = "${var.name}-api-gateway"
-  description = "User HTTPS traffic for the API Gateway Endpoint"
+  description = "All inbound HTTPS traffic for the API Gateway Endpoint"
   vpc_id      = module.vpc.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
