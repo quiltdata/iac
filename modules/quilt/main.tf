@@ -86,7 +86,12 @@ resource "aws_s3_object" "cft" {
 resource "aws_cloudformation_stack" "stack" {
   name         = var.name
   template_url = local.template_url
-  depends_on   = [aws_s3_object.cft]
+  depends_on = [
+    aws_s3_object.cft,
+    # Prevent resrouce races between module.vpc and module.quilt resources
+    # e.g. if ECS tries to reach ECR before private subnet NAT is available it fails
+    module.vpc, 
+  ]
   capabilities = ["CAPABILITY_NAMED_IAM"]
 
   parameters = merge(
