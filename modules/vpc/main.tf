@@ -86,9 +86,11 @@ module "api_gateway_security_group" {
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["https-443-tcp"]
 
+  /*
   tags = {
     Note = "Also used for ELBv2 ingress"
   }
+  */
 }
 
 module "vpc_endpoints" {
