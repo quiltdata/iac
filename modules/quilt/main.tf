@@ -88,8 +88,8 @@ resource "aws_cloudformation_stack" "stack" {
   template_url = local.template_url
   depends_on = [
     aws_s3_object.cft,
-    # Prevent resrouce races between module.vpc and module.quilt resources
-    # e.g. if ECS tries to reach ECR before private subnet NAT is available it fails
+    # Prevent resource races between module.vpc and module.quilt resources
+    # e.g. if ECS tries to reach ECR before private subnet NAT is available ECS fails
     module.vpc, 
   ]
   capabilities = ["CAPABILITY_NAMED_IAM"]
