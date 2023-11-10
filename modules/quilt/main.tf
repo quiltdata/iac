@@ -90,7 +90,7 @@ resource "aws_cloudformation_stack" "stack" {
     aws_s3_object.cft,
     # Prevent races between module.vpc and module.quilt resources. For example:
     # If ECS tries to reach ECR before private subnet NAT is available then ECS fails.
-    module.vpc, 
+    module.vpc,
   ]
   capabilities = ["CAPABILITY_NAMED_IAM"]
 

@@ -74,17 +74,17 @@ module "vpc" {
   one_nat_gateway_per_az = true
 }
 
-module "api_gateway_security_group" {
-  source = "terraform-aws-modules/security-group/aws"
-
-  create = local.new_network_valid
-
+resource "aws_security_group" "user_ingress" {
+  count       = local.new_network_valid ? 1 : 0
+  vpc_id      = module.vpc.vpc_id
   name        = "${var.name}-user-ingress"
   description = "User ingress for Quilt load balancer, API Gateway"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress_cidr_blocks = ["0.0.0.0/0"]
-  ingress_rules       = ["https-443-tcp"]
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 module "vpc_endpoints" {
@@ -93,7 +93,7 @@ module "vpc_endpoints" {
   create = local.new_network_valid
 
   vpc_id             = module.vpc.vpc_id
-  security_group_ids = [module.api_gateway_security_group.security_group_id]
+  security_group_ids = [aws_security_group.user_ingress[0].id]
 
   endpoints = {
     s3 = {

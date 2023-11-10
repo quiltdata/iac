@@ -53,6 +53,6 @@ output "user_subnets" {
 
 output "ingress_security_group" {
   value = local.new_network_valid ? (
-    module.api_gateway_security_group.security_group_id
+    aws_security_group.user_ingress[0].id
   ) : var.existing_user_security_group
 }
