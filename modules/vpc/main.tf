@@ -79,18 +79,12 @@ module "api_gateway_security_group" {
 
   create = local.new_network_valid
 
-  name        = "${var.name}-api-gateway"
-  description = "All inbound HTTPS traffic for the API Gateway Endpoint"
+  name        = "${var.name}-user-ingress"
+  description = "User ingress for Quilt load balancer, API Gateway"
   vpc_id      = module.vpc.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["https-443-tcp"]
-
-  /*
-  tags = {
-    Note = "Also used for ELBv2 ingress"
-  }
-  */
 }
 
 module "vpc_endpoints" {
