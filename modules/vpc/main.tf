@@ -74,6 +74,19 @@ module "vpc" {
   one_nat_gateway_per_az = true
 }
 
+module "api_gateway_security_group" {
+  source = "terraform-aws-modules/security-group/aws"
+
+  create = var.internal && local.new_network_valid
+
+  name        = "${var.name}-api-gateway"
+  description = "All inbound HTTPS traffic for the API Gateway Endpoint"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_rules       = ["https-443-tcp"]
+}
+
 resource "aws_security_group" "user_ingress" {
   count       = local.new_network_valid ? 1 : 0
   vpc_id      = module.vpc.vpc_id
@@ -93,7 +106,7 @@ module "vpc_endpoints" {
   create = local.new_network_valid
 
   vpc_id             = module.vpc.vpc_id
-  security_group_ids = [aws_security_group.user_ingress[0].id]
+  security_group_ids = [module.api_gateway_security_group.security_group_id]
 
   endpoints = {
     s3 = {
