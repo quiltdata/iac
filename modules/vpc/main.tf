@@ -87,19 +87,6 @@ module "api_gateway_security_group" {
   ingress_rules       = ["https-443-tcp"]
 }
 
-resource "aws_security_group" "user_ingress" {
-  count       = local.new_network_valid ? 1 : 0
-  vpc_id      = module.vpc.vpc_id
-  name        = "${var.name}-user-ingress"
-  description = "User ingress for Quilt load balancer, API Gateway"
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
 module "vpc_endpoints" {
   source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
 
