@@ -77,7 +77,7 @@ module "vpc" {
 module "api_gateway_security_group" {
   source = "terraform-aws-modules/security-group/aws"
 
-  create = var.internal && local.new_network_valid
+  create = local.new_network_valid
 
   name        = "${var.name}-api-gateway"
   description = "All inbound HTTPS traffic for the API Gateway Endpoint"
