@@ -160,7 +160,7 @@ variable "private_subnets" {
 variable "public_subnets" {
   type        = list(string)
   default     = null
-  description = "IDs. Only needed when var.internal == false (for NAT & load balancer)."
+  description = "IDs for public subnets. Only needed when var.internal == false (for NAT & load balancer)."
 }
 
 variable "user_security_group" {
