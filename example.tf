@@ -23,11 +23,13 @@ module "quilt" {
   /* Optional: initialize a new stack from an existing database
   // db_snapshot_identifier = ""
   // Optional: Run Quilt stack in an existing VPC (create_new_vpc = false)
-  vpc_id          = ""
-  api_endpoint    = ""
-  intra_subnets   = ["", ""]
-  private_subnets = ["", ""]
-  public_subnets  = ["", ""]
+  vpc_id              = ""
+  api_endpoint        = ""
+  intra_subnets       = ["", ""]
+  private_subnets     = ["", ""]
+  public_subnets      = ["", ""]
+  user_security_group = ""
+  user_subnets        = ["", ""]
   */
 
   parameters = {
