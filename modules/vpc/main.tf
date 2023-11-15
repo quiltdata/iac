@@ -74,13 +74,14 @@ module "vpc" {
   one_nat_gateway_per_az = true
 }
 
+// Module name no longer accurate (see description); changing name causes tf apply to fail
 module "api_gateway_security_group" {
   source = "terraform-aws-modules/security-group/aws"
 
   create = local.new_network_valid
 
-  name        = "${var.name}-api-gateway"
-  description = "All inbound HTTPS traffic for the API Gateway Endpoint"
+  name        = "${var.name}-user-ingress"
+  description = "User ingress security group for API Gateway Endpoint, Quilt load balancer"
   vpc_id      = module.vpc.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
