@@ -20,10 +20,12 @@ module "quilt" {
   internal       = false
   create_new_vpc = true
   cidr           = ""
-  /* Optional arguments:
-  // Initialize a new stack from an existing database
-  // db_snapshot_identifier = ""
-  // Deploy Quilt stack to an existing VPC (create_new_vpc = false)
+
+  /* Optional: initialize a new stack from an existing database
+  db_snapshot_identifier = ""
+  */
+
+  /* Optional: deploy Quilt stack to an existing VPC (create_new_vpc = false)
   vpc_id              = ""
   api_endpoint        = ""
   intra_subnets       = ["", ""]
