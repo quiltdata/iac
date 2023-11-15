@@ -14,12 +14,14 @@ module "vpc" {
   cidr     = var.cidr
   internal = var.internal
 
-  create_new_vpc           = var.create_new_vpc
-  existing_api_endpoint    = var.api_endpoint
-  existing_vpc_id          = var.vpc_id
-  existing_intra_subnets   = var.intra_subnets
-  existing_private_subnets = var.private_subnets
-  existing_public_subnets  = var.public_subnets
+  create_new_vpc               = var.create_new_vpc
+  existing_api_endpoint        = var.api_endpoint
+  existing_vpc_id              = var.vpc_id
+  existing_intra_subnets       = var.intra_subnets
+  existing_private_subnets     = var.private_subnets
+  existing_public_subnets      = var.public_subnets
+  existing_user_security_group = var.user_security_group
+  existing_user_subnets        = var.user_subnets
 }
 
 module "db" {
@@ -84,15 +86,22 @@ resource "aws_s3_object" "cft" {
 resource "aws_cloudformation_stack" "stack" {
   name         = var.name
   template_url = local.template_url
-  depends_on   = [aws_s3_object.cft]
+  depends_on = [
+    aws_s3_object.cft,
+    /* Prevent races between module.vpc and module.quilt resources. For example:
+     * If ECS tries to reach ECR before private subnet NAT is available then ECS fails. */
+    module.vpc,
+  ]
   capabilities = ["CAPABILITY_NAMED_IAM"]
 
   parameters = merge(
     var.parameters,
     {
-      VPC           = module.vpc.vpc_id
-      Subnets       = join(",", module.vpc.private_subnets)
-      PublicSubnets = var.internal ? null : join(",", module.vpc.public_subnets)
+      VPC               = module.vpc.vpc_id
+      Subnets           = join(",", module.vpc.private_subnets)
+      PublicSubnets     = module.vpc.public_subnets == null ? null : join(",", module.vpc.public_subnets)
+      UserSubnets       = module.vpc.user_subnets == null ? null : join(",", module.vpc.user_subnets)
+      UserSecurityGroup = module.vpc.ingress_security_group
 
       ApiGatewayVPCEndpoint = module.vpc.api_endpoint
 

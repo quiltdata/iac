@@ -14,21 +14,25 @@ locals {
 module "quilt" {
   source = "github.com/quiltdata/iac//modules/quilt"
 
-  name     = local.name
-  internal = false
-
+  name          = local.name
   template_file = local.build_file_path
 
-  /* Optional arguments
-  // To initialize a new stack from an existing database
+  internal       = false
+  create_new_vpc = true
+  cidr           = ""
+
+  /* Optional: initialize a new stack from an existing database
   db_snapshot_identifier = ""
-  // To run Quilt services in an existing VPC
-  cidr            = ""
-  vpc_id          = ""
-  api_endpoint    = ""
-  intra_subnets   = ["", ""]
-  private_subnets = ["", ""]
-  public_subnets  = ["", ""]
+  */
+
+  /* Optional: deploy Quilt stack to an existing VPC (create_new_vpc = false)
+  vpc_id              = ""
+  api_endpoint        = ""
+  intra_subnets       = ["", ""]
+  private_subnets     = ["", ""]
+  public_subnets      = ["", ""]
+  user_security_group = ""
+  user_subnets        = ["", ""]
   */
 
   parameters = {

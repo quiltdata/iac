@@ -12,7 +12,7 @@ variable "name" {
 
 variable "create_new_vpc" {
   type        = bool
-  nullable    = false
+  default     = false
   description = "Create a new VPC if true, otherwise use an existing VPC."
 }
 
@@ -20,7 +20,7 @@ variable "cidr" {
   type        = string
   nullable    = false
   default     = "10.0.0.0/16"
-  description = "CIDR block for the VPC. Set for validation even if using an existing VPC."
+  description = "CIDR block for the VPC. Set for validation even if create_new_vpc == false."
 }
 
 variable "internal" {
@@ -148,17 +148,29 @@ variable "api_endpoint" {
 variable "intra_subnets" {
   type        = list(string)
   default     = null
-  description = "Only communicate with private subnets (never the Internet)."
+  description = "IDs for subnets that only communicate with private subnets (never the Internet)."
 }
 
 variable "private_subnets" {
   type        = list(string)
   default     = null
-  description = "Have Internet access to reach public AWS services."
+  description = "IDs for subnets with Internet access to reach public AWS services."
 }
 
 variable "public_subnets" {
   type        = list(string)
   default     = null
-  description = "Only needed when var.internal == false (for NAT & load balancer)."
+  description = "IDs for public subnets. Only needed when var.internal == false (for NAT & load balancer)."
+}
+
+variable "user_security_group" {
+  type        = string
+  default     = null
+  description = "Security group ID for Quilt load balancer ingress. Only needed when var.create_new_vpc == false."
+}
+
+variable "user_subnets" {
+  type        = list(string)
+  default     = null
+  description = "Subnet IDs for Quilt load balancer. Only needed when var.internal == true and var.create_new_vpc == true."
 }
