@@ -1,13 +1,13 @@
 module "search_accessor_security_group" {
   source = "terraform-aws-modules/security-group/aws"
 
-  name = "${var.domain_name}-search-accessor"
+  name        = "${var.domain_name}-search-accessor"
   description = "For resources that need access to search cluster"
-  vpc_id = var.vpc_id
+  vpc_id      = var.vpc_id
 
   egress_with_source_security_group_id = [
     {
-      rule = "https-443-tcp"
+      rule                     = "https-443-tcp"
       source_security_group_id = module.search_security_group.security_group_id
     }
   ]
@@ -16,20 +16,20 @@ module "search_accessor_security_group" {
 module "search_security_group" {
   source = "terraform-aws-modules/security-group/aws"
 
-  name = "${var.domain_name}-search"
+  name        = "${var.domain_name}-search"
   description = "For search cluster resources"
-  vpc_id = var.vpc_id
+  vpc_id      = var.vpc_id
 
   ingress_with_source_security_group_id = [
     {
-      rule = "https-443-tcp"
+      rule                     = "https-443-tcp"
       source_security_group_id = module.search_accessor_security_group.security_group_id
     }
   ]
 }
 
 resource "aws_elasticsearch_domain" "search" {
-  domain_name = var.domain_name
+  domain_name           = var.domain_name
   elasticsearch_version = "6.7"
 
   auto_tune_options {
@@ -51,6 +51,7 @@ resource "aws_elasticsearch_domain" "search" {
     ebs_enabled = true
     volume_size = var.volume_size
     volume_type = var.volume_type
+    iops        = var.volume_iops
   }
 
   encrypt_at_rest {

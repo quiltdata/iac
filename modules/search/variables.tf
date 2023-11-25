@@ -48,6 +48,11 @@ variable "zone_awareness_enabled" {
   nullable = false
 }
 
+variable "volume_iops" {
+  type    = number
+  default = null
+}
+
 variable "volume_size" {
   type     = number
   nullable = false

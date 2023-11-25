@@ -105,6 +105,13 @@ variable "search_zone_awareness_enabled" {
   description = "Whether to enable Multi-AZ for the ElasticSearch cluster"
 }
 
+variable "search_volume_iops" {
+  type        = number
+  nullable    = false
+  default     = null
+  description = "EBS IOPS (required for gp3 volumes: 9,216 - 16,000) "
+}
+
 variable "search_volume_size" {
   type        = number
   nullable    = false
