@@ -49,8 +49,7 @@ variable "zone_awareness_enabled" {
 }
 
 variable "volume_iops" {
-  type    = number
-  default = null
+  type = number
 }
 
 variable "volume_size" {
