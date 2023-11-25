@@ -39,8 +39,8 @@ module "quilt" {
     AdminEmail               = ""
     CertificateArnELB        = ""
     QuiltWebHost             = local.quilt_web_host
-    PasswordAuth             = ""
-    SingleSignOnProvider     = ""
+    PasswordAuth             = "Enabled"
+    SingleSignOnProvider     = "(Disabled)"
     SingleSignOnClientSecret = ""
     SingleSignOnDomains      = ""
     SingleSignOnClientId     = ""
