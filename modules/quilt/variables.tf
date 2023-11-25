@@ -107,7 +107,6 @@ variable "search_zone_awareness_enabled" {
 
 variable "search_volume_iops" {
   type        = number
-  nullable    = true
   default     = null
   description = "EBS IOPS (required for gp3 volumes: 9,216 - 16,000) "
 }
