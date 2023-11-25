@@ -48,6 +48,15 @@ variable "zone_awareness_enabled" {
   nullable = false
 }
 
+variable "volume_iops" {
+  type        = number
+  description = "Must be null or an integer greater than or equal to 3000."
+  validation {
+    condition     = var.volume_iops == null || var.volume_iops >= 3000
+    error_message = "Invalid volume_iops"
+  }
+}
+
 variable "volume_size" {
   type     = number
   nullable = false

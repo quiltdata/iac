@@ -56,6 +56,7 @@ module "search" {
   zone_awareness_enabled   = var.search_zone_awareness_enabled
   volume_size              = var.search_volume_size
   volume_type              = var.search_volume_type
+  volume_iops              = var.search_volume_iops
 }
 
 resource "random_password" "admin_password" {
