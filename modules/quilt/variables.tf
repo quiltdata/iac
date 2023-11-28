@@ -108,7 +108,7 @@ variable "search_zone_awareness_enabled" {
 variable "search_volume_iops" {
   type        = number
   default     = null
-  description = "EBS IOPS (required for gp3 volumes: 9,216 - 16,000) "
+  description = "EBS IOPS (required for gp3 volumes)"
 }
 
 variable "search_volume_size" {
@@ -116,6 +116,12 @@ variable "search_volume_size" {
   nullable    = false
   default     = 100
   description = "Size of EBS volumes attached to data nodes in the ElasticSearch cluster"
+}
+
+variable "search_volume_throughput" {
+  type        = number
+  default     = null
+  description = "EBS throughput (required for some gp3 volumes)"
 }
 
 variable "search_volume_type" {

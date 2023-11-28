@@ -62,6 +62,11 @@ variable "volume_size" {
   nullable = false
 }
 
+variable "volume_throughput" {
+  type = number
+  description = "EBS throughput (for some gp3 volumes)"
+}
+
 variable "volume_type" {
   type     = string
   nullable = false
