@@ -52,7 +52,7 @@ resource "aws_elasticsearch_domain" "search" {
     volume_size = var.volume_size
     volume_type = var.volume_type
     iops        = var.volume_iops
-    throughput  = var.throughput
+    throughput  = var.volume_throughput
   }
 
   encrypt_at_rest {
