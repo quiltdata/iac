@@ -52,7 +52,7 @@ variable "volume_iops" {
   type        = number
   description = "Must be null or an integer greater than or equal to 3000."
   validation {
-    condition     = try(var.volume_iops == null, var.volume_iops >= 3000, false)
+    condition     = try(var.volume_iops >= 3000, var.volume_iops == null, false)
     error_message = "Invalid volume_iops"
   }
 }
