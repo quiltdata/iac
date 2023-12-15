@@ -115,7 +115,7 @@ variable "search_volume_size" {
   type        = number
   nullable    = false
   default     = 512
-  description = "Size of EBS volume attached to each data node in the ElasticSearch cluster"
+  description = "Size (GiB) of EBS volume attached to each data node in the ElasticSearch cluster"
 }
 
 variable "search_volume_throughput" {
