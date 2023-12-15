@@ -12,7 +12,9 @@ locals {
 }
 
 module "quilt" {
-  source = "github.com/quiltdata/iac//modules/quilt"
+  # We recommend that you pin the module to the latest hash from the present
+  # repository to insulate your deployment from future module changes.
+  source = "github.com/quiltdata/iac//modules/quilt?ref=xxxxxxxx"
 
   name          = local.name
   template_file = local.build_file_path

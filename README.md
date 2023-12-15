@@ -5,8 +5,77 @@
 existing search domain, and existing vpc in order for the  `quilt` module to
 function properly.
 
-1. Rightsize your search cluster with the
+1. Rightsize your search cluster with the `quilt`
 [`search_*` variables](./modules/quilt/variables.tf).
+
+    The primary consideration is total data node disk size as a function of average
+    maximum document size times the total number of deep-indexed documents.
+    See [docs on deep indexing](https://docs.quiltdata.com/catalog/searchquery#indexing) for more.
+
+    Here are known good search cluster sizes that you can set for the `quilt`
+    `search_` variables.
+
+    ```
+    # Small
+    search_dedicated_master_enabled = false
+    search_zone_awareness_enabled = false
+    search_instance_count = 1
+    search_instance_type = "m5.large.elasticsearch"
+    search_volume_size = 512
+
+    # Medium (default)
+    search_dedicated_master_enabled = true
+    search_zone_awareness_enabled = true
+    search_instance_count = 2
+    search_instance_type = "m5.xlarge.elasticsearch"
+    search_volume_size = 1024
+
+    # Large
+    search_dedicated_master_enabled = true
+    search_zone_awareness_enabled = true
+    search_instance_count = 2
+    search_instance_type = "m5.xlarge.elasticsearch"
+    search_volume_size = 2*1024
+    search_volume_type = "gp3"
+
+    # X-Large
+    search_dedicated_master_enabled = true
+    search_zone_awareness_enabled = true
+    search_instance_count = 2
+    search_instance_type = "m5.2xlarge.elasticsearch"
+    search_volume_size = 3*1024
+    search_volume_type = "gp3"
+    search_volume_iops = 16000
+
+    # XX-Large
+    search_dedicated_master_enabled = true
+    search_zone_awareness_enabled = true
+    search_instance_count = 2
+    search_instance_type = "m5.4xlarge.elasticsearch"
+    search_volume_size = 6*1024
+    search_volume_type = "gp3"
+    search_volume_iops = 18750
+
+    # XXX-Large
+    search_dedicated_master_enabled = true
+    search_zone_awareness_enabled = true
+    search_instance_count = 2
+    search_instance_type = "m5.12xlarge.elasticsearch"
+    search_volume_size = 18*1024
+    search_volume_type = "gp3"
+    search_volume_iops = 40000
+    search_volume_throughput = 1187
+
+    # XXXX-Large
+    search_dedicated_master_enabled = true
+    search_zone_awareness_enabled = true
+    search_instance_count = 4
+    search_instance_type = "m5.12xlarge.elasticsearch"
+    search_volume_size = 18*1024
+    search_volume_type = "gp3"
+    search_volume_iops = 40000
+    search_volume_throughput = 1187
+    ```
 
 ## Example
 See [example.tf](./example.tf).
