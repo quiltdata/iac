@@ -12,7 +12,7 @@ function properly.
     maximum document size times the total number of deep-indexed documents.
     See [docs on deep indexing](https://docs.quiltdata.com/catalog/searchquery#indexing) for more.
 
-    The following are known good search arguments that you set on the `quilt` module:
+    The following are known good search arguments that you can set on the `quilt` module:
 
     ```
     # Small
