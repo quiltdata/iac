@@ -114,8 +114,8 @@ variable "search_volume_iops" {
 variable "search_volume_size" {
   type        = number
   nullable    = false
-  default     = 100
-  description = "Size of EBS volumes attached to data nodes in the ElasticSearch cluster"
+  default     = 1024
+  description = "Size (GiB) of EBS volume attached to each data node in the ElasticSearch cluster"
 }
 
 variable "search_volume_throughput" {
