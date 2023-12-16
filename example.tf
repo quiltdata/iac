@@ -13,7 +13,7 @@ locals {
 
 module "quilt" {
   # We recommend that you pin the module to the latest hash from the present
-  # repository to insulate your deployment from future module changes.
+  # repository to insulate from future module changes and simplify future `apply`s.
   source = "github.com/quiltdata/iac//modules/quilt?ref=xxxxxxxx"
 
   name          = local.name
