@@ -60,7 +60,7 @@ variable "db_deletion_protection" {
   type        = bool
   nullable    = false
   default     = true
-  description = "Whether to enable deletion protection for the DB"
+  description = "Set to true for production environments to prevent accidental deletion of stack database."
 }
 
 variable "search_auto_tune_desired_state" {
