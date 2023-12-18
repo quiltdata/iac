@@ -56,6 +56,13 @@ variable "db_network_type" {
   description = "'IPV4' (required for IPV4-only VPCs) or 'DUAL'"
 }
 
+variable "db_deletion_protection" {
+  type        = bool
+  nullable    = false
+  default     = true
+  description = "Whether to enable deletion protection for the DB"
+}
+
 variable "search_auto_tune_desired_state" {
   type        = string
   nullable    = false
