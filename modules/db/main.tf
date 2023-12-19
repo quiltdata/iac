@@ -59,5 +59,5 @@ module "db" {
   create_db_parameter_group = false
 
   backup_retention_period = 7
-  deletion_protection     = true
+  deletion_protection     = var.deletion_protection
 }

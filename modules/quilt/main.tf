@@ -35,8 +35,9 @@ module "db" {
   vpc_id       = module.vpc.vpc_id
   subnet_ids   = module.vpc.intra_subnets
 
-  instance_class = var.db_instance_class
-  multi_az       = var.db_multi_az
+  instance_class      = var.db_instance_class
+  multi_az            = var.db_multi_az
+  deletion_protection = var.db_deletion_protection
 }
 
 module "search" {
