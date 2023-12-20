@@ -13,10 +13,10 @@ locals {
     "vpc_id (required)" : var.existing_vpc_id != null,
     "intra_subnets (required)" : var.existing_intra_subnets != null,
     "private_subnets (required)" : var.existing_private_subnets != null,
-    "public_subnets (required if var.internal == false)" : var.internal == (var.existing_public_subnets == null),
+    "public_subnets (required if var.internal == false, else must be null)" : var.internal == (var.existing_public_subnets == null),
     "user_security_group (required)" : var.existing_user_security_group != null,
-    "user_subnets (required if var.internal == true)" : var.internal == (var.existing_user_subnets != null)
-    "api_endpoint (required if var.internal == true)" : var.internal == (var.existing_api_endpoint != null),
+    "user_subnets (required if var.internal == true, else must be null)" : var.internal == (var.existing_user_subnets != null)
+    "api_endpoint (required if var.internal == true, else must be null)" : var.internal == (var.existing_api_endpoint != null),
   }
   new_network_requires = {
     "create_new_vpc == true" : var.create_new_vpc == true,
