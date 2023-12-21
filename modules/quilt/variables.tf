@@ -153,7 +153,7 @@ variable "vpc_id" {
 variable "api_endpoint" {
   type        = string
   default     = null
-  description = "VPC endpoint for API Gateway (api-execute) for Quilt services."
+  description = "VPC endpoint ID for API Gateway (api-execute) for Quilt services."
 
 }
 
