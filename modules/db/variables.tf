@@ -36,3 +36,8 @@ variable "network_type" {
     error_message = "'IPV4' or 'DUAL'"
   }
 }
+
+variable "deletion_protection" {
+  type     = bool
+  nullable = false
+}
