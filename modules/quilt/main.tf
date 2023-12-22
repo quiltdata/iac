@@ -96,6 +96,7 @@ resource "aws_cloudformation_stack" "stack" {
     module.vpc,
   ]
   capabilities = ["CAPABILITY_NAMED_IAM"]
+  notification_arns = var.stack_notification_arns
 
   parameters = merge(
     var.parameters,
