@@ -193,3 +193,9 @@ variable "user_subnets" {
   default     = null
   description = "Subnet IDs for Quilt load balancer. Only needed when var.internal == true and var.create_new_vpc == true."
 }
+
+variable "stack_notification_arns" {
+  type        = list(string)
+  default     = null
+  description = "A list of SNS topic ARNs to publish CloudFormation stack related events."
+}
