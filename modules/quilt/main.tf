@@ -126,4 +126,8 @@ resource "aws_cloudformation_stack" "stack" {
       AdminPassword = random_password.admin_password.result
     }
   )
+
+  timeouts {
+    delete = "1h"
+  }
 }
