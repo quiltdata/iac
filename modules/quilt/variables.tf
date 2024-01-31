@@ -191,7 +191,7 @@ variable "user_security_group" {
 variable "user_subnets" {
   type        = list(string)
   default     = null
-  description = "Subnet IDs for Quilt load balancer. Only needed when var.internal == true and var.create_new_vpc == true."
+  description = "Subnet IDs for Quilt load balancer. Only needed when var.internal == true and var.create_new_vpc == false."
 }
 
 variable "stack_notification_arns" {
