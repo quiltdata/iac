@@ -95,7 +95,7 @@ resource "aws_cloudformation_stack" "stack" {
      * If ECS tries to reach ECR before private subnet NAT is available then ECS fails. */
     module.vpc,
   ]
-  capabilities = ["CAPABILITY_NAMED_IAM"]
+  capabilities      = ["CAPABILITY_NAMED_IAM"]
   notification_arns = var.stack_notification_arns
 
   parameters = merge(
