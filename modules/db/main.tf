@@ -36,13 +36,14 @@ module "db" {
 
   snapshot_identifier = var.snapshot_identifier
 
-  engine            = "postgres"
-  engine_version    = "11.19"
-  storage_type      = "gp2"
-  allocated_storage = 100
-  storage_encrypted = true
-  instance_class    = var.instance_class
-  multi_az          = var.multi_az
+  engine                      = "postgres"
+  allow_major_version_upgrade = true
+  engine_version              = "15.2" # Latest release we can directly upgrade to from the previous version (11.19).
+  storage_type                = "gp2"
+  allocated_storage           = 100
+  storage_encrypted           = true
+  instance_class              = var.instance_class
+  multi_az                    = var.multi_az
 
   apply_immediately = true
 
