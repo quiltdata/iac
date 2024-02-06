@@ -38,6 +38,7 @@ module "db" {
 
   engine                      = "postgres"
   allow_major_version_upgrade = true
+  auto_minor_version_upgrade  = false
   engine_version              = "15.2" # Latest release we can directly upgrade to from the previous version (11.19).
   storage_type                = "gp2"
   allocated_storage           = 100
