@@ -1,10 +1,35 @@
 # Modules to deploy Quilt stacks with Terraform
 
 ## Prerequisites
-1. You must use a Quilt CloudFormation template that supports an existing database,
+
+## CloudFormation template
+You must use a Quilt CloudFormation template that supports an existing database,
 existing search domain, and existing vpc in order for the  `quilt` module to
 function properly.
 
+
+## Provider
+The `aws_elasticsearch_domain` currently used by the `search` module requires the
+following provider version.
+
+```hcl
+provider "aws" {
+    version             = "= 5.20.0"
+    // Remainder of block shown as optional guidance
+    profile             = ""
+    allowed_account_ids = [""]
+    region              = ""
+    default_tags {
+        Author = ""
+    }
+}
+```
+> If `profile` does not seem to take effect you can do the following:
+```sh
+export AWS_PROFILE=your_profile
+```
+
+### Search sizing
 1. Rightsize your search cluster with the `quilt`
 [`search_*` variables](./modules/quilt/variables.tf).
 
@@ -101,6 +126,10 @@ at `template_url=` without changing the URL itself.
 ## Apply
 If the plan is what you want:
 * `terraform apply tfplan`
+
+## Output sensitive values
+Sensitive values must be named in order to display on the command line:
+* `terraform output admin_password`
 
 ## Inspect
 * `terraform state list`
