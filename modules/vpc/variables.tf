@@ -13,8 +13,8 @@ variable "cidr" {
   type     = string
   nullable = false
   validation {
-    condition     = split("/", var.cidr)[1] <= 22
-    error_message = "CIDR prefix should allow for at least 1,024 IP addresses"
+    condition     = split("/", var.cidr)[1] <= 24
+    error_message = "CIDR prefix should allow for at least 256 IPv4 addresses"
   }
 }
 
