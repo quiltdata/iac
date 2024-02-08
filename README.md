@@ -1,10 +1,37 @@
-# Modules to deploy Quilt stacks with Terraform
+# Deploy Quilt stacks with Terraform
 
 ## Prerequisites
-1. You must use a Quilt CloudFormation template that supports an existing database,
+
+### CloudFormation template
+You must use a Quilt CloudFormation template that supports an existing database,
 existing search domain, and existing vpc in order for the  `quilt` module to
 function properly.
 
+### [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+See [examples/main.tf](examples/main.tf) for details on how to configure your main.tf file.
+
+### Provider
+The `aws_elasticsearch_domain` currently used by the `search` module requires the
+following provider version.
+
+```hcl
+provider "aws" {
+    version             = "= 5.20.0"
+    // Remainder of block shown as optional guidance
+    profile             = ""
+    allowed_account_ids = [""]
+    region              = ""
+    default_tags {
+        Author = ""
+    }
+}
+```
+> If `profile` does not seem to take effect you can do the following:
+```sh
+export AWS_PROFILE=your_profile
+```
+
+### Size search domain
 1. Rightsize your search cluster with the `quilt`
 [`search_*` variables](./modules/quilt/variables.tf).
 
@@ -76,9 +103,6 @@ function properly.
     search_volume_throughput = 1187
     ```
 
-## Example
-See [example.tf](./example.tf).
-
 ## Updating stacks
 For certain (older) versions of Terraform you must change the contents stored 
 at `template_url=` without changing the URL itself.
@@ -101,6 +125,10 @@ at `template_url=` without changing the URL itself.
 ## Apply
 If the plan is what you want:
 * `terraform apply tfplan`
+
+## Output sensitive values
+Sensitive values must be named in order to display on the command line:
+* `terraform output admin_password`
 
 ## Inspect
 * `terraform state list`
