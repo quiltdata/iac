@@ -16,14 +16,7 @@ following provider version.
 
 ```hcl
 provider "aws" {
-    version             = "= 5.20.0"
-    // Remainder of block shown as optional guidance
-    profile             = ""
-    allowed_account_ids = [""]
-    region              = ""
-    default_tags {
-        Author = ""
-    }
+    version = "= 5.20.0"
 }
 ```
 > If `profile` does not seem to take effect you can do the following:
