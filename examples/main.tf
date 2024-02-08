@@ -1,11 +1,10 @@
 provider "aws" {
-  version = "= 5.20.0"
-  // Remainder of block shown as optional guidance
+  version             = "= 5.20.0"
   profile             = ""
   allowed_account_ids = [""]
   region              = ""
   default_tags {
-    Author = ""
+    Author  = ""
     Purpose = ""
   }
 }
@@ -19,8 +18,8 @@ locals {
 }
 
 module "quilt" {
-  # We recommend that you pin the module to the latest hash from the present
-  # repository to insulate from future module changes and simplify future `apply`s.
+  // We recommend that you pin the module to the latest hash from the present
+  // repository to insulate from future module changes and simplify future `apply`s.
   source = "github.com/quiltdata/iac//modules/quilt?ref=xxxxxxxx"
 
   name          = local.name
@@ -30,19 +29,17 @@ module "quilt" {
   create_new_vpc = true
   cidr           = ""
 
-  /* Optional: initialize a new stack from an existing database
-  db_snapshot_identifier = ""
-  */
+  // Optional: initialize a new stack from an existing database
+  // db_snapshot_identifier = ""
 
-  /* Optional: deploy Quilt stack to an existing VPC (create_new_vpc = false)
-  vpc_id              = ""
-  api_endpoint        = ""
-  intra_subnets       = ["", ""]
-  private_subnets     = ["", ""]
-  public_subnets      = ["", ""]
-  user_security_group = ""
-  user_subnets        = ["", ""]
-  */
+  // Optional: deploy Quilt stack to an existing VPC (create_new_vpc = false)
+  // vpc_id              = ""
+  // api_endpoint        = ""
+  // intra_subnets       = ["", ""]
+  // private_subnets     = ["", ""]
+  // public_subnets      = ["", ""]
+  // user_security_group = ""
+  // user_subnets        = ["", ""]
 
   parameters = {
     AdminEmail               = ""
