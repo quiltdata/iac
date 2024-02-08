@@ -102,7 +102,7 @@ export AWS_PROFILE=your_profile
     ```
 
 ## Example `main.tf`
-See [main_example.tf](./main_example.tf).
+See [examples/main.tf](examples/main.tf).
 
 ## Updating stacks
 For certain (older) versions of Terraform you must change the contents stored 
