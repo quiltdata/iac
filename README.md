@@ -7,6 +7,8 @@ You must use a Quilt CloudFormation template that supports an existing database,
 existing search domain, and existing vpc in order for the  `quilt` module to
 function properly.
 
+### [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+See [examples/main.tf](examples/main.tf) for details on how to configure your main.tf file.
 
 ### Provider
 The `aws_elasticsearch_domain` currently used by the `search` module requires the
@@ -100,9 +102,6 @@ export AWS_PROFILE=your_profile
     search_volume_iops = 40000
     search_volume_throughput = 1187
     ```
-
-## Example `main.tf`
-See [examples/main.tf](examples/main.tf).
 
 ## Updating stacks
 For certain (older) versions of Terraform you must change the contents stored 
