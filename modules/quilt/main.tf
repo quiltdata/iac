@@ -97,6 +97,7 @@ resource "aws_cloudformation_stack" "stack" {
   ]
   capabilities      = ["CAPABILITY_NAMED_IAM"]
   notification_arns = var.stack_notification_arns
+  disable_rollback  = true
 
   parameters = merge(
     var.parameters,
