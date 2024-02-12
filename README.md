@@ -1,64 +1,62 @@
-# Deploy Quilt stacks with Terraform
+# Deploy and maintain Quilt stacks with Terraform
 
 ## Prerequisites
 
-### CloudFormation template
-You must use a Quilt CloudFormation template that supports an existing database,
-existing search domain, and existing vpc in order for the  `quilt` module to
-function properly.
+### [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 
-### Terraform
 
-[Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli).
-See [examples/main.tf](examples/main.tf) for details
-on how to configure your main.tf file.
+### Get a Terraform-compatible CloudFormation template
+You must use a specially configured Terraform-compatible Quilt CloudFormation
+template (`local.build_file_path`). Ask your account manger for details.
+
+## Create `main.tf`
+See [examples/main.tf](examples/main.tf) for a starting point.
 
 ### Provider
-The `aws_elasticsearch_domain` currently used by the `quilt` module requires the
+The `aws_elasticsearch_domain` called by the `quilt` module requires the
 5.20.0 provider version.
 
 ```hcl
 provider "aws" {
     version = "= 5.20.0"
+    profile = "your-aws-profile"
 }
 ```
 
-Pinning the provider as shown above prevents the following error:
->  ```
+Pinning the provider version avoids the following error:
+> ```
 > Error: updating Elasticsearch Domain (arn:aws:es:foo:bar/baz) config:
 > ValidationException: A change/update is in progress. Please wait for it to
 > complete before requesting another change.
 > ```
 
-#### Profile
-
-If for some reason `profile=` does not take effect in the `provider`,
-try to set the AWS profile in your shell:
+### Profile
+If for some reason `profile=` does not take effect in the `provider` block,
+set the AWS profile in your shell:
 ```sh
 export AWS_PROFILE=your-aws-profile
 ```
 
-### Size your search domain
-Before deploying, rightsize your search cluster as shown in the examples below.
-
+### Rightsize your search domain
 Your primary consideration is the _total_ data node disk size.
 If you multiply your average document size (likely a function of the number of
 [deep-indexed](https://docs.quiltdata.com/catalog/searchquery#indexing) documents
 and your depth limit) by the total number of documents that will give you "Source data" below.
 
-> Shallow-indexed documents require a small fixed number of bytes on the order
+> Each shallow-indexed document requires a constant number of bytes on the order
 > of 1kB.
 
 Follow AWS's documentation on [Sizing Search Domains](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/sizing-domains.html)
-and note the following simplified formula for estimating your storage needs:
+and note the following simplified formula:
 
 > `Source data * (1 + number of replicas) * 1.45` = minimum storage requirement
 
 For a production Quilt deployment the number of replicas will be 1, so multiplying
 "Source data" by 3 (2.9 rounded up) is a fair starting point. Be sure to account
-for growth in your Quilt buckets. Resizing domains is possible as a dynamic
-operation but will require time and may reduce quality of service during the
-blue/green update to the domain.
+for growth in your Quilt buckets. "Live" resizing of existing domains is supported
+but requires time and may reduce quality of service during the blue/green update.
+
+Below are known-good search sizes that you can set on the `quilt` module.
 
 #### Small
 ```hcl
@@ -140,8 +138,8 @@ As a rule, `terraform apply` is sufficient to both deploy and update Quilt.
 ### Verify the plan
 
 Before calling `apply` read `terraform plan` carefully to ensure that it does
-not inadvertently destroy and recreate the stack. The following changes have been
-known to cause issues (see [examples/main.tf](examples/main.tf) for context).
+not inadvertently destroy and recreate the stack. The following modifications
+are known to cause issues (see [examples/main.tf](examples/main.tf) for context).
 
 1. Modifying `local.name`
 1. Modifying `local.build_file_path`
@@ -214,15 +212,13 @@ terraform refresh
 terraform destroy
 ```
 
-## What to check into git
+## Git version control
+### Check these files in
 * `*.tf`
+* `terraform.lock.hcl`
 * Your Quilt `build_file`
-for [security reasons](https://stackoverflow.com/questions/38486335/should-i-commit-tfstate-files-to-git),
-these are better handled with
 
-* [.lock.hcl files](https://stackoverflow.com/questions/67963719/should-terraform-lock-hcl-be-included-in-the-gitignore-file)
-
-## What to ignore from git
+### Ignore these files
 You may wish to create a `.gitignore` file similar to the following:
 ```
 .terraform
@@ -231,7 +227,7 @@ tfplan
 
 > We recommend that you use
 > [remote state](https://developer.hashicorp.com/terraform/language/state/remote)
-> so that passwords are not checked into git.
+> so that no passwords are checked into version control.
 
 
 # References
