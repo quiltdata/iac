@@ -9,6 +9,15 @@ provider "aws" {
   }
 }
 
+terraform {
+  backend "s3" {
+    bucket               = ""
+    workspace_key_prefix = ""
+    key                  = ""
+    region               = ""
+  }
+}
+
 locals {
   name = ""
   // Place a local copy of your CloudFormation YAML Template at build_file_path
