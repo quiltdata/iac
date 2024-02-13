@@ -1,6 +1,5 @@
 provider "aws" {
   version             = "= 5.20.0"
-  profile             = ""
   allowed_account_ids = [""]
   region              = ""
   default_tags {
@@ -11,10 +10,9 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket               = ""
-    workspace_key_prefix = ""
-    key                  = ""
-    region               = ""
+    bucket = ""
+    key    = ""
+    region = ""
   }
 }
 

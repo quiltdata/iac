@@ -19,7 +19,6 @@ The `aws_elasticsearch_domain` called by the `quilt` module requires the
 ```hcl
 provider "aws" {
     version = "= 5.20.0"
-    profile = "your-aws-profile"
 }
 ```
 
@@ -31,11 +30,14 @@ Pinning the provider version avoids the following error:
 > ```
 
 ### Profile
-If for some reason `profile=` does not take effect in the `provider` block,
-set the AWS profile in your shell:
+You may wish to set a specific AWS profile before executing `terraform`
+commands. 
+
 ```sh
 export AWS_PROFILE=your-aws-profile
 ```
+> We discourage the use of `provider.profile` in team environments
+> where profile names may differ across users and machines.
 
 ### Rightsize your search domain
 Your primary consideration is the _total_ data node disk size.
