@@ -233,5 +233,5 @@ tfplan
 
 
 # References
-1. [Terraform AWS Tutorial](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/aws-build)
-1. [Basic CLI Features](https://developer.hashicorp.com/terraform/cli/commands)
+1. [Terraform: AWS Provider Tutorial](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/aws-build)
+1. [Terraform: Basic CLI Features](https://developer.hashicorp.com/terraform/cli/commands)
