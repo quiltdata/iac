@@ -1,11 +1,18 @@
 provider "aws" {
   version             = "= 5.20.0"
-  profile             = ""
   allowed_account_ids = [""]
   region              = ""
   default_tags {
     Author  = ""
     Purpose = ""
+  }
+}
+
+terraform {
+  backend "s3" {
+    bucket = ""
+    key    = ""
+    region = ""
   }
 }
 
