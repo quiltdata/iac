@@ -224,9 +224,9 @@ tfplan
 > ```
 
 If you encounter the above error we suggest that you use the latest version of the
-current repo which now no longer uses an `auto_tune_options` configuration
-block in the `search` module. We further recommend that you only use [search
-instance types that support Auto-Tune](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html)
+current repo which no longer uses an `auto_tune_options` configuration block in
+the `search` module. We further recommend that you only use
+[search instances that support Auto-Tune](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html)
 as the AWS service may automatically enable Auto-Tune without cause and without warning,
 leading to search domains that are difficult to upgrade.
 
