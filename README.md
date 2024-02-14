@@ -214,7 +214,6 @@ tfplan
 > [remote state](https://developer.hashicorp.com/terraform/language/state/remote)
 > so that no passwords are checked into version control.
 
-
 # Known issues
 ## Elasticsearch ValidationException
 > ```
