@@ -1,9 +1,6 @@
 # Deploy and maintain Quilt stacks with Terraform
-
 ## Prerequisites
-
 ### [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
-
 
 ### Get a Terraform-compatible CloudFormation template
 You must use a specially configured Terraform-compatible Quilt CloudFormation
@@ -15,6 +12,7 @@ See [examples/main.tf](examples/main.tf) for a starting point.
 ### Provider
 The `aws_elasticsearch_domain` called by the `quilt` module requires the
 5.20.0 provider version.
+
 ### Profile
 You may wish to set a specific AWS profile before executing `terraform`
 commands. 
@@ -124,7 +122,6 @@ search_volume_throughput = 1187
 As a rule, `terraform apply` is sufficient to both deploy and update Quilt.
 
 ### Verify the plan
-
 Before calling `apply` read `terraform plan` carefully to ensure that it does
 not inadvertently destroy and recreate the stack. The following modifications
 are known to cause issues (see [examples/main.tf](examples/main.tf) for context).
@@ -219,7 +216,6 @@ tfplan
 
 
 # Known issues
-
 ## Elasticsearch ValidationException
 > ```
 > Error: updating Elasticsearch Domain (arn:aws:es:foo:bar/baz) config:
