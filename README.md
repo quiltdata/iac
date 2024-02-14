@@ -15,20 +15,6 @@ See [examples/main.tf](examples/main.tf) for a starting point.
 ### Provider
 The `aws_elasticsearch_domain` called by the `quilt` module requires the
 5.20.0 provider version.
-
-```hcl
-provider "aws" {
-    version = "= 5.20.0"
-}
-```
-
-Pinning the provider version avoids the following error:
-> ```
-> Error: updating Elasticsearch Domain (arn:aws:es:foo:bar/baz) config:
-> ValidationException: A change/update is in progress. Please wait for it to
-> complete before requesting another change.
-> ```
-
 ### Profile
 You may wish to set a specific AWS profile before executing `terraform`
 commands. 
@@ -231,6 +217,31 @@ tfplan
 > [remote state](https://developer.hashicorp.com/terraform/language/state/remote)
 > so that no passwords are checked into version control.
 
+
+# Known issues
+
+## Elasticsearch ValidationException
+> ```
+> Error: updating Elasticsearch Domain (arn:aws:es:foo:bar/baz) config:
+> ValidationException: A change/update is in progress. Please wait for it to
+> complete before requesting another change.
+> ```
+
+If you encounter the above error we suggest that you use the latest version of the
+current repo which now no longer sets an `auto_tune_configuration`
+block in the `search` module. We further recommend that you only use [search
+instance types that support Auto-Tune](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html)
+as the AWS service may automatically enable Auto-Tune without cause and without warning,
+leading to search domains that are difficult to upgrade.
+
+Some users have overcome the above error by pinning the provider to 5.20.0 as shown
+below but this is not recommended given that 5.20.0 is an older version.
+
+```hcl
+provider "aws" {
+    version = "= 5.20.0"
+}
+```
 
 # References
 1. [Terraform: AWS Provider Tutorial](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/aws-build)
