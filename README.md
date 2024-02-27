@@ -197,6 +197,11 @@ terraform refresh
 terraform destroy
 ```
 
+## Routine updates
+1. Update the file at `local.build_file_path` to the new version
+1. `terraform plan`
+1. `terraform apply`
+
 ## Git version control
 ### Check these files in
 * `*.tf`
