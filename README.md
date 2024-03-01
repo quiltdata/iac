@@ -197,6 +197,12 @@ terraform refresh
 terraform destroy
 ```
 
+## Routine updates
+1. Update the file at `local.build_file_path` in `main.tf` to the new file you received from Quilt.
+    > Do not change the value of `build_file_path` as noted [above](#verify-the-plan).
+1. [plan](#plan)
+1. [apply](#apply)
+
 ## Git version control
 ### Check these files in
 * `*.tf`
