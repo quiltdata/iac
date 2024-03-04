@@ -1,5 +1,4 @@
 provider "aws" {
-  version             = "= 5.20.0"
   allowed_account_ids = [""]
   region              = ""
   default_tags {
