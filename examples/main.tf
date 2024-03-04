@@ -38,6 +38,9 @@ module "quilt" {
   // Optional: initialize a new stack from an existing database
   // db_snapshot_identifier = ""
 
+  // Optional: for VPCs that do not support IPV6
+  // db_network_type = "IPV4"
+
   // Optional: deploy Quilt stack to an existing VPC (create_new_vpc = false)
   // vpc_id              = ""
   // api_endpoint        = ""
