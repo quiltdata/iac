@@ -198,15 +198,18 @@ terraform destroy
 ```
 
 ## Routine updates
-1. Start with a clean git state in your Quilt Terraform folder (nothing uncommitted)
-1. Update the file at `local.build_file_path` in `main.tf` to the new file you
-received from Quilt.
-    > Do not change the value of `build_file_path`, as noted [above](#verify-the-plan).
-1. Update the `quilt.source=` pin in your `main.tf`
-1. [init](#initialize)
-1. [plan](#plan)
-1. [apply](#apply)
-1. Commit the [appropriate files](#check-these-files-in)
+1. Start with a clean commit of the previous apply in your Quilt Terraform folder
+(nothing uncommitted).
+1. In your `main.tf` file, do the following:
+    1. Update the file at `local.build_file_path` to the new file you received
+    from Quilt.
+        > Do not change the value of `build_file_path`, as noted [above](#verify-the-plan).
+    1. Update the `quilt.source=` pin to the newest hash from the present repository.
+1. [Initialize](#initialize).
+1. [Plan](#plan).
+1. [Verify the plan](#verify-the-plan).
+1. [Apply](#apply).
+1. Commit the [appropriate files](#check-these-files-in).
 
 ## Git version control
 ### Check these files in
