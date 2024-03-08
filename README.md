@@ -221,6 +221,22 @@ tfplan
 > so that no passwords are checked into version control.
 
 # Known issues
+## RDS InvalidParameterCombination
+> ```
+> InvalidParameterCombination: Cannot upgrade postgres from 11.X to 15.Y
+> ```
+
+Later versions of the current module set database `auto_minor_version_upgrade = false`.
+As a result some users may find their Quilt RDS instance on Postgres 11.19.
+These users should _first upgrade to 11.22 using the AWS Console_ and then apply
+a recent version of the present module, which will upgrade Postgres to 15.5.
+
+Users who have auto-minor-version-upgraded to 11.22 can apply the present module
+to automatically upgrade to 15.5 (without any manual steps).
+
+Engine version changes are applied _during the next maintenance window_,
+therefore you may not see them immediately in AWS Console.
+
 ## Elasticsearch ValidationException
 > ```
 > Error: updating Elasticsearch Domain (arn:aws:es:foo:bar/baz) config:
