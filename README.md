@@ -231,8 +231,8 @@ As a result some users may find their Quilt RDS instance on Postgres 11.19.
 These users should _first upgrade to 11.22 using the AWS Console_ and then apply
 a recent version of the present module, which will upgrade Postgres to 15.5.
 
-Users who have auto-minor-version-upgraded to 11.22 can apply the present module
-directly and automatically upgrade to 15.5 (without any manual steps).
+Users who have auto-minor-version-upgraded to 11.X can apply the present module
+directly and automatically upgrade to 15.Y (without any manual steps).
 
 ## Elasticsearch ValidationException
 > ```
