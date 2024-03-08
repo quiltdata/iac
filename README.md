@@ -232,10 +232,10 @@ These users should _first upgrade to 11.22 using the AWS Console_ and then apply
 a recent version of the present module, which will upgrade Postgres to 15.5.
 
 Users who have auto-minor-version-upgraded to 11.22 can apply the present module
-directly and automatically upgrade to 15.5 (without any manual steps).
+to automatically upgrade to 15.5 (without any manual steps).
 
 Engine version changes are applied _during the next maintenance window_,
-therefore you may not see them immediately.
+therefore you may not see them immediately in AWS Console.
 
 ## Elasticsearch ValidationException
 > ```
