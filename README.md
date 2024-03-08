@@ -126,13 +126,14 @@ Before calling `apply` read `terraform plan` carefully to ensure that it does
 not inadvertently destroy and recreate the stack. The following modifications
 are known to cause issues (see [examples/main.tf](examples/main.tf) for context).
 
-1. Modifying `local.name`
-1. Modifying `local.build_file_path`
-1. Modifying `quilt.template_file`
+* Modifying `local.name`.
+* Modifying `local.build_file_path`.
+* Modifying `quilt.template_file`.
 
 And for older versions of Terraform and customers whose usage predates the present
 module:
-1. Modifying `template_url=` in older versions of Terraform and for customers
+
+* Modifying `template_url=` (in older versions of Terraform).
 
 # Terraform cheat sheet
 
