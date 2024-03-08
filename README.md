@@ -226,10 +226,13 @@ tfplan
 > InvalidParameterCombination: Cannot upgrade postgres from 11.22 to 15.2
 > ```
 
-Later versions of the child `db` module set `auto_minor_version_upgrade = false`.
+Later versions of the current module set database `auto_minor_version_upgrade = false`.
 As a result some users may find their Quilt RDS instance on Postgres 11.19.
 These users should _first upgrade to 11.22 using the AWS Console_ and then apply
-a recent version of the present, which will upgrade Postgres to 15.5.
+a recent version of the present module, which will upgrade Postgres to 15.5.
+
+Users who have auto-minor-version-upgraded to 11.22 can apply the present module
+directly and ugprade to 15.5.
 
 ## Elasticsearch ValidationException
 > ```
