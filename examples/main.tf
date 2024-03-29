@@ -53,6 +53,7 @@ module "quilt" {
   parameters = {
     AdminEmail               = ""
     CertificateArnELB        = ""
+    ChunkedChecksums         = "Enabled"
     QuiltWebHost             = local.quilt_web_host
     PasswordAuth             = "Enabled"
     SingleSignOnProvider     = "(Disabled)"
