@@ -2,8 +2,11 @@ provider "aws" {
   allowed_account_ids = [""]
   region              = ""
   default_tags {
-    Author  = ""
-    Purpose = ""
+    tags = {
+      Author  = ""
+      Purpose = ""
+      Env     = ""
+    }
   }
 }
 
