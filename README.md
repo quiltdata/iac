@@ -9,7 +9,7 @@ You must use a Terraform-compatible Quilt CloudFormation template
 ## Create `main.tf`
 See [examples/main.tf](examples/main.tf) for a starting point.
 
-### Module arguments
+### `quilt` module arguments
 
 See [quilt/variables.tf](modules/quilt/variables.tf) for detailed documentation
 on each argument.
@@ -17,12 +17,12 @@ See [network documentation](https://docs.quiltdata.com/advanced/technical-refere
 for further details on subnet configuration.
 
 
-| Argument | `internal = true` (Private ALB, use with VPN) | `internal = false` (internet-facing ALB) |
+| Argument | `internal = true` (private ALB, use with VPN) | `internal = false` (internet-facing ALB) |
 |-----------------|-------------------|---------------------|
 | intra_subnets | No network at all (not even NAT); for `db` & `search` | " |
 | private_subnets | For services | " |
 | public_subnets | n/a | For IGW, ALB |
-| user_subnets | For ALB | n/a |
+| user_subnets | For ALB (when `create_new_vpc = false`) | n/a |
 | user_security_group | For ALB access | n/a |
 
 ### Profile
