@@ -39,7 +39,7 @@ module "db" {
   engine                      = "postgres"
   allow_major_version_upgrade = true
   auto_minor_version_upgrade  = false
-  engine_version              = "15.7" # reachable from 11.22-rds.20240509 and 15.x
+  engine_version              = "15.7"
   storage_type                = "gp2"
   allocated_storage           = 100
   storage_encrypted           = true
