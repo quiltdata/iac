@@ -3,15 +3,27 @@
 ### [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 
 ### Get a Terraform-compatible CloudFormation template
-You must use a specially configured Terraform-compatible Quilt CloudFormation
-template (`local.build_file_path`). Ask your account manger for details.
+You must use a Terraform-compatible Quilt CloudFormation template
+(`local.build_file_path`). Ask your account manger for details.
 
 ## Create `main.tf`
 See [examples/main.tf](examples/main.tf) for a starting point.
 
-### Provider
-The `aws_elasticsearch_domain` called by the `quilt` module requires the
-5.20.0 provider version.
+### `quilt` module arguments
+
+See [quilt/variables.tf](modules/quilt/variables.tf) for detailed documentation
+on each argument.
+See [network documentation](https://docs.quiltdata.com/advanced/technical-reference#network)
+for further details on subnet configuration.
+
+
+| Argument | `internal = true` (private ALB, use with VPN) | `internal = false` (internet-facing ALB) |
+|-----------------|-------------------|---------------------|
+| intra_subnets | No network at all (not even NAT); for `db` & `search` | " |
+| private_subnets | For services | " |
+| public_subnets | n/a | For IGW, ALB |
+| user_subnets | For ALB (when `create_new_vpc = false`) | n/a |
+| user_security_group | For ALB access | n/a |
 
 ### Profile
 You may wish to set a specific AWS profile before executing `terraform`
@@ -230,7 +242,38 @@ tfplan
 > so that no passwords are checked into version control.
 
 # Known issues
+
+##  invalid error message
+
+Due to how Terraform evaluates (or fails to evaluate) arguments in a precondition
+(e.g. `user_security_group = aws_security_group.lb_security_group.id`) you may
+see the following error message. Provide a static string instead of a dynamic value.
+
+```
+│   27:     condition     = !local.configuration_error
+│     ├────────────────
+│     │ local.configuration_error is true
+│
+│ This check failed, but has an invalid error message as described in the other accompanying messages.
+```
+
+Provide a static string instead (e.g. `user_security_group = "123"`) and you should
+receive a more informative message similar to the following:
+
+```
+│ In order to use an existing VPC (create_new_vpc == false) correct the following attributes:
+│ ❌ api_endpoint (required if var.internal == true, else must be null)
+│ ✅ create_new_vpc == false
+│ ✅ intra_subnets (required)
+│ ✅ private_subnets (required)
+│ ❌ public_subnets (required if var.internal == false, else must be null)
+│ ✅ user_security_group (required)
+│ ❌ user_subnets (required if var.internal == true and var.create_new_vpc == false, else must be null)
+│ ✅ vpc_id (required)
+```
+
 ## RDS InvalidParameterCombination
+
 > ```
 > InvalidParameterCombination: Cannot upgrade postgres from 11.X to 15.Y
 > ```
