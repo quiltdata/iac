@@ -6,20 +6,20 @@
 You must use a Terraform-compatible Quilt CloudFormation template
 (`local.build_file_path`). Ask your account manger for details.
 
-## Create the terraform project `main.tf`
-See [examples/main.tf](examples/main.tf) for a starting point.
-
-You project structure should look something like this:
+## Create your project directory
+You project structure should look something like the following:
 ```
-quilt_project
+quilt_stack
 ├── main.tf
 └── my-company.yml
 ```
 
-From here you can run the various `terraform` commands that are suggested below.
+Use [examples/main.tf](examples/main.tf) as a starting point for your main.tf.
 
 > **It is neither necessary nor recommended to modify any module in this repository.**
 > All supported customization is possible with arguments to `module.quilt`.
+
+You will run the various `terraform` commands from within this directory.
 
 ### `quilt` module arguments
 
