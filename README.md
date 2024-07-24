@@ -229,7 +229,9 @@ terraform destroy
     1. Update the YAML file at `local.build_file_path` with the new CloudFormation
     template that you received from Quilt.
         > Do not change the value of `build_file_path`, as noted [above](#verify-the-plan).
-    1. Update the `quilt.source=` pin to the newest hash from the present repository.
+    1. Update the `quilt.source=` pin to the newest
+    [`main` commit hash](https://github.com/quiltdata/iac/commits/main/)
+    from the present repository.
 1. [Initialize](#initialize).
 1. [Plan](#plan).
 1. [Verify the plan](#verify-the-plan).
