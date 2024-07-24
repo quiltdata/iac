@@ -28,15 +28,14 @@ on each argument.
 See [network documentation](https://docs.quiltdata.com/advanced/technical-reference#network)
 for further details on subnet configuration.
 
-
-| Argument | `internal = true` (private ALB, use with VPN) | `internal = false` (internet-facing ALB) |
-|-----------------|-------------------|---------------------|
-| intra_subnets | No network at all (not even NAT); for `db` & `search` | " |
-| private_subnets | For services | " |
-| public_subnets | n/a | For IGW, ALB |
-| user_subnets | For ALB (when `create_new_vpc = false`) | n/a |
-| user_security_group | For ALB access | n/a |
-| api_endpoint | For API Gateway when `create_new_vpc = false`  | n/a |
+| Argument           | `internal = true` (private ALB for VPN)       | `internal = false` (internet-facing ALB) |
+|--------------------|-----------------------------------------------|------------------------------------------|
+| intra_subnets      | Isolated subnets (no NAT) for `db` & `search` | "                                        |
+| private_subnets    | For Quilt services                            | "                                        |
+| public_subnets     | n/a                                           | For IGW, ALB                             |
+| user_subnets       | For ALB (when `create_new_vpc = false`)       | n/a                                      |
+| user_security_group| For ALB access                                | n/a                                      |
+| api_endpoint       | For API Gateway when `create_new_vpc = false` | n/a                                      |
 
 #### Example VPC Endpoint for API Gateway
 This endpoint must be reachable by your VPN clients.
