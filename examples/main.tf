@@ -64,6 +64,8 @@ module "quilt" {
     SingleSignOnDomains      = ""
     SingleSignOnClientId     = ""
     SingleSignOnBaseUrl      = ""
+
+    Qurator = "Enabled"
   }
 }
 
