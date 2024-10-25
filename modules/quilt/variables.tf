@@ -199,3 +199,27 @@ variable "stack_notification_arns" {
   default     = null
   description = "A list of SNS topic ARNs to publish CloudFormation stack related events."
 }
+
+variable "create_timeout" {
+  description = "aws_cloudformation_stack.timeouts.create="
+  type        = string
+  default     = "30m"
+}
+
+variable "delete_timeout" {
+  description = "aws_cloudformation_stack.timeouts.delete="
+  type        = string
+  default     = "1h"
+}
+
+variable "update_timeout" {
+  description = "aws_cloudformation_stack.timeouts.update="
+  type        = string
+  default     = "30m"
+}
+
+variable "on_failure" {
+  description = "aws_cloudformation_stack.on_failure="
+  type        = string
+  default     = "ROLLBACK"
+}
