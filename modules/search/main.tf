@@ -30,7 +30,7 @@ module "search_security_group" {
 
 resource "aws_elasticsearch_domain" "search" {
   domain_name           = var.domain_name
-  elasticsearch_version = "6.7"
+  elasticsearch_version = "6.8"
 
   cluster_config {
     instance_count           = var.instance_count
