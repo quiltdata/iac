@@ -128,6 +128,10 @@ resource "aws_cloudformation_stack" "stack" {
   )
 
   timeouts {
-    delete = "1h"
+    delete = var.delete_timeout
+    update = var.update_timeout
+    create = var.create_timeout
   }
+
+  on_failure = "ROLLBACK"
 }
