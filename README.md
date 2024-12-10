@@ -53,7 +53,7 @@ resource "aws_vpc_endpoint" "api_gateway_endpoint" {
 
 ### Profile
 You may wish to set a specific AWS profile before executing `terraform`
-commands. 
+commands.
 
 ```sh
 export AWS_PROFILE=your-aws-profile
@@ -244,7 +244,7 @@ terraform destroy
     template that you received from Quilt.
         > Do not change the value of `build_file_path`, as noted [above](#verify-the-plan).
     1. Update the `quilt.source=` pin to the newest
-    [`main` commit hash](https://github.com/quiltdata/iac/commits/main/)
+    [tag](https://github.com/quiltdata/iac/tags)
     from the present repository.
 1. [Initialize](#initialize).
 1. [Plan](#plan).
