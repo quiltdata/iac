@@ -215,7 +215,7 @@ variable "delete_timeout" {
 variable "update_timeout" {
   description = "aws_cloudformation_stack.timeouts.update="
   type        = string
-  default     = "30m"
+  default     = "1h"
 }
 
 variable "on_failure" {

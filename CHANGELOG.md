@@ -8,6 +8,12 @@ Optional release notice.
 - [Verb] Change description ([#<PR-number>](https://github.com/quiltdata/iac/pull/<PR-number>))
 -->
 
+## [Unreleased] - YYYY-MM-DD
+
+Optional release notice.
+
+- [Changed] Increase CloudFormation stack update timeout from 30m to 1h ([#73](https://github.com/quiltdata/iac/pull/73))
+
 ## [1.0.0] - 2024-12-09
 
 - [Added] Add changelog ([#74](https://github.com/quiltdata/iac/pull/74))
