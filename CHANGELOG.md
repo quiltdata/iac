@@ -10,9 +10,9 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
-To upgrade to this version, version 1.0.0 must be deployed first.
+To update to this version, version 1.0.0 must be deployed first.
 
-- [Changed] Upgrade Postgres to 15.10 ([#72](https://github.com/quiltdata/iac/pull/72))
+- [Changed] Update Postgres to 15.10 ([#72](https://github.com/quiltdata/iac/pull/72))
 - [Changed] Increase CloudFormation stack update timeout from 30m to 1h ([#73](https://github.com/quiltdata/iac/pull/73))
 
 ## [1.0.0] - 2024-12-09
