@@ -12,6 +12,7 @@ Optional release notice.
 
 Optional release notice.
 
+- [Changed] Update Elasticsearch to 6.8 ([#71](https://github.com/quiltdata/iac/pull/71))
 - [Changed] Increase CloudFormation stack update timeout from 30m to 1h ([#73](https://github.com/quiltdata/iac/pull/73))
 
 ## [1.0.0] - 2024-12-09
