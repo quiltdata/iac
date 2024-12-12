@@ -135,9 +135,9 @@ resource "aws_cloudformation_stack" "stack" {
 
   # on_failure = "ROLLBACK"
 
-  lifecycle {
-    ignore_changes = [
-      on_failure,
-    ]
-  }
+  # lifecycle {
+  #   ignore_changes = [
+  #     on_failure,
+  #   ]
+  # }
 }
