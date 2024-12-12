@@ -27,7 +27,7 @@ locals {
 }
 
 module "quilt" {
-  // We recommend that you pin the module to the latest hash from the present
+  // We recommend that you pin the module to the latest tag from the present
   // repository to insulate from future module changes and simplify future `apply`s.
   source = "github.com/quiltdata/iac//modules/quilt?ref=xxxxxxxx"
 
@@ -64,6 +64,8 @@ module "quilt" {
     SingleSignOnDomains      = ""
     SingleSignOnClientId     = ""
     SingleSignOnBaseUrl      = ""
+
+    Qurator = "Enabled"
   }
 }
 
