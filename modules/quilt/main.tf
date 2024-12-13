@@ -133,5 +133,11 @@ resource "aws_cloudformation_stack" "stack" {
     create = var.create_timeout
   }
 
-  on_failure = "ROLLBACK"
+  on_failure = var.on_failure
+
+  lifecycle {
+    ignore_changes = [
+      on_failure,
+    ]
+  }
 }
