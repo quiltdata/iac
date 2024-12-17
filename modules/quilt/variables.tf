@@ -209,7 +209,7 @@ variable "create_timeout" {
 variable "delete_timeout" {
   description = "aws_cloudformation_stack.timeouts.delete="
   type        = string
-  default     = "1h"
+  default     = "1h30m"
 }
 
 variable "update_timeout" {
