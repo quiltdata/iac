@@ -53,6 +53,14 @@ module "quilt" {
   // user_security_group = ""
   // user_subnets        = ["", ""]
 
+  // Optional: set size of ElasticSearch Instance. 
+  // See the full list of sizing options here: https://github.com/quiltdata/iac/blob/main/README.md#rightsize-your-search-domain
+  // search_dedicated_master_enabled = false
+  // search_zone_awareness_enabled = false
+  // search_instance_count = 1
+  // search_instance_type = "m5.large.elasticsearch"
+  // search_volume_size = 512
+
   parameters = {
     AdminEmail               = ""
     CertificateArnELB        = ""

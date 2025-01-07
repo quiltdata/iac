@@ -8,6 +8,10 @@ Optional release notice.
 - [Verb] Change description ([#<PR-number>](https://github.com/quiltdata/iac/pull/<PR-number>))
 -->
 
+## [Unreleased]
+
+- Chanded documentation to include elasticsearch instance sizing in the `Quilt` tf module. ([#79](https://github.com/quiltdata/iac/pull/79))
+
 ## [1.1.0] - 2024-12-20
 
 - [Changed] Increase default CloudFormation stack delete timeout from 1h to 1h30m ([#78](https://github.com/quiltdata/iac/pull/78))
