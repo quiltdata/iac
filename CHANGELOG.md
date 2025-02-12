@@ -8,6 +8,12 @@ Optional release notice.
 - [Verb] Change description ([#<PR-number>](https://github.com/quiltdata/iac/pull/<PR-number>))
 -->
 
+## [Unreleased] - YYYY-MM-DD
+
+- [Changed] Elasticsearch: require that all traffic to the domain arrive over HTTPS ([#81](https://github.com/quiltdata/iac/pull/81))
+- [Changed] Elasticsearch: set TLS security policy to "Policy-Min-TLS-1-2-PFS-2023-10" (latest) ([#81](https://github.com/quiltdata/iac/pull/81))
+- [Changed] Elasticsearch: enable node-to-node encryption ([#81](https://github.com/quiltdata/iac/pull/81))
+
 ## [1.1.0] - 2024-12-20
 
 - [Changed] Increase default CloudFormation stack delete timeout from 1h to 1h30m ([#78](https://github.com/quiltdata/iac/pull/78))
