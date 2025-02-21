@@ -10,6 +10,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+## [1.2.0] - 2025-02-21
+
 - [Changed] Elasticsearch: require that all traffic to the domain arrive over HTTPS ([#82](https://github.com/quiltdata/iac/pull/82))
 - [Changed] Elasticsearch: set TLS security policy to "Policy-Min-TLS-1-2-PFS-2023-10" (latest) ([#82](https://github.com/quiltdata/iac/pull/82))
 - [Changed] Elasticsearch: enable node-to-node encryption ([#82](https://github.com/quiltdata/iac/pull/82))
@@ -26,6 +28,7 @@ Optional release notice.
 
 - [Added] Add changelog ([#74](https://github.com/quiltdata/iac/pull/74))
 
-[Unreleased]: https://github.com/quiltdata/iac/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/quiltdata/iac/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/quiltdata/iac/releases/tag/1.2.0
 [1.1.0]: https://github.com/quiltdata/iac/releases/tag/1.1.0
 [1.0.0]: https://github.com/quiltdata/iac/releases/tag/1.0.0
