@@ -10,6 +10,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+- [Changed] Update Postgres to 15.12 ([#85](https://github.com/quiltdata/iac/pull/85))
+
 ## [1.2.0] - 2025-02-21
 
 - [Changed] Elasticsearch: require that all traffic to the domain arrive over HTTPS ([#82](https://github.com/quiltdata/iac/pull/82))
