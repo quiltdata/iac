@@ -41,6 +41,11 @@ resource "aws_elasticsearch_domain" "search" {
     zone_awareness_enabled   = var.zone_awareness_enabled
   }
 
+  domain_endpoint_options {
+    enforce_https       = true
+    tls_security_policy = "Policy-Min-TLS-1-2-PFS-2023-10"
+  }
+
   ebs_options {
     ebs_enabled = true
     volume_size = var.volume_size
@@ -50,6 +55,10 @@ resource "aws_elasticsearch_domain" "search" {
   }
 
   encrypt_at_rest {
+    enabled = true
+  }
+
+  node_to_node_encryption {
     enabled = true
   }
 
