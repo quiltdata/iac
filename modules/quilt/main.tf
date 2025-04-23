@@ -15,7 +15,6 @@ module "vpc" {
   internal = var.internal
 
   create_new_vpc               = var.create_new_vpc
-  tags                         = local.stack_dependent_tags
   existing_api_endpoint        = var.api_endpoint
   existing_vpc_id              = var.vpc_id
   existing_intra_subnets       = var.intra_subnets
