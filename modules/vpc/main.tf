@@ -45,6 +45,11 @@ module "vpc" {
   cidr = var.cidr
 
   azs = local.azs
+  
+  # Enable force destroy for testing
+  manage_default_security_group = true
+  default_security_group_ingress = []
+  default_security_group_egress = []
   # 1/2 of address space for each AZ
   # within AZ:
   # 1/2 for private

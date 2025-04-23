@@ -23,6 +23,9 @@ module "test_stack" {
   create_new_vpc = true
   template_file = "${path.module}/test.yml"
 
+  # Enable force destroy for testing
+  on_failure = "DELETE"
+
   # Minimize resource sizes and enable cleanup
   db_instance_class = "db.t3.micro"
   db_multi_az = false
