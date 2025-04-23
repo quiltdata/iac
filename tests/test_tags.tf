@@ -23,9 +23,10 @@ module "test_stack" {
   create_new_vpc = true
   template_file = "${path.module}/test.yml"
 
-  # Minimize resource sizes
+  # Minimize resource sizes and enable cleanup
   db_instance_class = "db.t3.micro"
   db_multi_az = false
+  db_deletion_protection = false
   
   search_instance_count = 1
   search_instance_type = "t3.small.elasticsearch"
