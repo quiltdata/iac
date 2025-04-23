@@ -12,9 +12,8 @@ These tests verify that the Quilt module correctly sets tags on AWS resources.
 
 From any directory:
 
-```bash
-cd tests && terraform init
-cd tests && terraform apply
+terraform -chdir=tests init
+terraform -chdir=tests apply
 ```
 
 The test will:
