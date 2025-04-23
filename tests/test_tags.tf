@@ -13,6 +13,7 @@ provider "aws" {
   region = "us-west-2"  # or your preferred region
 }
 
+# Use minimal test configuration to avoid long-running resource creation
 module "test_stack" {
   source = "../modules/quilt"
   
@@ -21,10 +22,25 @@ module "test_stack" {
   internal = false
   create_new_vpc = true
   template_file = "${path.module}/test.yml"
+
+  # Minimize resource sizes
+  db_instance_class = "db.t3.micro"
+  db_multi_az = false
+  
+  search_instance_count = 1
+  search_instance_type = "t3.small.elasticsearch"
+  search_dedicated_master_enabled = false
+  search_zone_awareness_enabled = false
+  search_volume_size = 10
   
   parameters = {
     AdminEmail = "test@example.com"
   }
+
+  # Add shorter timeouts
+  create_timeout = "20m"
+  update_timeout = "20m"
+  delete_timeout = "20m"
 }
 
 locals {
