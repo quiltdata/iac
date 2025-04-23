@@ -1,6 +1,3 @@
-locals {
-  stack_dependent_tags = {}
-}
 
 module "db_accessor_security_group" {
   source = "terraform-aws-modules/security-group/aws"
@@ -9,7 +6,7 @@ module "db_accessor_security_group" {
   description = "For resources that need access to DB"
   vpc_id      = var.vpc_id
 
-  tags = local.stack_dependent_tags
+  tags = var.tags
 
   egress_with_source_security_group_id = [
     {
@@ -26,7 +23,7 @@ module "db_security_group" {
   description = "For DB resources"
   vpc_id      = var.vpc_id
 
-  tags = local.stack_dependent_tags
+  tags = var.tags
 
   ingress_with_source_security_group_id = [
     {
@@ -70,4 +67,5 @@ module "db" {
 
   backup_retention_period = 7
   deletion_protection     = var.deletion_protection
+  tags                   = var.tags
 }
