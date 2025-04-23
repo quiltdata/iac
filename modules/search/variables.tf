@@ -71,3 +71,9 @@ variable "volume_type" {
   type     = string
   nullable = false
 }
+
+variable "tags" {
+  description = "Tags to apply to resources"
+  type        = map(string)
+  default     = {}
+}
