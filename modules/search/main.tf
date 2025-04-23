@@ -1,3 +1,7 @@
+locals {
+  stack_dependent_tags = {}
+}
+
 module "search_accessor_security_group" {
   source = "terraform-aws-modules/security-group/aws"
 
