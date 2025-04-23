@@ -5,6 +5,8 @@ module "db_accessor_security_group" {
   description = "For resources that need access to DB"
   vpc_id      = var.vpc_id
 
+  tags = local.stack_dependent_tags
+
   egress_with_source_security_group_id = [
     {
       rule                     = "postgresql-tcp"
@@ -19,6 +21,8 @@ module "db_security_group" {
   name        = "${var.identifier}-db"
   description = "For DB resources"
   vpc_id      = var.vpc_id
+
+  tags = local.stack_dependent_tags
 
   ingress_with_source_security_group_id = [
     {
