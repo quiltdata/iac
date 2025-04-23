@@ -1,3 +1,6 @@
 .DS_Store
 .terraform
 tfplan
+modules/db/main.tf
+tests/.terraform.tfstate.lock.info
+tests/terraform.tfstate.backup
