@@ -15,6 +15,7 @@ module "vpc" {
   internal = var.internal
 
   create_new_vpc               = var.create_new_vpc
+  tags                         = local.stack_dependent_tags
   existing_api_endpoint        = var.api_endpoint
   existing_vpc_id              = var.vpc_id
   existing_intra_subnets       = var.intra_subnets
@@ -38,6 +39,7 @@ module "db" {
   instance_class      = var.db_instance_class
   multi_az            = var.db_multi_az
   deletion_protection = var.db_deletion_protection
+  tags               = local.stack_dependent_tags
 }
 
 module "search" {
@@ -59,6 +61,7 @@ module "search" {
   volume_type              = var.search_volume_type
   volume_iops              = var.search_volume_iops
   volume_throughput        = var.search_volume_throughput
+  tags                     = local.stack_dependent_tags
 }
 
 resource "random_password" "admin_password" {

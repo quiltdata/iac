@@ -1,6 +1,3 @@
-locals {
-  stack_dependent_tags = {}
-}
 
 module "search_accessor_security_group" {
   source = "terraform-aws-modules/security-group/aws"
@@ -9,7 +6,7 @@ module "search_accessor_security_group" {
   description = "For resources that need access to search cluster"
   vpc_id      = var.vpc_id
 
-  tags = local.stack_dependent_tags
+  tags = var.tags
 
   egress_with_source_security_group_id = [
     {
@@ -26,7 +23,7 @@ module "search_security_group" {
   description = "For search cluster resources"
   vpc_id      = var.vpc_id
 
-  tags = local.stack_dependent_tags
+  tags = var.tags
 
   ingress_with_source_security_group_id = [
     {
@@ -40,7 +37,7 @@ resource "aws_elasticsearch_domain" "search" {
   domain_name           = var.domain_name
   elasticsearch_version = "6.8"
 
-  tags = local.stack_dependent_tags
+  tags = var.tags
 
   cluster_config {
     instance_count           = var.instance_count
