@@ -63,8 +63,11 @@ locals {
 
 output "test_common_tags" {
   value = local.test_tags.test_common_tags
+  description = "Test result for common tags"
 }
 
 output "test_stack_dependent_tags" {
   value = local.test_tags.test_stack_dependent_tags
+  description = "Test result for stack dependent tags"
+  sensitive = false
 }
