@@ -6,7 +6,6 @@ module "search_accessor_security_group" {
   description = "For resources that need access to search cluster"
   vpc_id      = var.vpc_id
 
-  tags = var.tags
 
   egress_with_source_security_group_id = [
     {
