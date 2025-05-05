@@ -10,6 +10,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+## [1.3.0] - 2025-05-05
+
 - [Changed] Update Postgres to 15.12 ([#85](https://github.com/quiltdata/iac/pull/85))
 
 ## [1.2.0] - 2025-02-21
@@ -30,7 +32,8 @@ Optional release notice.
 
 - [Added] Add changelog ([#74](https://github.com/quiltdata/iac/pull/74))
 
-[Unreleased]: https://github.com/quiltdata/iac/compare/1.2.0...HEAD
+[Unreleased]: https://github.com/quiltdata/iac/compare/1.3.0...HEAD
+[1.3.0]: https://github.com/quiltdata/iac/releases/tag/1.3.0
 [1.2.0]: https://github.com/quiltdata/iac/releases/tag/1.2.0
 [1.1.0]: https://github.com/quiltdata/iac/releases/tag/1.1.0
 [1.0.0]: https://github.com/quiltdata/iac/releases/tag/1.0.0
