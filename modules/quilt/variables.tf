@@ -59,7 +59,7 @@ variable "db_network_type" {
 variable "db_deletion_protection" {
   type        = bool
   nullable    = false
-  default     = true
+  default     = false
   description = "Set to true for production environments to prevent accidental deletion of stack database."
 }
 
