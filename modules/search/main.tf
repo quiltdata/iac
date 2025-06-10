@@ -62,8 +62,8 @@ resource "aws_elasticsearch_domain" "search" {
     enabled = true
   }
 
-  vpc_options {
-    subnet_ids         = var.zone_awareness_enabled ? var.subnet_ids : slice(var.subnet_ids, 0, 1)
-    security_group_ids = [module.search_security_group.security_group_id]
-  }
+  # vpc_options {
+  #   subnet_ids         = var.zone_awareness_enabled ? var.subnet_ids : slice(var.subnet_ids, 0, 1)
+  #   security_group_ids = [module.search_security_group.security_group_id]
+  # }
 }
