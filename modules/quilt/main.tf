@@ -87,7 +87,7 @@ resource "aws_s3_object" "cft" {
 }
 
 resource "aws_cloudformation_stack" "stack" {
-  name         = var.name
+  name         = title(var.name)
   template_url = local.template_url
   depends_on = [
     aws_s3_object.cft,
