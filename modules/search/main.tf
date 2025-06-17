@@ -29,7 +29,7 @@ module "search_security_group" {
 }
 
 resource "aws_elasticsearch_domain" "search" {
-  domain_name           = lower(var.domain_name)
+  domain_name           = var.domain_name
   elasticsearch_version = "6.8"
 
   cluster_config {

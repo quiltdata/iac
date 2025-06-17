@@ -5,8 +5,8 @@ variable "name" {
   nullable    = false
   description = "Name to use for the VPC, DB, and CloudFormation stack, as well as a prefix for other resources"
   validation {
-    condition     = length(var.name) <= 20
-    error_message = "no longer than 20 characters."
+    condition     = length(var.name) <= 20 && can(regex("^[a-z0-9-]+$", var.name))
+    error_message = "Lowercase alphanumerics and hyphens; no longer than 20 characters."
   }
 }
 
