@@ -4,6 +4,7 @@ Deploy and maintain Quilt stacks with Terraform using this comprehensive Infrast
 
 ## Table of Contents
 
+- [Cloud Team Operations Guide](#cloud-team-operations-guide)
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
 - [ElasticSearch Configuration](#elasticsearch-configuration)
@@ -14,6 +15,494 @@ Deploy and maintain Quilt stacks with Terraform using this comprehensive Infrast
 - [Deployment Examples](#deployment-examples)
 - [Troubleshooting](#troubleshooting)
 - [Terraform Commands Reference](#terraform-commands-reference)
+
+## Cloud Team Operations Guide
+
+This section provides step-by-step instructions specifically for cloud teams to ensure simple installation and maintenance of the Quilt platform.
+
+### Initial Setup Checklist
+
+#### 1. Environment Preparation (15 minutes)
+
+**Step 1.1: Install Required Tools**
+```bash
+# Install Terraform (if not already installed)
+# macOS
+brew install terraform
+
+# Linux
+wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
+unzip terraform_1.6.0_linux_amd64.zip
+sudo mv terraform /usr/local/bin/
+
+# Verify installation
+terraform --version  # Should show >= 1.5.0
+```
+
+**Step 1.2: Configure AWS CLI**
+```bash
+# Install AWS CLI (if not already installed)
+# macOS
+brew install awscli
+
+# Configure AWS credentials
+aws configure
+# Enter: Access Key ID, Secret Access Key, Region, Output format (json)
+
+# Verify access
+aws sts get-caller-identity
+```
+
+**Step 1.3: Set Up Terraform State Backend**
+```bash
+# Create S3 bucket for Terraform state (one-time setup)
+aws s3 mb s3://your-company-terraform-state --region us-east-1
+
+# Enable versioning
+aws s3api put-bucket-versioning \
+  --bucket your-company-terraform-state \
+  --versioning-configuration Status=Enabled
+
+# Optional: Create DynamoDB table for state locking
+aws dynamodb create-table \
+  --table-name terraform-locks \
+  --attribute-definitions AttributeName=LockID,AttributeType=S \
+  --key-schema AttributeName=LockID,KeyType=HASH \
+  --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
+  --region us-east-1
+```
+
+#### 2. SSL Certificate Setup (10 minutes)
+
+**Step 2.1: Request SSL Certificate**
+```bash
+# Request certificate in AWS Certificate Manager
+aws acm request-certificate \
+  --domain-name "data.yourcompany.com" \
+  --subject-alternative-names "*.data.yourcompany.com" \
+  --validation-method DNS \
+  --region us-east-1
+
+# Note the CertificateArn from the output
+```
+
+**Step 2.2: Validate Certificate**
+```bash
+# Get validation records
+aws acm describe-certificate --certificate-arn "arn:aws:acm:us-east-1:123456789012:certificate/your-cert-id"
+
+# Add the DNS validation records to your domain's DNS
+# Wait for validation (usually 5-10 minutes)
+```
+
+#### 3. Project Setup (10 minutes)
+
+**Step 3.1: Create Project Directory**
+```bash
+# Create project directory
+mkdir quilt-production
+cd quilt-production
+
+# Initialize git repository
+git init
+```
+
+**Step 3.2: Download Template Files**
+```bash
+# Download the example configuration
+curl -o main.tf https://raw.githubusercontent.com/quiltdata/iac/main/examples/main.tf
+
+# Create variables file for sensitive data
+cat > terraform.tfvars << 'EOF'
+# Add your sensitive variables here
+google_client_secret = "your-google-oauth-secret"
+okta_client_secret   = "your-okta-oauth-secret"
+EOF
+
+# Create .gitignore
+cat > .gitignore << 'EOF'
+.terraform/
+*.tfplan
+*.tfstate
+*.tfstate.backup
+terraform.tfvars
+.terraform.lock.hcl
+EOF
+```
+
+**Step 3.3: Obtain CloudFormation Template**
+Contact your Quilt account manager to obtain the CloudFormation template file and save it as `quilt-template.yml` in your project directory.
+
+### Installation Process (30 minutes)
+
+#### Step 1: Configure Your Deployment
+
+**Edit main.tf with your specific values:**
+```bash
+# Open main.tf in your preferred editor
+vim main.tf  # or code main.tf, nano main.tf, etc.
+```
+
+**Required changes:**
+1. **AWS Account ID**: Replace `"123456789012"` with your AWS account ID
+2. **Region**: Set your preferred AWS region
+3. **S3 Backend**: Update bucket name in terraform backend configuration
+4. **Stack Name**: Update `local.name` (≤20 chars, lowercase + hyphens)
+5. **Domain**: Update `local.quilt_web_host` with your domain
+6. **Certificate ARN**: Update with your SSL certificate ARN
+7. **Admin Email**: Set your administrator email
+8. **Route53 Zone**: Update zone_id in cnames module
+
+**Choose ElasticSearch sizing based on your data volume:**
+- **Small** (< 100GB): Use commented "Small" configuration
+- **Medium** (100GB-1TB): Use default configuration (already uncommented)
+- **Large** (1TB-5TB): Uncomment "Large" configuration
+- **Enterprise** (5TB+): Uncomment "X-Large" or larger configuration
+
+#### Step 2: Initialize and Plan
+
+```bash
+# Initialize Terraform
+terraform init
+
+# Validate configuration
+terraform validate
+
+# Format code
+terraform fmt
+
+# Create execution plan
+terraform plan -out=tfplan
+
+# Review the plan carefully - ensure no unexpected resource deletions
+```
+
+#### Step 3: Deploy
+
+```bash
+# Apply the configuration
+terraform apply tfplan
+
+# Deployment typically takes 20-30 minutes
+# Monitor progress in AWS Console if needed
+```
+
+#### Step 4: Verify Deployment
+
+```bash
+# Get outputs
+terraform output admin_password  # Save this password securely
+terraform output quilt_url       # Your Quilt catalog URL
+
+# Test access
+curl -I https://data.yourcompany.com  # Should return 200 OK
+```
+
+#### Step 5: Initial Configuration
+
+1. **Access Quilt Catalog**: Navigate to your Quilt URL
+2. **Login**: Use admin email and the password from terraform output
+3. **Change Password**: Immediately change the default admin password
+4. **Configure Users**: Set up additional users and permissions as needed
+
+### Maintenance Procedures
+
+#### Daily Operations
+
+**Health Checks (5 minutes daily)**
+```bash
+# Check infrastructure status
+terraform refresh
+terraform plan  # Should show "No changes"
+
+# Check application health
+curl -f https://data.yourcompany.com/health || echo "Health check failed"
+
+# Check ElasticSearch cluster health
+aws es describe-elasticsearch-domain --domain-name your-stack-name
+```
+
+#### Weekly Maintenance
+
+**Backup Verification (10 minutes weekly)**
+```bash
+# Verify RDS automated backups
+aws rds describe-db-snapshots --db-instance-identifier your-stack-name
+
+# Check ElasticSearch snapshots (if configured)
+aws es describe-elasticsearch-domain --domain-name your-stack-name
+```
+
+**Security Updates (15 minutes weekly)**
+```bash
+# Check for Terraform module updates
+# Visit: https://github.com/quiltdata/iac/releases
+
+# Update to latest stable version if available
+# Edit main.tf and update the ref= parameter
+# Example: ref=1.3.0 -> ref=1.4.0
+```
+
+#### Monthly Maintenance
+
+**Capacity Planning (20 minutes monthly)**
+```bash
+# Check ElasticSearch storage usage
+aws cloudwatch get-metric-statistics \
+  --namespace AWS/ES \
+  --metric-name StorageUtilization \
+  --dimensions Name=DomainName,Value=your-stack-name Name=ClientId,Value=123456789012 \
+  --start-time $(date -u -d '30 days ago' +%Y-%m-%dT%H:%M:%S) \
+  --end-time $(date -u +%Y-%m-%dT%H:%M:%S) \
+  --period 86400 \
+  --statistics Average
+
+# Check RDS storage usage
+aws cloudwatch get-metric-statistics \
+  --namespace AWS/RDS \
+  --metric-name DatabaseConnections \
+  --dimensions Name=DBInstanceIdentifier,Value=your-stack-name \
+  --start-time $(date -u -d '30 days ago' +%Y-%m-%dT%H:%M:%S) \
+  --end-time $(date -u +%Y-%m-%dT%H:%M:%S) \
+  --period 86400 \
+  --statistics Average
+```
+
+### Scaling Operations
+
+#### ElasticSearch Storage Scaling
+
+**When to Scale**: When storage utilization > 80%
+
+**Step 1: Plan the Scaling**
+```bash
+# Current configuration check
+terraform show | grep search_volume_size
+
+# Calculate new size needed (current_size * 1.5 recommended)
+# Example: 1024GB -> 1536GB
+```
+
+**Step 2: Update Configuration**
+```bash
+# Edit main.tf
+vim main.tf
+
+# Update search_volume_size value
+# Example: search_volume_size = 1536
+
+# Plan the change
+terraform plan -out=tfplan
+```
+
+**Step 3: Apply During Maintenance Window**
+```bash
+# Schedule during low-usage period
+# Scaling causes temporary performance impact
+
+terraform apply tfplan
+
+# Monitor the scaling process
+aws es describe-elasticsearch-domain --domain-name your-stack-name
+```
+
+#### Database Scaling
+
+**Vertical Scaling (Instance Size)**
+```bash
+# Edit main.tf
+# Update db_instance_class
+# Example: db.t3.small -> db.t3.medium
+
+terraform plan -out=tfplan
+terraform apply tfplan  # Causes brief downtime
+```
+
+**Storage Scaling**
+```bash
+# RDS storage scales automatically if enabled
+# Check current storage
+aws rds describe-db-instances --db-instance-identifier your-stack-name
+```
+
+### Disaster Recovery
+
+#### Backup Procedures
+
+**Database Backup**
+```bash
+# Create manual snapshot
+aws rds create-db-snapshot \
+  --db-instance-identifier your-stack-name \
+  --db-snapshot-identifier your-stack-name-manual-$(date +%Y%m%d)
+```
+
+**Configuration Backup**
+```bash
+# Backup Terraform state
+aws s3 cp s3://your-terraform-state-bucket/quilt/terraform.tfstate \
+  ./terraform.tfstate.backup.$(date +%Y%m%d)
+
+# Backup configuration files
+tar -czf quilt-config-backup-$(date +%Y%m%d).tar.gz *.tf *.yml
+```
+
+#### Recovery Procedures
+
+**Database Recovery**
+```bash
+# List available snapshots
+aws rds describe-db-snapshots --db-instance-identifier your-stack-name
+
+# Restore from snapshot (update main.tf)
+# Add: db_snapshot_identifier = "snapshot-name"
+# Then: terraform plan && terraform apply
+```
+
+### Monitoring and Alerting Setup
+
+#### CloudWatch Alarms
+
+**ElasticSearch Monitoring**
+```bash
+# Create storage utilization alarm
+aws cloudwatch put-metric-alarm \
+  --alarm-name "Quilt-ES-Storage-High" \
+  --alarm-description "ElasticSearch storage utilization > 80%" \
+  --metric-name StorageUtilization \
+  --namespace AWS/ES \
+  --statistic Average \
+  --period 300 \
+  --threshold 80 \
+  --comparison-operator GreaterThanThreshold \
+  --dimensions Name=DomainName,Value=your-stack-name Name=ClientId,Value=123456789012 \
+  --evaluation-periods 2 \
+  --alarm-actions arn:aws:sns:us-east-1:123456789012:quilt-alerts
+```
+
+**RDS Monitoring**
+```bash
+# Create CPU utilization alarm
+aws cloudwatch put-metric-alarm \
+  --alarm-name "Quilt-RDS-CPU-High" \
+  --alarm-description "RDS CPU utilization > 80%" \
+  --metric-name CPUUtilization \
+  --namespace AWS/RDS \
+  --statistic Average \
+  --period 300 \
+  --threshold 80 \
+  --comparison-operator GreaterThanThreshold \
+  --dimensions Name=DBInstanceIdentifier,Value=your-stack-name \
+  --evaluation-periods 2 \
+  --alarm-actions arn:aws:sns:us-east-1:123456789012:quilt-alerts
+```
+
+### Troubleshooting Common Issues
+
+#### Issue 1: Deployment Fails with "InvalidParameterCombination"
+
+**Symptoms**: Terraform apply fails with database parameter errors
+
+**Solution**:
+```bash
+# Check current RDS version
+aws rds describe-db-instances --db-instance-identifier your-stack-name
+
+# If PostgreSQL < 11.22, upgrade manually first
+aws rds modify-db-instance \
+  --db-instance-identifier your-stack-name \
+  --engine-version 11.22 \
+  --apply-immediately
+
+# Wait for upgrade to complete, then retry Terraform
+```
+
+#### Issue 2: ElasticSearch Domain Update Fails
+
+**Symptoms**: "ValidationException: A change/update is in progress"
+
+**Solution**:
+```bash
+# Check domain status
+aws es describe-elasticsearch-domain --domain-name your-stack-name
+
+# Wait for current operation to complete (check Processing field)
+# Then retry Terraform apply
+```
+
+#### Issue 3: SSL Certificate Validation Stuck
+
+**Symptoms**: Certificate remains in "Pending Validation" status
+
+**Solution**:
+```bash
+# Check DNS validation records
+aws acm describe-certificate --certificate-arn your-cert-arn
+
+# Verify DNS records are correctly added to your domain
+# Use DNS lookup tools to confirm propagation
+dig _validation-record.data.yourcompany.com CNAME
+```
+
+### Security Best Practices
+
+#### Access Control
+1. **Use IAM roles** instead of access keys where possible
+2. **Enable MFA** for all administrative accounts
+3. **Rotate credentials** regularly (quarterly)
+4. **Use least privilege** principle for all permissions
+
+#### Network Security
+1. **Use internal ALB** for VPN-only access when possible
+2. **Configure WAF** with appropriate geofencing
+3. **Enable VPC Flow Logs** for network monitoring
+4. **Use private subnets** for all internal services
+
+#### Data Protection
+1. **Enable encryption at rest** for all storage services
+2. **Use SSL/TLS** for all data in transit
+3. **Configure CloudTrail** for audit logging
+4. **Enable GuardDuty** for threat detection
+
+### Cost Optimization
+
+#### Regular Cost Reviews
+```bash
+# Check monthly costs by service
+aws ce get-cost-and-usage \
+  --time-period Start=2023-11-01,End=2023-12-01 \
+  --granularity MONTHLY \
+  --metrics BlendedCost \
+  --group-by Type=DIMENSION,Key=SERVICE
+
+# Identify optimization opportunities
+# - Unused EBS volumes
+# - Over-provisioned instances
+# - Unnecessary data transfer
+```
+
+#### Optimization Strategies
+1. **Use Reserved Instances** for production workloads
+2. **Right-size instances** based on actual usage
+3. **Implement lifecycle policies** for S3 storage
+4. **Use Spot Instances** for non-critical workloads where applicable
+
+### Support and Escalation
+
+#### Internal Escalation Path
+1. **Level 1**: Cloud team member (daily operations)
+2. **Level 2**: Senior cloud engineer (scaling, troubleshooting)
+3. **Level 3**: Cloud architect (design changes, major issues)
+
+#### External Support
+1. **Quilt Support**: Contact your account manager for application issues
+2. **AWS Support**: Use your AWS support plan for infrastructure issues
+3. **Community**: GitHub issues for module-related problems
+
+#### Emergency Contacts
+- **Cloud Team Lead**: [contact information]
+- **On-call Engineer**: [contact information]
+- **Quilt Account Manager**: [contact information]
 
 ## Prerequisites
 
