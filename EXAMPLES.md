@@ -1,5 +1,13 @@
 # Deployment Examples
 
+> **⚠️ CRITICAL WARNING**: All examples in this document contain placeholder values that MUST be replaced with your actual values before deployment. Do NOT use these examples directly without customization.
+> 
+> **Required replacements:**
+> - `YOUR-ACCOUNT-ID`: Replace with your AWS account ID
+> - `YOUR-AWS-REGION`: Replace with your AWS region (e.g., us-east-1, us-west-2)
+> - `YOUR-COMPANY`: Replace with your company/organization name
+> - All certificate ARNs, domain names, and other placeholder values
+
 This document provides comprehensive examples for deploying Quilt using different configurations and scenarios.
 
 ## Table of Contents
@@ -17,14 +25,14 @@ This document provides comprehensive examples for deploying Quilt using differen
 
 ```hcl
 provider "aws" {
-  region = "us-east-1"
+  region = "YOUR-AWS-REGION"
 }
 
 terraform {
   backend "s3" {
     bucket = "company-terraform-state"
     key    = "quilt/dev/terraform.tfstate"
-    region = "us-east-1"
+    region = "YOUR-AWS-REGION"
   }
 }
 
@@ -58,7 +66,7 @@ module "quilt" {
 
   parameters = {
     AdminEmail        = "dev@company.com"
-    CertificateArnELB = "arn:aws:acm:us-east-1:123456789012:certificate/dev-cert"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/dev-cert"
     QuiltWebHost      = local.quilt_web_host
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
@@ -91,8 +99,8 @@ output "quilt_url" {
 
 ```hcl
 provider "aws" {
-  region              = "us-east-1"
-  allowed_account_ids = ["123456789012"]
+  region              = "YOUR-AWS-REGION"
+  allowed_account_ids = ["YOUR-ACCOUNT-ID"]
   
   default_tags {
     tags = {
@@ -107,7 +115,7 @@ terraform {
   backend "s3" {
     bucket         = "company-terraform-state"
     key            = "quilt/prod/terraform.tfstate"
-    region         = "us-east-1"
+    region         = "YOUR-AWS-REGION"
     encrypt        = true
     dynamodb_table = "terraform-locks"
   }
@@ -143,11 +151,11 @@ module "quilt" {
   search_volume_type             = "gp3"
 
   # CloudFormation notifications
-  stack_notification_arns = ["arn:aws:sns:us-east-1:123456789012:quilt-notifications"]
+  stack_notification_arns = ["arn:aws:sns:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:quilt-notifications"]
 
   parameters = {
     AdminEmail               = "admin@company.com"
-    CertificateArnELB        = "arn:aws:acm:us-east-1:123456789012:certificate/prod-cert"
+    CertificateArnELB        = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/prod-cert"
     QuiltWebHost             = local.quilt_web_host
     CloudTrailBucket         = "company-cloudtrail"
     PasswordAuth             = "Enabled"
@@ -285,11 +293,11 @@ module "quilt" {
   
   parameters = {
     AdminEmail          = "admin@company.com"
-    CertificateArnELB   = "arn:aws:acm:us-east-1:123456789012:certificate/cert-id"
+    CertificateArnELB   = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
     QuiltWebHost        = "data.company.com"
     PasswordAuth        = "Enabled"
     GoogleAuth          = "Enabled"
-    GoogleClientId      = "123456789012-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
+    GoogleClientId      = "YOUR-ACCOUNT-ID-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
     GoogleClientSecret  = var.google_client_secret
     SingleSignOnDomains = "company.com,subsidiary.com"
     Qurator            = "Enabled"
@@ -313,7 +321,7 @@ module "quilt" {
   
   parameters = {
     AdminEmail          = "admin@company.com"
-    CertificateArnELB   = "arn:aws:acm:us-east-1:123456789012:certificate/cert-id"
+    CertificateArnELB   = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
     QuiltWebHost        = "data.company.com"
     PasswordAuth        = "Enabled"
     OktaAuth           = "Enabled"
@@ -342,12 +350,12 @@ module "quilt" {
   
   parameters = {
     AdminEmail        = "admin@company.com"
-    CertificateArnELB = "arn:aws:acm:us-east-1:123456789012:certificate/cert-id"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
     QuiltWebHost      = "data.company.com"
     PasswordAuth      = "Enabled"
     AzureAuth         = "Enabled"
     AzureBaseUrl      = "https://login.microsoftonline.com/tenant-id/v2.0"
-    AzureClientId     = "12345678-1234-1234-1234-123456789012"
+    AzureClientId     = "12345678-1234-1234-1234-YOUR-ACCOUNT-ID"
     AzureClientSecret = var.azure_client_secret
     Qurator          = "Enabled"
   }
@@ -362,7 +370,7 @@ module "quilt" {
   
   parameters = {
     AdminEmail           = "admin@company.com"
-    CertificateArnELB    = "arn:aws:acm:us-east-1:123456789012:certificate/cert-id"
+    CertificateArnELB    = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
     QuiltWebHost         = "data.company.com"
     
     # Enable multiple auth providers
@@ -404,7 +412,7 @@ module "quilt" {
 
   parameters = {
     AdminEmail        = "admin@company.com"
-    CertificateArnELB = "arn:aws:acm:us-east-1:123456789012:certificate/cert-id"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
     QuiltWebHost      = "data.company.com"
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
@@ -433,7 +441,7 @@ module "quilt" {
 
   parameters = {
     AdminEmail        = "admin@company.com"
-    CertificateArnELB = "arn:aws:acm:us-east-1:123456789012:certificate/cert-id"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
     QuiltWebHost      = "internal-data.company.com"
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
@@ -463,7 +471,7 @@ module "quilt" {
 
   parameters = {
     AdminEmail        = "admin@company.com"
-    CertificateArnELB = "arn:aws:acm:us-east-1:123456789012:certificate/cert-id"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
     QuiltWebHost      = "data.company.com"
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
@@ -477,7 +485,7 @@ module "quilt" {
 # Create VPC endpoint for API Gateway
 resource "aws_vpc_endpoint" "api_gateway" {
   vpc_id              = "vpc-12345678"
-  service_name        = "com.amazonaws.us-east-1.execute-api"
+  service_name        = "com.amazonaws.YOUR-AWS-REGION.execute-api"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = ["subnet-private1", "subnet-private2"]
   security_group_ids  = ["sg-12345678"]
@@ -504,7 +512,7 @@ module "quilt" {
 
   parameters = {
     AdminEmail        = "admin@company.com"
-    CertificateArnELB = "arn:aws:acm:us-east-1:123456789012:certificate/cert-id"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
     QuiltWebHost      = "internal-data.company.com"
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
@@ -518,8 +526,8 @@ module "quilt" {
 
 ```hcl
 provider "aws" {
-  region              = "us-east-1"
-  allowed_account_ids = ["123456789012"]
+  region              = "YOUR-AWS-REGION"
+  allowed_account_ids = ["YOUR-ACCOUNT-ID"]
   
   default_tags {
     tags = {
@@ -535,7 +543,7 @@ terraform {
   backend "s3" {
     bucket         = "company-terraform-state"
     key            = "quilt/prod/terraform.tfstate"
-    region         = "us-east-1"
+    region         = "YOUR-AWS-REGION"
     encrypt        = true
     dynamodb_table = "terraform-locks"
   }
@@ -573,13 +581,13 @@ module "quilt" {
 
   # Monitoring and notifications
   stack_notification_arns = [
-    "arn:aws:sns:us-east-1:123456789012:quilt-alerts",
-    "arn:aws:sns:us-east-1:123456789012:ops-notifications"
+    "arn:aws:sns:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:quilt-alerts",
+    "arn:aws:sns:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:ops-notifications"
   ]
 
   parameters = {
     AdminEmail                   = "admin@company.com"
-    CertificateArnELB           = "arn:aws:acm:us-east-1:123456789012:certificate/prod-cert"
+    CertificateArnELB           = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/prod-cert"
     QuiltWebHost                = local.quilt_web_host
     CloudTrailBucket            = "company-cloudtrail-prod"
     PasswordAuth                = "Enabled"
@@ -591,7 +599,7 @@ module "quilt" {
     Qurator                     = "Enabled"
     CanaryNotificationsEmail    = "ops@company.com"
     ManagedUserRoleExtraPolicies = join(",", [
-      "arn:aws:iam::123456789012:policy/DataScientistAccess",
+      "arn:aws:iam::YOUR-ACCOUNT-ID:policy/DataScientistAccess",
       "arn:aws:iam::aws:policy/AmazonAthenaFullAccess"
     ])
     WAFGeofenceCountries = "US,CA,GB,DE,FR,AU"
@@ -660,7 +668,7 @@ module "quilt" {
 
   parameters = {
     AdminEmail                   = "admin@enterprise.com"
-    CertificateArnELB           = "arn:aws:acm:us-east-1:123456789012:certificate/enterprise-cert"
+    CertificateArnELB           = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/enterprise-cert"
     QuiltWebHost                = "data.enterprise.com"
     CloudTrailBucket            = "enterprise-security-logs"
     PasswordAuth                = "Disabled"  # SSO only
@@ -672,13 +680,13 @@ module "quilt" {
     Qurator                     = "Enabled"
     CanaryNotificationsEmail    = "security-ops@enterprise.com"
     ManagedUserRoleExtraPolicies = join(",", [
-      "arn:aws:iam::123456789012:policy/EnterpriseDataGovernance",
-      "arn:aws:iam::123456789012:policy/ComplianceAuditAccess",
+      "arn:aws:iam::YOUR-ACCOUNT-ID:policy/EnterpriseDataGovernance",
+      "arn:aws:iam::YOUR-ACCOUNT-ID:policy/ComplianceAuditAccess",
       "arn:aws:iam::aws:policy/AmazonAthenaFullAccess"
     ])
     S3BucketPolicyExcludeArnsFromDeny = join(",", [
-      "arn:aws:iam::123456789012:role/DataGovernanceRole",
-      "arn:aws:iam::123456789012:role/ComplianceAuditRole"
+      "arn:aws:iam::YOUR-ACCOUNT-ID:role/DataGovernanceRole",
+      "arn:aws:iam::YOUR-ACCOUNT-ID:role/ComplianceAuditRole"
     ])
     WAFGeofenceCountries = "US,CA"  # Restrict to North America
   }
@@ -707,7 +715,7 @@ terraform {
     bucket               = "company-terraform-state"
     workspace_key_prefix = "quilt"
     key                  = "terraform.tfstate"
-    region               = "us-east-1"
+    region               = "YOUR-AWS-REGION"
   }
 }
 
@@ -722,7 +730,7 @@ locals {
       search_instance_count = 1
       search_instance_type = "m5.large.elasticsearch"
       search_volume_size = 512
-      cert_arn          = "arn:aws:acm:us-east-1:123456789012:certificate/dev-cert"
+      cert_arn          = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/dev-cert"
       web_host          = "dev-data.company.com"
     }
     staging = {
@@ -733,7 +741,7 @@ locals {
       search_instance_count = 2
       search_instance_type = "m5.xlarge.elasticsearch"
       search_volume_size = 1024
-      cert_arn          = "arn:aws:acm:us-east-1:123456789012:certificate/staging-cert"
+      cert_arn          = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/staging-cert"
       web_host          = "staging-data.company.com"
     }
     prod = {
@@ -744,7 +752,7 @@ locals {
       search_instance_count = 4
       search_instance_type = "m5.2xlarge.elasticsearch"
       search_volume_size = 4096
-      cert_arn          = "arn:aws:acm:us-east-1:123456789012:certificate/prod-cert"
+      cert_arn          = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/prod-cert"
       web_host          = "data.company.com"
     }
   }

@@ -97,9 +97,9 @@ vim main.tf
 # - region: "YOUR_AWS_REGION"
 # - bucket: "YOUR_TERRAFORM_STATE_BUCKET"
 # - local.name: "quilt-${ENVIRONMENT}"
-# - local.quilt_web_host: "data-${ENVIRONMENT}.yourcompany.com"
+# - local.quilt_web_host: "data-${ENVIRONMENT}.YOUR-COMPANY.com"
 # - CertificateArnELB: "YOUR_CERTIFICATE_ARN"
-# - AdminEmail: "admin@yourcompany.com"
+# - AdminEmail: "admin@YOUR-COMPANY.com"
 # - zone_id: "YOUR_ROUTE53_ZONE_ID"
 ```
 
@@ -199,7 +199,7 @@ cat > docs/deployment-info.md << EOF
 ## Access Information
 - **URL**: ${QUILT_URL}
 - **Admin Email**: ${ADMIN_EMAIL}
-- **AWS Region**: $(terraform output -raw aws_region 2>/dev/null || echo "us-east-1")
+- **AWS Region**: $(terraform output -raw aws_region 2>/dev/null || echo "YOUR-AWS-REGION")
 
 ## Infrastructure
 - **VPC ID**: $(terraform show -json | jq -r '.values.root_module.child_modules[] | select(.address=="module.quilt") | .child_modules[] | select(.address=="module.vpc") | .resources[] | select(.type=="aws_vpc") | .values.id' 2>/dev/null || echo "N/A")
@@ -1029,7 +1029,7 @@ echo "=== Cost Optimization Complete ==="
       "Resource": "*",
       "Condition": {
         "StringLike": {
-          "aws:RequestedRegion": ["us-east-1", "us-west-2"]
+          "aws:RequestedRegion": ["YOUR-AWS-REGION", "YOUR-BACKUP-REGION"]
         }
       }
     }

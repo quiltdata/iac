@@ -72,7 +72,7 @@ The `parameters` map configures the Quilt application. Here are all available pa
 | Parameter | Description | Example |
 |-----------|-------------|---------|
 | `AdminEmail` | Administrator email address | `"admin@company.com"` |
-| `CertificateArnELB` | SSL certificate ARN for HTTPS | `"arn:aws:acm:us-east-1:123456789012:certificate/abc123"` |
+| `CertificateArnELB` | SSL certificate ARN for HTTPS | `"arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERT-ID"` |
 | `QuiltWebHost` | Domain name for Quilt catalog | `"quilt.company.com"` |
 
 ### Authentication Parameters
@@ -111,8 +111,8 @@ The `parameters` map configures the Quilt application. Here are all available pa
 
 | Parameter | Description | Example |
 |-----------|-------------|---------|
-| `ManagedUserRoleExtraPolicies` | Additional IAM policies (comma-separated ARNs) | `"arn:aws:iam::123456789012:policy/CustomPolicy,arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"` |
-| `S3BucketPolicyExcludeArnsFromDeny` | ARNs to exclude from S3 bucket deny policies | `"arn:aws:iam::123456789012:user/service-account,arn:aws:iam::123456789012:role/DataProcessingRole"` |
+| `ManagedUserRoleExtraPolicies` | Additional IAM policies (comma-separated ARNs) | `"arn:aws:iam::YOUR-ACCOUNT-ID:policy/CustomPolicy,arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"` |
+| `S3BucketPolicyExcludeArnsFromDeny` | ARNs to exclude from S3 bucket deny policies | `"arn:aws:iam::YOUR-ACCOUNT-ID:user/service-account,arn:aws:iam::YOUR-ACCOUNT-ID:role/DataProcessingRole"` |
 | `WAFGeofenceCountries` | Country codes for WAF geofencing (comma-separated) | `"US,CA,GB,DE,FR"` |
 
 ## VPC Module Variables (`modules/vpc`)

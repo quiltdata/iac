@@ -56,11 +56,11 @@ aws sts get-caller-identity
 **Step 1.3: Set Up Terraform State Backend**
 ```bash
 # Create S3 bucket for Terraform state (one-time setup)
-aws s3 mb s3://your-company-terraform-state --region us-east-1
+aws s3 mb s3://YOUR-COMPANY-terraform-state --region YOUR-AWS-REGION
 
 # Enable versioning
 aws s3api put-bucket-versioning \
-  --bucket your-company-terraform-state \
+  --bucket YOUR-COMPANY-terraform-state \
   --versioning-configuration Status=Enabled
 
 # Optional: Create DynamoDB table for state locking
@@ -69,7 +69,7 @@ aws dynamodb create-table \
   --attribute-definitions AttributeName=LockID,AttributeType=S \
   --key-schema AttributeName=LockID,KeyType=HASH \
   --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
-  --region us-east-1
+  --region YOUR-AWS-REGION
 ```
 
 #### 2. SSL Certificate Setup (10 minutes)
@@ -78,10 +78,10 @@ aws dynamodb create-table \
 ```bash
 # Request certificate in AWS Certificate Manager
 aws acm request-certificate \
-  --domain-name "data.yourcompany.com" \
-  --subject-alternative-names "*.data.yourcompany.com" \
+  --domain-name "data.YOUR-COMPANY.com" \
+  --subject-alternative-names "*.data.YOUR-COMPANY.com" \
   --validation-method DNS \
-  --region us-east-1
+  --region YOUR-AWS-REGION
 
 # Note the CertificateArn from the output
 ```
@@ -89,7 +89,7 @@ aws acm request-certificate \
 **Step 2.2: Validate Certificate**
 ```bash
 # Get validation records
-aws acm describe-certificate --certificate-arn "arn:aws:acm:us-east-1:123456789012:certificate/your-cert-id"
+aws acm describe-certificate --certificate-arn "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERT-ID"
 
 # Add the DNS validation records to your domain's DNS
 # Wait for validation (usually 5-10 minutes)
@@ -143,15 +143,19 @@ Contact your Quilt account manager to obtain the CloudFormation template file an
 vim main.tf  # or code main.tf, nano main.tf, etc.
 ```
 
+**⚠️ CRITICAL: Replace ALL placeholder values before deployment**
+
 **Required changes:**
-1. **AWS Account ID**: Replace `"123456789012"` with your AWS account ID
-2. **Region**: Set your preferred AWS region
-3. **S3 Backend**: Update bucket name in terraform backend configuration
+1. **AWS Account ID**: Replace `"YOUR-ACCOUNT-ID"` with your AWS account ID
+2. **AWS Region**: Replace `"YOUR-AWS-REGION"` with your preferred AWS region
+3. **S3 Backend**: Replace `"YOUR-TERRAFORM-STATE-BUCKET"` with your bucket name
 4. **Stack Name**: Update `local.name` (≤20 chars, lowercase + hyphens)
-5. **Domain**: Update `local.quilt_web_host` with your domain
-6. **Certificate ARN**: Update with your SSL certificate ARN
-7. **Admin Email**: Set your administrator email
-8. **Route53 Zone**: Update zone_id in cnames module
+5. **Domain**: Replace `"YOUR-COMPANY"` in `local.quilt_web_host` with your domain
+6. **Certificate ARN**: Replace `"YOUR-CERT-ID"` with your SSL certificate ID
+7. **Route53 Zone**: Replace `"YOUR-ROUTE53-ZONE-ID"` with your hosted zone ID
+8. **All other placeholders**: Replace any remaining `YOUR-*` values with actual values
+
+> **⚠️ WARNING**: Do NOT run `terraform apply` with placeholder values. This will cause deployment failures and may create resources with incorrect configurations.
 
 **Choose ElasticSearch sizing based on your data volume:**
 - **Small** (< 100GB): Use commented "Small" configuration
@@ -195,7 +199,7 @@ terraform output admin_password  # Save this password securely
 terraform output quilt_url       # Your Quilt catalog URL
 
 # Test access
-curl -I https://data.yourcompany.com  # Should return 200 OK
+curl -I https://data.YOUR-COMPANY.com  # Should return 200 OK
 ```
 
 #### Step 5: Initial Configuration
@@ -216,7 +220,7 @@ terraform refresh
 terraform plan  # Should show "No changes"
 
 # Check application health
-curl -f https://data.yourcompany.com/health || echo "Health check failed"
+curl -f https://data.YOUR-COMPANY.com/health || echo "Health check failed"
 
 # Check ElasticSearch cluster health
 aws es describe-elasticsearch-domain --domain-name your-stack-name
@@ -251,7 +255,7 @@ aws es describe-elasticsearch-domain --domain-name your-stack-name
 aws cloudwatch get-metric-statistics \
   --namespace AWS/ES \
   --metric-name StorageUtilization \
-  --dimensions Name=DomainName,Value=your-stack-name Name=ClientId,Value=123456789012 \
+  --dimensions Name=DomainName,Value=YOUR-STACK-NAME Name=ClientId,Value=YOUR-ACCOUNT-ID \
   --start-time $(date -u -d '30 days ago' +%Y-%m-%dT%H:%M:%S) \
   --end-time $(date -u +%Y-%m-%dT%H:%M:%S) \
   --period 86400 \
@@ -340,7 +344,7 @@ aws rds create-db-snapshot \
 **Configuration Backup**
 ```bash
 # Backup Terraform state
-aws s3 cp s3://your-terraform-state-bucket/quilt/terraform.tfstate \
+aws s3 cp s3://YOUR-TERRAFORM-STATE-BUCKET/quilt/terraform.tfstate \
   ./terraform.tfstate.backup.$(date +%Y%m%d)
 
 # Backup configuration files
@@ -375,9 +379,9 @@ aws cloudwatch put-metric-alarm \
   --period 300 \
   --threshold 80 \
   --comparison-operator GreaterThanThreshold \
-  --dimensions Name=DomainName,Value=your-stack-name Name=ClientId,Value=123456789012 \
+  --dimensions Name=DomainName,Value=YOUR-STACK-NAME Name=ClientId,Value=YOUR-ACCOUNT-ID \
   --evaluation-periods 2 \
-  --alarm-actions arn:aws:sns:us-east-1:123456789012:quilt-alerts
+  --alarm-actions arn:aws:sns:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:quilt-alerts
 ```
 
 **RDS Monitoring**
@@ -394,7 +398,7 @@ aws cloudwatch put-metric-alarm \
   --comparison-operator GreaterThanThreshold \
   --dimensions Name=DBInstanceIdentifier,Value=your-stack-name \
   --evaluation-periods 2 \
-  --alarm-actions arn:aws:sns:us-east-1:123456789012:quilt-alerts
+  --alarm-actions arn:aws:sns:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:quilt-alerts
 ```
 
 ### Troubleshooting Common Issues
@@ -441,7 +445,7 @@ aws acm describe-certificate --certificate-arn your-cert-arn
 
 # Verify DNS records are correctly added to your domain
 # Use DNS lookup tools to confirm propagation
-dig _validation-record.data.yourcompany.com CNAME
+dig _validation-record.data.YOUR-COMPANY.com CNAME
 ```
 
 ### Security Best Practices
@@ -698,8 +702,8 @@ Here's a minimal configuration:
 
 ```hcl
 provider "aws" {
-  region              = "us-east-1"
-  allowed_account_ids = ["123456789012"]
+  region              = "YOUR-AWS-REGION"
+  allowed_account_ids = ["YOUR-ACCOUNT-ID"]
   default_tags {
     tags = {
       Environment = "production"
@@ -710,9 +714,9 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket = "your-terraform-state-bucket"
+    bucket = "YOUR-TERRAFORM-STATE-BUCKET"
     key    = "quilt/terraform.tfstate"
-    region = "us-east-1"
+    region = "YOUR-AWS-REGION"
   }
 }
 
@@ -733,8 +737,8 @@ module "quilt" {
   cidr           = "10.0.0.0/16"
 
   parameters = {
-    AdminEmail        = "admin@yourcompany.com"
-    CertificateArnELB = "arn:aws:acm:us-east-1:123456789012:certificate/your-cert-id"
+    AdminEmail        = "admin@YOUR-COMPANY.com"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERT-ID"
     QuiltWebHost      = local.quilt_web_host
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"

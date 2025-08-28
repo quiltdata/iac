@@ -1,13 +1,25 @@
 # Quilt Platform Terraform Configuration Example
 # 
+# ⚠️  WARNING: This file contains placeholder values that MUST be replaced before use.
+# Do NOT deploy this configuration without replacing ALL placeholder values with your actual values.
+# 
 # This is a comprehensive example showing how to deploy Quilt using Terraform.
 # Copy this file to your project directory and customize the values below.
+#
+# Required replacements:
+# - YOUR-ACCOUNT-ID: Replace with your AWS account ID
+# - YOUR-AWS-REGION: Replace with your AWS region (e.g., us-east-1, us-west-2)
+# - YOUR-COMPANY: Replace with your company/organization name
+# - YOUR-TERRAFORM-STATE-BUCKET: Replace with your Terraform state bucket name
+# - YOUR-CERT-ID: Replace with your SSL certificate ID
+# - YOUR-ROUTE53-ZONE-ID: Replace with your Route53 hosted zone ID
+# - All other YOUR-* placeholders with appropriate values
 
 provider "aws" {
   # Replace with your AWS account ID
-  allowed_account_ids = ["123456789012"]
+  allowed_account_ids = ["YOUR-ACCOUNT-ID"]
   # Replace with your preferred AWS region
-  region              = "us-east-1"
+  region              = "YOUR-AWS-REGION"
   
   default_tags {
     tags = {
@@ -22,9 +34,9 @@ provider "aws" {
 terraform {
   # Configure remote state storage (recommended for production)
   backend "s3" {
-    bucket         = "your-terraform-state-bucket"
+    bucket         = "YOUR-TERRAFORM-STATE-BUCKET"
     key            = "quilt/terraform.tfstate"
-    region         = "us-east-1"
+    region         = "YOUR-AWS-REGION"
     encrypt        = true
     # Optional: DynamoDB table for state locking
     # dynamodb_table = "terraform-locks"
@@ -50,7 +62,7 @@ locals {
   build_file_path = "./quilt-template.yml"
   
   # Your Quilt catalog domain name
-  quilt_web_host = "data.yourcompany.com"
+  quilt_web_host = "data.YOUR-COMPANY.com"
 }
 
 # Optional: Variables for sensitive values
@@ -125,22 +137,22 @@ module "quilt" {
   # search_volume_iops             = 16000
 
   # Existing VPC configuration (uncomment if create_new_vpc = false)
-  # vpc_id              = "vpc-12345678"
-  # intra_subnets       = ["subnet-12345678", "subnet-87654321"]  # For DB & ElasticSearch
-  # private_subnets     = ["subnet-abcdef12", "subnet-21fedcba"]  # For Quilt services
-  # public_subnets      = ["subnet-11111111", "subnet-22222222"]  # For ALB (if internal = false)
-  # user_security_group = "sg-12345678"                           # For ALB access
-  # user_subnets        = ["subnet-33333333", "subnet-44444444"]  # For ALB (if internal = true)
-  # api_endpoint        = "vpce-12345678"                         # VPC endpoint (if internal = true)
+  # vpc_id              = "vpc-YOUR-VPC-ID"
+  # intra_subnets       = ["subnet-YOUR-INTRA-1", "subnet-YOUR-INTRA-2"]  # For DB & ElasticSearch
+  # private_subnets     = ["subnet-YOUR-PRIVATE-1", "subnet-YOUR-PRIVATE-2"]  # For Quilt services
+  # public_subnets      = ["subnet-YOUR-PUBLIC-1", "subnet-YOUR-PUBLIC-2"]  # For ALB (if internal = false)
+  # user_security_group = "sg-YOUR-SECURITY-GROUP"                           # For ALB access
+  # user_subnets        = ["subnet-YOUR-USER-1", "subnet-YOUR-USER-2"]  # For ALB (if internal = true)
+  # api_endpoint        = "vpce-YOUR-VPC-ENDPOINT"                         # VPC endpoint (if internal = true)
 
   # CloudFormation notifications (optional)
-  # stack_notification_arns = ["arn:aws:sns:us-east-1:123456789012:quilt-notifications"]
+  # stack_notification_arns = ["arn:aws:sns:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:quilt-notifications"]
 
   # CloudFormation parameters
   parameters = {
     # Required parameters
-    AdminEmail        = "admin@yourcompany.com"
-    CertificateArnELB = "arn:aws:acm:us-east-1:123456789012:certificate/your-cert-id"
+    AdminEmail        = "admin@YOUR-COMPANY.com"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERT-ID"
     QuiltWebHost      = local.quilt_web_host
 
     # Authentication configuration
@@ -153,13 +165,13 @@ module "quilt" {
     
     # Okta SAML/OAuth (optional)
     OktaAuth         = "Disabled"    # Change to "Enabled" to use Okta
-    OktaBaseUrl      = ""            # https://yourcompany.okta.com/oauth2/default
+    OktaBaseUrl      = ""            # https://YOUR-COMPANY.okta.com/oauth2/default
     OktaClientId     = ""            # Your Okta client ID
     OktaClientSecret = var.okta_client_secret
     
     # OneLogin OAuth (optional)
     OneLoginAuth         = "Disabled"  # Change to "Enabled" to use OneLogin
-    OneLoginBaseUrl      = ""          # https://yourcompany.onelogin.com/oidc/2
+    OneLoginBaseUrl      = ""          # https://YOUR-COMPANY.onelogin.com/oidc/2
     OneLoginClientId     = ""          # Your OneLogin client ID
     OneLoginClientSecret = ""          # Your OneLogin client secret
     
@@ -170,7 +182,7 @@ module "quilt" {
     AzureClientSecret = ""             # Your Azure AD client secret
     
     # SSO domain restriction (optional)
-    SingleSignOnDomains = ""           # Comma-separated list: "yourcompany.com,subsidiary.com"
+    SingleSignOnDomains = ""           # Comma-separated list: "YOUR-COMPANY.com,subsidiary.com"
 
     # Optional features
     Qurator              = "Enabled"   # Enable Quilt's data quality features
@@ -179,8 +191,8 @@ module "quilt" {
     CanaryNotificationsEmail = ""      # Email for monitoring alerts
     
     # Advanced configuration (optional)
-    # ManagedUserRoleExtraPolicies = "arn:aws:iam::123456789012:policy/CustomPolicy"
-    # S3BucketPolicyExcludeArnsFromDeny = "arn:aws:iam::123456789012:user/service-account"
+    # ManagedUserRoleExtraPolicies = "arn:aws:iam::YOUR-ACCOUNT-ID:policy/CustomPolicy"
+    # S3BucketPolicyExcludeArnsFromDeny = "arn:aws:iam::YOUR-ACCOUNT-ID:user/service-account"
     # WAFGeofenceCountries = "US,CA,GB"  # Country codes for WAF geofencing
     # VoilaVersion = "0.5.8"             # Specific Voilà version
   }
@@ -192,7 +204,7 @@ module "cnames" {
 
   lb_dns_name    = module.quilt.stack.outputs.LoadBalancerDNSName
   quilt_web_host = local.quilt_web_host
-  zone_id        = "Z1234567890ABC"  # Your Route53 hosted zone ID
+  zone_id        = "YOUR-ROUTE53-ZONE-ID"  # Your Route53 hosted zone ID
 }
 
 # Outputs
