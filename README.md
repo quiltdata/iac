@@ -1,17 +1,44 @@
-# Deploy and maintain Quilt stacks with Terraform
+# Quilt Platform Terraform Infrastructure
+
+Deploy and maintain Quilt stacks with Terraform using this comprehensive Infrastructure as Code (IaC) repository.
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [ElasticSearch Configuration](#elasticsearch-configuration)
+- [Database Configuration](#database-configuration)
+- [Network Configuration](#network-configuration)
+- [CloudFormation Parameters](#cloudformation-parameters)
+- [Complete Variable Reference](#complete-variable-reference)
+- [Deployment Examples](#deployment-examples)
+- [Troubleshooting](#troubleshooting)
+- [Terraform Commands Reference](#terraform-commands-reference)
+
 ## Prerequisites
-### [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 
-### Get a Terraform-compatible CloudFormation template
-You must use a Terraform-compatible Quilt CloudFormation template
-(`local.build_file_path`). Ask your account manger for details.
+### Required Tools
+- **[Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)** >= 1.5.0
+- **AWS CLI** configured with appropriate permissions
+- **Git** for version control
 
-## Create your project directory
-You project structure should look something like the following:
+### Required Resources
+- **Terraform-compatible CloudFormation template**: You must obtain a Terraform-compatible Quilt CloudFormation template (`local.build_file_path`). Contact your account manager for details.
+- **AWS Account** with appropriate permissions for creating VPC, RDS, ElasticSearch, ECS, and other AWS resources
+- **SSL Certificate** in AWS Certificate Manager for HTTPS access
+
+## Quick Start
+
+### 1. Create Your Project Directory
+
+Your project structure should look like this:
+
 ```
-quilt_stack
+quilt_stack/
 ├── main.tf
-└── my-company.yml
+├── variables.tf          # Optional: for sensitive variables
+├── terraform.tfvars      # Optional: for configuration values
+└── my-company.yml        # Your CloudFormation template
 ```
 
 Use [examples/main.tf](examples/main.tf) as a starting point for your main.tf.
@@ -19,14 +46,153 @@ Use [examples/main.tf](examples/main.tf) as a starting point for your main.tf.
 > **It is neither necessary nor recommended to modify any module in this repository.**
 > All supported customization is possible with arguments to `module.quilt`.
 
-You will run the various `terraform` commands from within this directory.
+### 2. Basic Configuration
 
-### `quilt` module arguments
+Here's a minimal configuration:
 
-See [quilt/variables.tf](modules/quilt/variables.tf) for detailed documentation
-on each argument.
-See [network documentation](https://docs.quiltdata.com/advanced/technical-reference#network)
-for further details on subnet configuration.
+```hcl
+provider "aws" {
+  region              = "us-east-1"
+  allowed_account_ids = ["123456789012"]
+  default_tags {
+    tags = {
+      Environment = "production"
+      Project     = "quilt"
+    }
+  }
+}
+
+terraform {
+  backend "s3" {
+    bucket = "your-terraform-state-bucket"
+    key    = "quilt/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
+locals {
+  name            = "quilt-prod"
+  build_file_path = "./quilt-template.yml"
+  quilt_web_host  = "quilt.yourcompany.com"
+}
+
+module "quilt" {
+  source = "github.com/quiltdata/iac//modules/quilt?ref=1.3.0"
+
+  name          = local.name
+  template_file = local.build_file_path
+  
+  internal       = false
+  create_new_vpc = true
+  cidr           = "10.0.0.0/16"
+
+  parameters = {
+    AdminEmail        = "admin@yourcompany.com"
+    CertificateArnELB = "arn:aws:acm:us-east-1:123456789012:certificate/your-cert-id"
+    QuiltWebHost      = local.quilt_web_host
+    PasswordAuth      = "Enabled"
+    Qurator          = "Enabled"
+  }
+}
+```
+
+### 3. Deploy
+
+```bash
+terraform init
+terraform plan -out=tfplan
+terraform apply tfplan
+```
+
+## ElasticSearch Configuration
+
+**This section addresses ElasticSearch EBS volume specifications and sizing.**
+
+### Understanding ElasticSearch Storage Requirements
+
+Your primary consideration is the **total data node disk size**. Calculate your storage needs using:
+
+1. **Source data size**: Average document size × total number of documents
+2. **AWS formula**: `Source data × (1 + number of replicas) × 1.45 = minimum storage requirement`
+3. **Production multiplier**: For production with 1 replica, multiply source data by 3 (rounded up from 2.9)
+
+### ElasticSearch Sizing Configurations
+
+#### Small (Development/Testing)
+```hcl
+module "quilt" {
+  # ... other configuration ...
+  
+  search_dedicated_master_enabled = false
+  search_zone_awareness_enabled   = false
+  search_instance_count          = 1
+  search_instance_type           = "m5.large.elasticsearch"
+  search_volume_size             = 512
+  search_volume_type             = "gp2"
+}
+```
+
+#### Medium (Default Production)
+```hcl
+module "quilt" {
+  # ... other configuration ...
+  
+  search_dedicated_master_enabled = true
+  search_zone_awareness_enabled   = true
+  search_instance_count          = 2
+  search_instance_type           = "m5.xlarge.elasticsearch"
+  search_volume_size             = 1024
+  search_volume_type             = "gp2"
+}
+```
+
+#### Large (High Volume)
+```hcl
+module "quilt" {
+  # ... other configuration ...
+  
+  search_dedicated_master_enabled = true
+  search_zone_awareness_enabled   = true
+  search_instance_count          = 2
+  search_instance_type           = "m5.xlarge.elasticsearch"
+  search_volume_size             = 2048  # 2TB
+  search_volume_type             = "gp3"
+}
+```
+
+#### X-Large (Enterprise)
+```hcl
+module "quilt" {
+  # ... other configuration ...
+  
+  search_dedicated_master_enabled = true
+  search_zone_awareness_enabled   = true
+  search_instance_count          = 2
+  search_instance_type           = "m5.2xlarge.elasticsearch"
+  search_volume_size             = 3072  # 3TB
+  search_volume_type             = "gp3"
+  search_volume_iops             = 16000
+}
+```
+
+### ElasticSearch Volume Types
+
+| Volume Type | Use Case | IOPS | Throughput | Cost |
+|-------------|----------|------|------------|------|
+| `gp2` | General purpose, baseline performance | 3 IOPS/GiB (min 100, max 16,000) | Up to 250 MiB/s | Lower |
+| `gp3` | General purpose, configurable performance | 3,000 baseline, up to 16,000 | 125 MiB/s baseline, up to 1,000 MiB/s | Optimized |
+| `io1` | High IOPS, consistent performance | Up to 64,000 | Up to 1,000 MiB/s | Higher |
+
+### Scaling ElasticSearch Storage
+
+**Important**: Resizing existing domains is supported but requires time and may reduce quality of service during the blue/green update. Plan for growth in your initial sizing.
+
+To increase storage:
+
+1. Update `search_volume_size` in your configuration
+2. Run `terraform plan` to verify changes
+3. Run `terraform apply` during a maintenance window
+4. Monitor the domain during the update process
 
 | Argument           | `internal = true` (private ALB for VPN)       | `internal = false` (internet-facing ALB) |
 |--------------------|-----------------------------------------------|------------------------------------------|
