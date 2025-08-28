@@ -506,15 +506,172 @@ aws ce get-cost-and-usage \
 
 ## Prerequisites
 
+> **📖 Additional Documentation**: For comprehensive enterprise installation guidance, refer to the official documentation at [docs.quilt.bio](https://docs.quilt.bio). This Terraform module complements the standard installation process with Infrastructure as Code automation.
+
 ### Required Tools
 - **[Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)** >= 1.5.0
-- **AWS CLI** configured with appropriate permissions
-- **Git** for version control
+- **AWS CLI** >= 2.0 configured with appropriate permissions
+- **Git** for version control and configuration management
+- **jq** (optional) for JSON processing in automation scripts
 
 ### Required Resources
-- **Terraform-compatible CloudFormation template**: You must obtain a Terraform-compatible Quilt CloudFormation template (`local.build_file_path`). Contact your account manager for details.
-- **AWS Account** with appropriate permissions for creating VPC, RDS, ElasticSearch, ECS, and other AWS resources
+
+#### CloudFormation Template
+Quilt provides Terraform-compatible CloudFormation templates via email:
+- **Initial Installation**: Template delivered in your installation welcome email from Quilt
+- **Platform Updates**: Updated templates sent regularly via platform update emails
+- **Template Location**: Save the template as `quilt-template.yml` in your project directory
+- **Version Management**: Always use the latest template version for updates and security patches
+- **Template Validation**: Verify template integrity before deployment
+
+#### AWS Infrastructure Requirements
+- **AWS Account** with administrative permissions or specific IAM policies (see [AWS Permissions](#aws-permissions))
+- **AWS Region** selection based on data residency and compliance requirements
 - **SSL Certificate** in AWS Certificate Manager for HTTPS access
+- **Domain Name** with DNS control for certificate validation and CNAME setup
+- **VPC Planning** (if using existing VPC) with proper subnet architecture
+
+#### Network Requirements
+
+**For Internet-Facing Deployments:**
+- Public subnets in at least 2 Availability Zones for load balancer
+- Private subnets in at least 2 Availability Zones for application services
+- Isolated subnets in at least 2 Availability Zones for database and search
+- Internet Gateway for public subnet access
+- NAT Gateways for private subnet internet access
+
+**For Internal/VPN-Only Deployments:**
+- Private subnets in at least 2 Availability Zones for application services and load balancer
+- Isolated subnets in at least 2 Availability Zones for database and search
+- VPC Endpoints for AWS service access (S3, ECR, CloudWatch, etc.)
+- VPN or Direct Connect for user access
+
+**Security Groups:**
+- Application Load Balancer security group (port 443 from users)
+- Application services security group (port 80 from ALB)
+- Database security group (port 5432 from application)
+- ElasticSearch security group (port 443 from application)
+
+#### Capacity Planning
+
+**Minimum Requirements:**
+- **Database**: db.t3.small (2 vCPU, 2GB RAM) for development
+- **ElasticSearch**: 1x m5.large.elasticsearch (2 vCPU, 8GB RAM, 512GB storage) for development
+- **Application**: ECS Fargate tasks (0.5 vCPU, 1GB RAM per task)
+
+**Production Recommendations:**
+- **Database**: db.t3.medium or larger (2+ vCPU, 4+ GB RAM) with Multi-AZ
+- **ElasticSearch**: 2x m5.xlarge.elasticsearch (4 vCPU, 16GB RAM, 1TB+ storage) with zone awareness
+- **Application**: Multiple ECS Fargate tasks across availability zones
+
+**Storage Considerations:**
+- **Database Storage**: 100GB minimum, auto-scaling enabled
+- **ElasticSearch Storage**: Size based on data volume (see [ElasticSearch Configuration](#elasticsearch-configuration))
+- **Application Logs**: CloudWatch Logs with appropriate retention policies
+
+### AWS Permissions
+
+#### Required IAM Permissions
+The deploying user or role needs the following AWS permissions:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:*",
+        "rds:*",
+        "es:*",
+        "ecs:*",
+        "elbv2:*",
+        "elasticloadbalancing:*",
+        "cloudformation:*",
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:GetRole",
+        "iam:PassRole",
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:CreateInstanceProfile",
+        "iam:DeleteInstanceProfile",
+        "iam:AddRoleToInstanceProfile",
+        "iam:RemoveRoleFromInstanceProfile",
+        "s3:CreateBucket",
+        "s3:DeleteBucket",
+        "s3:GetBucketLocation",
+        "s3:GetBucketVersioning",
+        "s3:PutBucketVersioning",
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "cloudwatch:*",
+        "logs:*",
+        "route53:*",
+        "acm:*",
+        "secretsmanager:*",
+        "kms:*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+#### Service-Linked Roles
+Ensure the following AWS service-linked roles exist (created automatically if missing):
+- `AWSServiceRoleForElasticLoadBalancing`
+- `AWSServiceRoleForECS`
+- `AWSServiceRoleForRDS`
+- `AWSServiceRoleForElasticsearch`
+
+### Security Considerations
+
+#### Network Security
+- **VPC Flow Logs**: Enable for network monitoring and security analysis
+- **Security Groups**: Follow principle of least privilege
+- **NACLs**: Additional layer of network security (optional)
+- **WAF**: Web Application Firewall for additional protection (configured in CloudFormation)
+
+#### Data Protection
+- **Encryption at Rest**: Enabled for RDS, ElasticSearch, and S3
+- **Encryption in Transit**: TLS 1.2+ for all communications
+- **Key Management**: AWS KMS for encryption key management
+- **Backup Encryption**: All backups encrypted with KMS
+
+#### Access Control
+- **IAM Roles**: Use IAM roles instead of access keys where possible
+- **MFA**: Multi-factor authentication for administrative access
+- **Audit Logging**: CloudTrail enabled for all API calls
+- **Monitoring**: CloudWatch and GuardDuty for security monitoring
+
+### Compliance Considerations
+
+#### Data Residency
+- Choose AWS region based on data residency requirements
+- Consider AWS Local Zones for specific geographic requirements
+- Review AWS compliance certifications for your region
+
+#### Regulatory Compliance
+- **SOC 2**: AWS infrastructure is SOC 2 compliant
+- **GDPR**: Configure data retention and deletion policies
+- **HIPAA**: Use HIPAA-eligible AWS services if handling PHI
+- **FedRAMP**: Use FedRAMP authorized regions if required
+
+### Monitoring and Observability
+
+#### Required Monitoring
+- **CloudWatch Metrics**: Infrastructure and application metrics
+- **CloudWatch Logs**: Application and infrastructure logs
+- **CloudWatch Alarms**: Proactive alerting for issues
+- **AWS X-Ray**: Distributed tracing (optional)
+
+#### Recommended Monitoring
+- **AWS Config**: Configuration compliance monitoring
+- **AWS GuardDuty**: Threat detection
+- **AWS Security Hub**: Centralized security findings
+- **AWS Systems Manager**: Patch management and compliance
 
 ## Quick Start
 
