@@ -88,7 +88,7 @@ This specification defines the end-to-end integration between the IAM module, Qu
 
 ## Data Flow Specifications
 
-### Flow 1: Template Preparation (Customer Workflow)
+### Flow 1: Template Preparation (Quilt Internal Process)
 
 **WHAT**: Customer prepares CloudFormation templates for deployment
 
@@ -579,7 +579,7 @@ This specification defines the end-to-end integration between the IAM module, Qu
 
 **Terraform Expects from Customer**:
 
-- Templates are pre-split (external IAM) or monolithic (inline IAM)
+- Templates provided by Quilt (split for external IAM, monolithic for inline IAM)
 - Templates uploaded to accessible S3 locations
 - S3 bucket exists and Terraform has permissions
 - Consistent pattern choice (don't mix split and monolithic templates)
@@ -588,7 +588,7 @@ This specification defines the end-to-end integration between the IAM module, Qu
 
 - Terraform validates variable inputs (URL format, etc.)
 - CloudFormation validates templates during deployment
-- Customer responsible for template correctness
+- Quilt responsible for template correctness, customer responsible for proper upload
 
 ## Error Handling Specifications
 

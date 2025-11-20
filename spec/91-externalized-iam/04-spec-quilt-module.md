@@ -136,11 +136,11 @@ data "aws_cloudformation_stack" "iam" {
 
 ### Decision 5: No Template Splitting in Module
 
-**Decision**: Module does not split templates; customers provide pre-split templates
+**Decision**: Module does not split templates; Quilt provides pre-split templates
 
 **Rationale**:
 
-- Splitting is customer workflow concern, not infrastructure concern
+- Splitting is Quilt internal build process, not infrastructure concern
 - Split script already exists and works
 - Module should be declarative, not imperative
 - Avoids complex YAML manipulation in Terraform
@@ -153,7 +153,7 @@ data "aws_cloudformation_stack" "iam" {
 
 **Implications**:
 
-- Customer must run split script before deployment
+- Quilt provides pre-split templates via release process
 - Module assumes templates are already split
 - Documentation must explain split workflow clearly
 
@@ -454,14 +454,14 @@ END IF
 **Dependencies**:
 
 - Application template must match IAM pattern selected
-- Template split must be done by customer before deployment
+- Templates pre-split by Quilt before distribution
 
 ### With S3 Template Storage
 
 **Interface**: Quilt module uploads templates to S3 bucket
 
 **Current State**: Module already uploads application template
-**New Requirement**: Customer must upload IAM template separately
+**New Requirement**: Customer uploads Quilt-provided IAM template
 
 **Contract**:
 
