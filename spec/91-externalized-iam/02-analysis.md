@@ -23,6 +23,7 @@ The Quilt infrastructure uses a **two-layer deployment model**:
 **Location**: [`/modules/quilt/main.tf`](../../modules/quilt/main.tf)
 
 **Responsibilities**:
+
 - VPC networking (via `modules/vpc/`)
 - RDS PostgreSQL database (via `modules/db/`)
 - ElasticSearch domain (via `modules/search/`)
@@ -59,6 +60,7 @@ resource "aws_cloudformation_stack" "stack" {
 **Location**: Customer-provided YAML template (e.g., `syngenta-nonprod.yaml`, `quilt.yaml`)
 
 **Responsibilities**:
+
 - IAM roles (24 roles)
 - IAM managed policies (8 policies)
 - Lambda functions
@@ -76,6 +78,7 @@ resource "aws_cloudformation_stack" "stack" {
 **Example**: `syngenta-nonprod.yaml` (4,952 lines)
 
 **Structure**:
+
 ```yaml
 Description: Quilt Data catalog and services
 Metadata:
@@ -139,6 +142,7 @@ Outputs:
 ```
 
 **Key Characteristics**:
+
 1. **Inline IAM Resources**: All IAM roles/policies defined as CloudFormation resources
 2. **GetAtt References**: `!GetAtt 'RoleName.Arn'` used throughout to reference role ARNs
 3. **Resource Dependencies**: IAM resources reference application resources (circular dependencies)
@@ -235,6 +239,7 @@ SearchHandler:
 #### Target Pattern (Externalized IAM)
 
 After split, the IAM stack exports:
+
 ```yaml
 # IAM Stack Output
 Outputs:
@@ -246,6 +251,7 @@ Outputs:
 ```
 
 Application stack receives as parameter:
+
 ```yaml
 # Application Stack Parameter
 Parameters:
@@ -275,6 +281,7 @@ A Python-based conversion tool already exists that demonstrates the IAM split pa
 **Source**: `split_iam.py` (830 lines)
 
 **Features**:
+
 - Comment preservation using `ruamel.yaml`
 - Automatic reference transformation (`!GetAtt` → `!Ref`)
 - Circular dependency detection
@@ -284,6 +291,7 @@ A Python-based conversion tool already exists that demonstrates the IAM split pa
 - Conversion reports
 
 **Example Output**: The tool has successfully split `syngenta-nonprod.yaml` (4,952 lines):
+
 - **IAM Stack**: 1,549 lines with 24 roles + 8 policies
 - **App Stack**: 3,763 lines with IAM parameters
 
@@ -308,6 +316,7 @@ Metadata:
 ```
 
 **Parameter Structure** (example from output):
+
 ```yaml
 Parameters:
   SearchHandlerRole:
@@ -322,6 +331,7 @@ Parameters:
 ### 1. Deployment Architecture Constraints
 
 **Issue**: Single-stack atomic deployment
+
 - **Impact**: Security teams cannot manage IAM independently
 - **Blocker**: CloudFormation requires all IAM resources in the same stack as consumers
 - **Evidence**: `modules/quilt/main.tf:98` - `capabilities = ["CAPABILITY_NAMED_IAM"]`
@@ -345,6 +355,7 @@ SearchHandlerRole:
 ```
 
 **Affected Roles**:
+
 - `SearchHandlerRole` → `IndexerQueue`, `ManifestIndexerQueue`
 - `EsIngestRole` → `EsIngestQueue`, `EsIngestBucket`
 - `ManifestIndexerRole` → `ManifestIndexerQueue`
@@ -356,6 +367,7 @@ SearchHandlerRole:
 **Issue**: CloudFormation exports are region-specific and have naming constraints
 
 **Constraints**:
+
 - Export names must be unique within a region/account
 - Cannot delete exports while they're imported by other stacks
 - Export name format: `${AWS::StackName}-${ResourceName}Arn`
@@ -368,6 +380,7 @@ SearchHandlerRole:
 **Future**: Will need to pass 32+ parameters (24 roles + 8 policies)
 
 **Terraform parameter merge pattern**:
+
 ```hcl
 parameters = merge(
   var.parameters,      # User-provided
@@ -380,17 +393,20 @@ parameters = merge(
 ### 5. Template Management Complexity
 
 **Current Pattern**:
+
 - Customer provides single monolithic template
 - Template stored in S3: `s3://{bucket}/quilt.yaml`
 - CloudFormation stack references S3 URL
 
 **New Pattern Required**:
+
 - Two templates: IAM + Application
 - IAM template deployed first
 - Application template needs IAM stack name/outputs
 
 **Storage Pattern Change**:
-```
+
+```examples
 Current:  s3://quilt-templates-{name}/quilt.yaml
 Proposed: s3://quilt-templates-{name}/quilt-iam.yaml
           s3://quilt-templates-{name}/quilt-app.yaml
@@ -402,6 +418,7 @@ Proposed: s3://quilt-templates-{name}/quilt-iam.yaml
 
 **Missing**: `modules/iam/` Terraform module
 **Required Capabilities**:
+
 - Deploy IAM CloudFormation stack
 - Output role/policy ARNs
 - Support customization via variables
@@ -412,6 +429,7 @@ Proposed: s3://quilt-templates-{name}/quilt-iam.yaml
 **Missing**: Data source to query IAM stack outputs in `modules/quilt/`
 
 **Required Pattern**:
+
 ```hcl
 data "aws_cloudformation_stack" "iam" {
   count = var.iam_stack_name != null ? 1 : 0
@@ -431,6 +449,7 @@ locals {
 **Missing**: Logic to conditionally pass IAM parameters only when external stack is used
 
 **Required Pattern**:
+
 ```hcl
 parameters = merge(
   var.parameters,
@@ -444,6 +463,7 @@ parameters = merge(
 **Issue**: Customer templates currently have inline IAM resources
 
 **Options**:
+
 1. **Customer provides pre-split templates** - Simple but requires customer work
 2. **Terraform splits at deploy time** - Complex but transparent
 3. **Separate tool for splitting** - Exists but not integrated
@@ -455,6 +475,7 @@ parameters = merge(
 **Missing**: Migration path for existing deployments
 
 **Considerations**:
+
 - Existing stacks use inline IAM
 - Cannot change IAM resource names without recreation
 - Stack updates may fail if IAM resources are removed
@@ -468,7 +489,8 @@ parameters = merge(
 **Observation**: Consistent module structure across `vpc/`, `db/`, `search/`
 
 **Pattern**:
-```
+
+```sh
 modules/{name}/
   ├── main.tf       # Resources
   ├── variables.tf  # Inputs
@@ -480,6 +502,7 @@ modules/{name}/
 ### 2. Variable Naming Convention
 
 **Pattern**: Lowercase with underscores
+
 ```hcl
 variable "db_instance_class"
 variable "search_instance_type"
@@ -491,6 +514,7 @@ variable "create_new_vpc"
 ### 3. Resource Naming Convention
 
 **Pattern**: Prefixed with module name variable
+
 ```hcl
 resource "aws_db_instance" "db" {
   identifier = var.name
@@ -506,6 +530,7 @@ resource "aws_elasticsearch_domain" "search" {
 ### 4. Conditional Resource Creation
 
 **Pattern**: Count-based conditionals
+
 ```hcl
 module "vpc" {
   source = "../vpc"
@@ -518,6 +543,7 @@ module "vpc" {
 ### 5. Parameter Merging Pattern
 
 **Pattern**: User parameters override defaults
+
 ```hcl
 parameters = merge(
   var.parameters,       # User overrides
@@ -542,6 +568,7 @@ parameters = merge(
 **Example**: `SearchHandlerRole` references `IndexerQueue.Arn`
 
 **Resolution Options**:
+
 - Use wildcard resources in IAM policies
 - Pass application resource ARNs as parameters to IAM stack (creates reverse dependency)
 - Keep tightly-coupled roles in application stack
@@ -573,6 +600,7 @@ parameters = merge(
 **Location**: `/Users/ernest/GitHub/scripts/iam-split/split_iam.py`
 
 **Demonstrated Capabilities**:
+
 - Successfully split a 4,952-line template
 - Preserved comments and formatting
 - Generated 32 parameters with validation
@@ -587,6 +615,7 @@ parameters = merge(
 **Location**: `/Users/ernest/GitHub/scripts/iam-split/config.yaml`
 
 **Pattern**: Declarative configuration for resource extraction
+
 ```yaml
 extraction:
   roles: [list of 24 roles]
@@ -638,6 +667,7 @@ extraction:
 ## Next Steps
 
 This analysis provides the foundation for the specifications document, which will define:
+
 1. Desired end state architecture
 2. Success criteria for IAM externalization
 3. Integration points between Terraform and CloudFormation
