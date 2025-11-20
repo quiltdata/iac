@@ -979,7 +979,7 @@ module "quilt_prod" {
 ### Security Best Practices
 
 1. Use separate AWS accounts for different environments
-2. Enable deletion protection for production databases
+2. Enable deletion protection for production databases (enabled by default)
 3. Use internal ALBs for sensitive deployments
 4. Implement WAF geofencing for additional security
 5. Use SSO instead of password authentication where possible
@@ -1012,6 +1012,6 @@ module "quilt_prod" {
 
 1. Use smaller instances for development environments
 2. Disable Multi-AZ for non-production environments
-3. Use gp2 volumes for cost-sensitive workloads
+3. Use gp3 volumes for better cost/performance (20% savings vs gp2 for equivalent performance)
 4. Consider reserved instances for production workloads
 5. Implement proper resource tagging for cost allocation
