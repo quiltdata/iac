@@ -27,6 +27,7 @@ Optional release notice.
 - [Added] Network, security, and AWS permissions guidance
 - [Enhanced] EXAMPLES.md with sizing rationale, best practices, and realistic instance types based on production deployments
 - [Removed] OPERATIONS.md moved to separate PR to maintain focused scope
+- [Added] Comprehensive operations guide (OPERATIONS.md) for cloud teams with installation, maintenance, scaling, disaster recovery, and monitoring procedures ([#92](https://github.com/quiltdata/iac/pull/92))
 
 ### Security
 
