@@ -1,12 +1,14 @@
 # Deployment Examples
 
 > **⚠️ CRITICAL WARNING**: All examples in this document contain placeholder values that MUST be replaced with your actual values before deployment. Do NOT use these examples directly without customization.
-> 
+>
 > **Required replacements:**
+>
 > - `YOUR-ACCOUNT-ID`: Replace with your AWS account ID
 > - `YOUR-AWS-REGION`: Replace with your AWS region (e.g., us-east-1, us-west-2)
 > - `YOUR-COMPANY`: Replace with your company/organization name
 > - All certificate ARNs, domain names, and other placeholder values
+>
 
 This document provides comprehensive examples for deploying Quilt using different configurations and scenarios.
 
@@ -30,7 +32,7 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket = "company-terraform-state"
+    bucket = "YOUR-TERRAFORM-STATE-BUCKET"
     key    = "quilt/dev/terraform.tfstate"
     region = "YOUR-AWS-REGION"
   }
@@ -39,7 +41,7 @@ terraform {
 locals {
   name            = "quilt-dev"
   build_file_path = "./quilt-dev.yml"
-  quilt_web_host  = "dev-data.company.com"
+  quilt_web_host  = "dev-data.YOUR-COMPANY.com"
 }
 
 module "quilt" {
@@ -65,8 +67,8 @@ module "quilt" {
   search_volume_size             = 512
 
   parameters = {
-    AdminEmail        = "dev@company.com"
-    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/dev-cert"
+    AdminEmail        = "dev@YOUR-COMPANY.com"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-DEV-CERT-ID"
     QuiltWebHost      = local.quilt_web_host
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
@@ -79,7 +81,7 @@ module "cnames" {
 
   lb_dns_name    = module.quilt.stack.outputs.LoadBalancerDNSName
   quilt_web_host = local.quilt_web_host
-  zone_id        = "Z1234567890ABC"
+  zone_id        = "YOUR-ROUTE53-ZONE-ID"
 }
 
 # Outputs
@@ -113,7 +115,7 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket         = "company-terraform-state"
+    bucket         = "YOUR-TERRAFORM-STATE-BUCKET"
     key            = "quilt/prod/terraform.tfstate"
     region         = "YOUR-AWS-REGION"
     encrypt        = true
@@ -124,7 +126,7 @@ terraform {
 locals {
   name            = "quilt-prod"
   build_file_path = "./quilt-prod.yml"
-  quilt_web_host  = "data.company.com"
+  quilt_web_host  = "data.YOUR-COMPANY.com"
 }
 
 module "quilt" {
@@ -154,13 +156,13 @@ module "quilt" {
   stack_notification_arns = ["arn:aws:sns:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:quilt-notifications"]
 
   parameters = {
-    AdminEmail               = "admin@company.com"
-    CertificateArnELB        = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/prod-cert"
+    AdminEmail               = "admin@YOUR-COMPANY.com"
+    CertificateArnELB        = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-PROD-CERT-ID"
     QuiltWebHost             = local.quilt_web_host
-    CloudTrailBucket         = "company-cloudtrail"
+    CloudTrailBucket         = "YOUR-CLOUDTRAIL-BUCKET"
     PasswordAuth             = "Enabled"
     Qurator                  = "Enabled"
-    CanaryNotificationsEmail = "ops@company.com"
+    CanaryNotificationsEmail = "ops@YOUR-COMPANY.com"
   }
 }
 
@@ -169,13 +171,14 @@ module "cnames" {
 
   lb_dns_name    = module.quilt.stack.outputs.LoadBalancerDNSName
   quilt_web_host = local.quilt_web_host
-  zone_id        = "Z1234567890ABC"
+  zone_id        = "YOUR-ROUTE53-ZONE-ID"
 }
 ```
 
 ## ElasticSearch Sizing Examples
 
 ### Small (Development/Testing)
+
 **Use case**: Development, testing, small datasets (<100GB)
 
 ```hcl
@@ -192,6 +195,7 @@ module "quilt" {
 ```
 
 ### Medium (Default Production)
+
 **Use case**: Standard production, moderate datasets (100GB-1TB)
 
 ```hcl
@@ -208,6 +212,7 @@ module "quilt" {
 ```
 
 ### Large (High Volume)
+
 **Use case**: Large datasets (1TB-5TB), high query volume
 
 ```hcl
@@ -224,6 +229,7 @@ module "quilt" {
 ```
 
 ### X-Large (Enterprise)
+
 **Use case**: Very large datasets (5TB-15TB), high performance requirements
 
 ```hcl
@@ -241,6 +247,7 @@ module "quilt" {
 ```
 
 ### XX-Large (High Performance)
+
 **Use case**: Massive datasets (15TB+), maximum performance
 
 ```hcl
@@ -258,6 +265,7 @@ module "quilt" {
 ```
 
 ### XXXX-Large (Multi-Node Scale)
+
 **Use case**: Extreme scale, multiple TB per node
 
 ```hcl
@@ -292,14 +300,14 @@ module "quilt" {
   # ... other configuration ...
   
   parameters = {
-    AdminEmail          = "admin@company.com"
+    AdminEmail          = "admin@YOUR-COMPANY.com"
     CertificateArnELB   = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
-    QuiltWebHost        = "data.company.com"
+    QuiltWebHost        = "data.YOUR-COMPANY.com"
     PasswordAuth        = "Enabled"
     GoogleAuth          = "Enabled"
     GoogleClientId      = "YOUR-ACCOUNT-ID-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
     GoogleClientSecret  = var.google_client_secret
-    SingleSignOnDomains = "company.com,subsidiary.com"
+    SingleSignOnDomains = "YOUR-COMPANY.com,subsidiary.com"
     Qurator            = "Enabled"
   }
 }
@@ -320,15 +328,15 @@ module "quilt" {
   # ... other configuration ...
   
   parameters = {
-    AdminEmail          = "admin@company.com"
+    AdminEmail          = "admin@YOUR-COMPANY.com"
     CertificateArnELB   = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
-    QuiltWebHost        = "data.company.com"
+    QuiltWebHost        = "data.YOUR-COMPANY.com"
     PasswordAuth        = "Enabled"
     OktaAuth           = "Enabled"
     OktaBaseUrl        = "https://company.okta.com/oauth2/default"
     OktaClientId       = "0oa1234567890abcdef"
     OktaClientSecret   = var.okta_client_secret
-    SingleSignOnDomains = "company.com"
+    SingleSignOnDomains = "YOUR-COMPANY.com"
     Qurator            = "Enabled"
   }
 }
@@ -349,9 +357,9 @@ module "quilt" {
   # ... other configuration ...
   
   parameters = {
-    AdminEmail        = "admin@company.com"
+    AdminEmail        = "admin@YOUR-COMPANY.com"
     CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
-    QuiltWebHost      = "data.company.com"
+    QuiltWebHost      = "data.YOUR-COMPANY.com"
     PasswordAuth      = "Enabled"
     AzureAuth         = "Enabled"
     AzureBaseUrl      = "https://login.microsoftonline.com/tenant-id/v2.0"
@@ -369,9 +377,9 @@ module "quilt" {
   # ... other configuration ...
   
   parameters = {
-    AdminEmail           = "admin@company.com"
+    AdminEmail           = "admin@YOUR-COMPANY.com"
     CertificateArnELB    = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
-    QuiltWebHost         = "data.company.com"
+    QuiltWebHost         = "data.YOUR-COMPANY.com"
     
     # Enable multiple auth providers
     PasswordAuth         = "Enabled"
@@ -383,7 +391,7 @@ module "quilt" {
     OktaClientId       = var.okta_client_id
     OktaClientSecret   = var.okta_client_secret
     
-    SingleSignOnDomains = "company.com,partner.com"
+    SingleSignOnDomains = "YOUR-COMPANY.com,partner.com"
     Qurator            = "Enabled"
   }
 }
@@ -411,9 +419,9 @@ module "quilt" {
   # - Isolated subnets for database and ElasticSearch
 
   parameters = {
-    AdminEmail        = "admin@company.com"
+    AdminEmail        = "admin@YOUR-COMPANY.com"
     CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
-    QuiltWebHost      = "data.company.com"
+    QuiltWebHost      = "data.YOUR-COMPANY.com"
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
   }
@@ -440,9 +448,9 @@ module "quilt" {
   # - No public subnets (no internet gateway)
 
   parameters = {
-    AdminEmail        = "admin@company.com"
+    AdminEmail        = "admin@YOUR-COMPANY.com"
     CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
-    QuiltWebHost      = "internal-data.company.com"
+    QuiltWebHost      = "internal-data.YOUR-COMPANY.com"
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
   }
@@ -470,9 +478,9 @@ module "quilt" {
   user_security_group = "sg-12345678"                               # For ALB access
 
   parameters = {
-    AdminEmail        = "admin@company.com"
+    AdminEmail        = "admin@YOUR-COMPANY.com"
     CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
-    QuiltWebHost      = "data.company.com"
+    QuiltWebHost      = "data.YOUR-COMPANY.com"
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
   }
@@ -511,9 +519,9 @@ module "quilt" {
   api_endpoint        = aws_vpc_endpoint.api_gateway.id             # VPC endpoint
 
   parameters = {
-    AdminEmail        = "admin@company.com"
+    AdminEmail        = "admin@YOUR-COMPANY.com"
     CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
-    QuiltWebHost      = "internal-data.company.com"
+    QuiltWebHost      = "internal-data.YOUR-COMPANY.com"
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
   }
@@ -541,7 +549,7 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket         = "company-terraform-state"
+    bucket         = "YOUR-TERRAFORM-STATE-BUCKET"
     key            = "quilt/prod/terraform.tfstate"
     region         = "YOUR-AWS-REGION"
     encrypt        = true
@@ -552,7 +560,7 @@ terraform {
 locals {
   name            = "quilt-prod"
   build_file_path = "./quilt-prod.yml"
-  quilt_web_host  = "data.company.com"
+  quilt_web_host  = "data.YOUR-COMPANY.com"
 }
 
 module "quilt" {
@@ -586,18 +594,18 @@ module "quilt" {
   ]
 
   parameters = {
-    AdminEmail                   = "admin@company.com"
-    CertificateArnELB           = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/prod-cert"
+    AdminEmail                   = "admin@YOUR-COMPANY.com"
+    CertificateArnELB           = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-PROD-CERT-ID"
     QuiltWebHost                = local.quilt_web_host
-    CloudTrailBucket            = "company-cloudtrail-prod"
+    CloudTrailBucket            = "YOUR-CLOUDTRAIL-BUCKET-prod"
     PasswordAuth                = "Enabled"
     OktaAuth                    = "Enabled"
     OktaBaseUrl                 = "https://company.okta.com/oauth2/default"
     OktaClientId                = var.okta_client_id
     OktaClientSecret            = var.okta_client_secret
-    SingleSignOnDomains         = "company.com"
+    SingleSignOnDomains         = "YOUR-COMPANY.com"
     Qurator                     = "Enabled"
-    CanaryNotificationsEmail    = "ops@company.com"
+    CanaryNotificationsEmail    = "ops@YOUR-COMPANY.com"
     ManagedUserRoleExtraPolicies = join(",", [
       "arn:aws:iam::YOUR-ACCOUNT-ID:policy/DataScientistAccess",
       "arn:aws:iam::aws:policy/AmazonAthenaFullAccess"
@@ -611,7 +619,7 @@ module "cnames" {
 
   lb_dns_name    = module.quilt.stack.outputs.LoadBalancerDNSName
   quilt_web_host = local.quilt_web_host
-  zone_id        = "Z1234567890ABC"
+  zone_id        = "YOUR-ROUTE53-ZONE-ID"
 }
 
 # Outputs
@@ -668,7 +676,7 @@ module "quilt" {
 
   parameters = {
     AdminEmail                   = "admin@enterprise.com"
-    CertificateArnELB           = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/enterprise-cert"
+    CertificateArnELB           = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-ENTERPRISE-CERT-ID"
     QuiltWebHost                = "data.enterprise.com"
     CloudTrailBucket            = "enterprise-security-logs"
     PasswordAuth                = "Disabled"  # SSO only
@@ -712,7 +720,7 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket               = "company-terraform-state"
+    bucket               = "YOUR-TERRAFORM-STATE-BUCKET"
     workspace_key_prefix = "quilt"
     key                  = "terraform.tfstate"
     region               = "YOUR-AWS-REGION"
@@ -730,8 +738,8 @@ locals {
       search_instance_count = 1
       search_instance_type = "m5.large.elasticsearch"
       search_volume_size = 512
-      cert_arn          = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/dev-cert"
-      web_host          = "dev-data.company.com"
+      cert_arn          = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-DEV-CERT-ID"
+      web_host          = "dev-data.YOUR-COMPANY.com"
     }
     staging = {
       name                = "quilt-staging"
@@ -741,8 +749,8 @@ locals {
       search_instance_count = 2
       search_instance_type = "m5.xlarge.elasticsearch"
       search_volume_size = 1024
-      cert_arn          = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/staging-cert"
-      web_host          = "staging-data.company.com"
+      cert_arn          = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-STAGING-CERT-ID"
+      web_host          = "staging-data.YOUR-COMPANY.com"
     }
     prod = {
       name                = "quilt-prod"
@@ -752,8 +760,8 @@ locals {
       search_instance_count = 4
       search_instance_type = "m5.2xlarge.elasticsearch"
       search_volume_size = 4096
-      cert_arn          = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/prod-cert"
-      web_host          = "data.company.com"
+      cert_arn          = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-PROD-CERT-ID"
+      web_host          = "data.YOUR-COMPANY.com"
     }
   }
   
@@ -782,7 +790,7 @@ module "quilt" {
   search_volume_size             = local.env_config.search_volume_size
 
   parameters = {
-    AdminEmail        = "admin+${terraform.workspace}@company.com"
+    AdminEmail        = "admin+${terraform.workspace}@YOUR-COMPANY.com"
     CertificateArnELB = local.env_config.cert_arn
     QuiltWebHost      = local.env_config.web_host
     PasswordAuth      = "Enabled"
@@ -841,6 +849,7 @@ module "quilt_prod" {
 ## Best Practices from Examples
 
 ### Security Best Practices
+
 1. Use separate AWS accounts for different environments
 2. Enable deletion protection for production databases
 3. Use internal ALBs for sensitive deployments
@@ -848,6 +857,7 @@ module "quilt_prod" {
 5. Use SSO instead of password authentication where possible
 
 ### Performance Best Practices
+
 1. Use Multi-AZ for production databases and ElasticSearch
 2. Choose appropriate instance types based on workload
 3. Use gp3 volumes for better price/performance ratio
@@ -855,6 +865,7 @@ module "quilt_prod" {
 5. Plan ElasticSearch storage with growth in mind
 
 ### Operational Best Practices
+
 1. Use remote state with locking
 2. Tag all resources consistently
 3. Set up monitoring and alerting
@@ -862,6 +873,7 @@ module "quilt_prod" {
 5. Implement proper backup strategies
 
 ### Cost Optimization
+
 1. Use smaller instances for development environments
 2. Disable Multi-AZ for non-production environments
 3. Use gp2 volumes for cost-sensitive workloads
