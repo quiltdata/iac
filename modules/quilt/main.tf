@@ -5,6 +5,56 @@ terraform {
 locals {
   template_key = "quilt.yaml"
   template_url = "https://${aws_s3_bucket.cft_bucket.bucket_regional_domain_name}/${local.template_key}"
+
+  # Determine IAM stack name for data source query
+  iam_stack_name = var.iam_stack_name != null ? var.iam_stack_name : "${var.name}-iam"
+
+  # Transform IAM module outputs to CloudFormation parameters
+  # Remove "Arn" suffix from output names to match parameter names
+  # Only populate when external IAM pattern is active (var.iam_template_url != null)
+  iam_parameters = var.iam_template_url != null ? {
+    # IAM Role parameters (24 roles)
+    SearchHandlerRole                = try(data.aws_cloudformation_stack.iam[0].outputs["SearchHandlerRoleArn"], null)
+    EsIngestRole                     = try(data.aws_cloudformation_stack.iam[0].outputs["EsIngestRoleArn"], null)
+    ManifestIndexerRole              = try(data.aws_cloudformation_stack.iam[0].outputs["ManifestIndexerRoleArn"], null)
+    AccessCountsRole                 = try(data.aws_cloudformation_stack.iam[0].outputs["AccessCountsRoleArn"], null)
+    PkgEventsRole                    = try(data.aws_cloudformation_stack.iam[0].outputs["PkgEventsRoleArn"], null)
+    DuckDBSelectLambdaRole           = try(data.aws_cloudformation_stack.iam[0].outputs["DuckDBSelectLambdaRoleArn"], null)
+    PkgPushRole                      = try(data.aws_cloudformation_stack.iam[0].outputs["PkgPushRoleArn"], null)
+    PackagerRole                     = try(data.aws_cloudformation_stack.iam[0].outputs["PackagerRoleArn"], null)
+    AmazonECSTaskExecutionRole       = try(data.aws_cloudformation_stack.iam[0].outputs["AmazonECSTaskExecutionRoleArn"], null)
+    ManagedUserRole                  = try(data.aws_cloudformation_stack.iam[0].outputs["ManagedUserRoleArn"], null)
+    MigrationLambdaRole              = try(data.aws_cloudformation_stack.iam[0].outputs["MigrationLambdaRoleArn"], null)
+    TrackingCronRole                 = try(data.aws_cloudformation_stack.iam[0].outputs["TrackingCronRoleArn"], null)
+    ApiRole                          = try(data.aws_cloudformation_stack.iam[0].outputs["ApiRoleArn"], null)
+    TimestampResourceHandlerRole     = try(data.aws_cloudformation_stack.iam[0].outputs["TimestampResourceHandlerRoleArn"], null)
+    TabulatorRole                    = try(data.aws_cloudformation_stack.iam[0].outputs["TabulatorRoleArn"], null)
+    TabulatorOpenQueryRole           = try(data.aws_cloudformation_stack.iam[0].outputs["TabulatorOpenQueryRoleArn"], null)
+    IcebergLambdaRole                = try(data.aws_cloudformation_stack.iam[0].outputs["IcebergLambdaRoleArn"], null)
+    T4BucketReadRole                 = try(data.aws_cloudformation_stack.iam[0].outputs["T4BucketReadRoleArn"], null)
+    T4BucketWriteRole                = try(data.aws_cloudformation_stack.iam[0].outputs["T4BucketWriteRoleArn"], null)
+    S3ProxyRole                      = try(data.aws_cloudformation_stack.iam[0].outputs["S3ProxyRoleArn"], null)
+    S3LambdaRole                     = try(data.aws_cloudformation_stack.iam[0].outputs["S3LambdaRoleArn"], null)
+    S3SNSToEventBridgeRole           = try(data.aws_cloudformation_stack.iam[0].outputs["S3SNSToEventBridgeRoleArn"], null)
+    S3HashLambdaRole                 = try(data.aws_cloudformation_stack.iam[0].outputs["S3HashLambdaRoleArn"], null)
+    S3CopyLambdaRole                 = try(data.aws_cloudformation_stack.iam[0].outputs["S3CopyLambdaRoleArn"], null)
+
+    # IAM Policy parameters (8 policies)
+    BucketReadPolicy                 = try(data.aws_cloudformation_stack.iam[0].outputs["BucketReadPolicyArn"], null)
+    BucketWritePolicy                = try(data.aws_cloudformation_stack.iam[0].outputs["BucketWritePolicyArn"], null)
+    RegistryAssumeRolePolicy         = try(data.aws_cloudformation_stack.iam[0].outputs["RegistryAssumeRolePolicyArn"], null)
+    ManagedUserRoleBasePolicy        = try(data.aws_cloudformation_stack.iam[0].outputs["ManagedUserRoleBasePolicyArn"], null)
+    UserAthenaNonManagedRolePolicy   = try(data.aws_cloudformation_stack.iam[0].outputs["UserAthenaNonManagedRolePolicyArn"], null)
+    UserAthenaManagedRolePolicy      = try(data.aws_cloudformation_stack.iam[0].outputs["UserAthenaManagedRolePolicyArn"], null)
+    TabulatorOpenQueryPolicy         = try(data.aws_cloudformation_stack.iam[0].outputs["TabulatorOpenQueryPolicyArn"], null)
+    T4DefaultBucketReadPolicy        = try(data.aws_cloudformation_stack.iam[0].outputs["T4DefaultBucketReadPolicyArn"], null)
+  } : {}
+}
+
+# Data source to query IAM stack outputs (only when external IAM pattern active)
+data "aws_cloudformation_stack" "iam" {
+  count = var.iam_template_url != null ? 1 : 0
+  name  = local.iam_stack_name
 }
 
 module "vpc" {
@@ -61,6 +111,19 @@ module "search" {
   volume_throughput        = var.search_volume_throughput
 }
 
+# Conditionally instantiate IAM module when external IAM pattern is active
+module "iam" {
+  count  = var.iam_template_url != null ? 1 : 0
+  source = "../iam"
+
+  name         = var.name
+  template_url = var.iam_template_url
+
+  iam_stack_name = var.iam_stack_name
+  parameters     = var.iam_parameters
+  tags           = merge(var.iam_tags, { ManagedBy = "Terraform" })
+}
+
 resource "random_password" "admin_password" {
   length = 16
 }
@@ -94,12 +157,15 @@ resource "aws_cloudformation_stack" "stack" {
     /* Prevent races between module.vpc and module.quilt resources. For example:
      * If ECS tries to reach ECR before private subnet NAT is available then ECS fails. */
     module.vpc,
+    /* Ensure IAM module completes before application stack deployment when external IAM pattern is used */
+    module.iam,
   ]
   capabilities      = ["CAPABILITY_NAMED_IAM"]
   notification_arns = var.stack_notification_arns
 
   parameters = merge(
     var.parameters,
+    local.iam_parameters, # IAM ARNs from external stack (or empty map if inline IAM)
     {
       VPC               = module.vpc.vpc_id
       Subnets           = join(",", module.vpc.private_subnets)
