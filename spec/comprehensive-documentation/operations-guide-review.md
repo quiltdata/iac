@@ -64,18 +64,36 @@ OPERATIONS.md (1,082 lines) was initially included in PR #88 but represents a se
 #### 2. Non-existent Resource (Line 308)
 
 **Thread**: PRRT_kwDOJnJ_Ds5Y9uBY
-**Status**: ⏳ Needs Verification
+**Status**: ✅ VERIFIED - Same as Issue #1
 **Priority**: HIGH (accuracy - documenting non-existent resources is problematic)
 
 **Task**: Identify what resource at line 308 is questioned and verify its existence
 
 **Action Items**:
 
-- [ ] Review line 308 of OPERATIONS.md
-- [ ] Check if resource exists in CloudFormation template
+- [x] Review line 308 of OPERATIONS.md
+- [x] Check if resource exists in CloudFormation template
 - [ ] Verify resource exists in actual deployments
 - [ ] Remove or correct if resource is indeed non-existent
 - [ ] Add clarification if resource is conditional/optional
+
+**Verification Results** (2025-11-20):
+
+Line 308 is part of the CloudTrail log group example (lines 304-308):
+
+```bash
+# CloudTrail logs
+aws logs filter-log-events \
+  --log-group-name "CloudTrail/QuiltAuditLogs" \
+  --start-time $(date -d '24 hours ago' +%s)000 \
+  --filter-pattern "{ $.eventName = CreateDBInstance || $.eventName = ModifyDBInstance }"
+```
+
+**Finding**: This is the same issue as Issue #1 - the CloudTrail log group `CloudTrail/QuiltAuditLogs` does not exist because CloudTrail is configured to write to S3 only (see [analytics.py:76-91](file:///Users/ernest/GitHub/deployment/t4/template/analytics.py#L76-L91)).
+
+**Additional Finding**: Line 311 also references VPC Flow Logs (`/aws/vpc/flowlogs`), which are also not configured in the CloudFormation templates. The comment "(if enabled)" suggests this is conditional, but the template does not enable them by default.
+
+**Correction Needed**: Same as Issue #1 - either remove the CloudTrail CloudWatch Logs example or document the S3/Athena-based approach instead.
 
 **Why Critical**: Documenting non-existent resources causes confusion and erodes trust in the operations guide.
 
@@ -112,7 +130,7 @@ OPERATIONS.md (1,082 lines) was initially included in PR #88 but represents a se
 ### Immediate Actions
 
 1. ✅ Verify log group names at line 300 - COMPLETED (see findings above)
-2. ⏳ Check resource at line 308 - PENDING (related to CloudTrail, likely same issue)
+2. ✅ Check resource at line 308 - COMPLETED (confirmed CloudTrail issue)
 3. ✅ Document source of truth for operational data - COMPLETED
 
 ### After Verification
@@ -148,7 +166,7 @@ OPERATIONS.md (1,082 lines) was initially included in PR #88 but represents a se
 Before submitting operations guide PR:
 
 - [x] B7: Log group names verified - Issues identified (needs correction in OPERATIONS.md)
-- [ ] B8: Non-existent resource issue resolved - In progress (likely CloudTrail related)
+- [x] B8: Non-existent resource verified - Same CloudTrail issue as B7 (needs correction)
 - [ ] All operational commands tested against actual deployment
 - [ ] All resource names match CloudFormation template
 - [ ] All log groups confirmed to exist
