@@ -12,16 +12,14 @@ Optional release notice.
 
 ### Documentation
 
-- [Added] Comprehensive installation and configuration documentation with step-by-step guides
-- [Added] Enterprise-aligned prerequisites section referencing docs.quilt.bio for complete guidance
-- [Added] Detailed ElasticSearch configuration guide with sizing recommendations and EBS volume calculations
-- [Added] Complete variable reference documentation (VARIABLES.md) with validation rules and examples
-- [Added] Comprehensive deployment examples (EXAMPLES.md) covering multiple scenarios and configurations
-- [Added] Cloud team operations guide (OPERATIONS.md) with installation, maintenance, and disaster recovery procedures
-- [Added] Network configuration guidance for both internet-facing and VPN-only deployments
-- [Added] AWS permissions documentation with complete IAM policy examples
-- [Added] Security, compliance, and monitoring considerations for enterprise deployments
-- [Added] Troubleshooting guides and health check procedures
+- [Added] Cloud team operations guide (OPERATIONS.md) with comprehensive procedures for:
+  - Installation and deployment with step-by-step guides
+  - Daily, weekly, and monthly maintenance checklists
+  - Emergency scaling procedures for ElasticSearch and database
+  - Disaster recovery and service recovery procedures
+  - Security incident response protocols
+  - Monitoring, alerting, and cost management
+  - Team onboarding and change management processes
 
 ### Security
 
