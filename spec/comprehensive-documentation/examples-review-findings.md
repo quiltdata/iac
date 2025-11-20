@@ -38,7 +38,7 @@ module "quilt" {
 
 - **Default in base.py**: `db.t3.small` with Multi-AZ enabled
 - **Actual production deployments**:
-  - Hudl (cost-optimized): `db.t3.small` (Single-AZ)
+  - Cost-optimized deployments: `db.t3.small` (Single-AZ)
   - Most deployments: Use defaults (t3.small with Multi-AZ)
   - Large deployments: Configurations not exposed in variant files (likely using defaults or custom overrides)
 
@@ -75,20 +75,20 @@ search_instance_count = 4
 | Deployment | Instance Count | Instance Type | Use Case |
 |------------|----------------|---------------|----------|
 | **Development** | 1 | t3.small.elasticsearch | Dev/test |
-| **Hudl** | 1 | m5.xlarge.elasticsearch | Cost-optimized small prod |
-| **Entact** | Unknown | m5.large.elasticsearch | Small prod |
-| **Interline** | Unknown | m5.xlarge.elasticsearch | Medium prod |
-| **Inari** | 2 | m5.2xlarge.elasticsearch | Large prod |
-| **Tessera** | **4** | m5.4xlarge.elasticsearch | **Massive scale (45M docs, 11.5TB)** |
+| **Customer-A** | 1 | m5.xlarge.elasticsearch | Cost-optimized small prod |
+| **Customer-B** | Unknown | m5.large.elasticsearch | Small prod |
+| **Customer-C** | Unknown | m5.xlarge.elasticsearch | Medium prod |
+| **Customer-D** | 2 | m5.2xlarge.elasticsearch | Large prod |
+| **Customer-XL** | **4** | m5.4xlarge.elasticsearch | **Massive scale (45M docs, 11.5TB)** |
 
 **Default Value Analysis**:
 
 - **VARIABLES.md default**: `search_instance_count = 2`
-- **Real deployments**: Primarily 1-2 instances, with 4 instances only for extreme scale (Tessera)
+- **Real deployments**: Primarily 1-2 instances, with 4 instances only for extreme scale
 
 **Assessment**: ✅ **ACCURATE for Large Production**
 
-The `search_instance_count = 4` at line 845 is in the "Large Production" example and is appropriate for that tier. It matches Tessera's real-world configuration for massive datasets.
+The `search_instance_count = 4` at line 845 is in the "Large Production" example and is appropriate for that tier. It matches real-world configurations for massive datasets.
 
 **Clarification on "Enabled by Default"**:
 
@@ -230,7 +230,7 @@ Shows additional parameters for complex scenarios (CloudTrail, SNS notifications
 | Medium Prod (Line 210) | gp2 | Standard |
 | Large Prod (Line 227) | **gp3** | High performance |
 | X-Large (Line 244) | **gp3** | High performance with IOPS |
-| Tessera | **gp3** | Massive scale |
+| Customer-XL | **gp3** | Massive scale |
 
 **Assessment**: ✅ **TECHNICALLY ACCURATE** but could be more specific
 
@@ -257,7 +257,7 @@ Shows additional parameters for complex scenarios (CloudTrail, SNS notifications
    - See X-Large example (line 244) for high-IOPS configuration
 5. Plan ElasticSearch storage with growth in mind
    - Estimate: (# documents) × (avg document size) × (1 + # replicas) × 1.5 safety factor
-   - See Tessera example (45M docs × 256KB = 11.5TB requirement)
+   - See extreme scale example (45M docs × 256KB = 11.5TB requirement)
 ```
 
 ---
@@ -269,7 +269,7 @@ Shows additional parameters for complex scenarios (CloudTrail, SNS notifications
 **Real Production Usage**:
 
 - **Default**: `db.t3.small` with Multi-AZ
-- **Cost-Optimized**: `db.t3.small` without Multi-AZ (Hudl)
+- **Cost-Optimized**: `db.t3.small` without Multi-AZ
 - **Large Production**: Not visible in variants (likely defaults or custom)
 
 **EXAMPLES.md Coverage**:
@@ -295,7 +295,7 @@ Shows additional parameters for complex scenarios (CloudTrail, SNS notifications
 - ✅ Medium (Line 197-212): Matches real standard prod
 - ✅ Large (Line 214-229): Matches real high-volume prod
 - ✅ X-Large (Line 231-247): Matches real enterprise scale
-- ✅ XXXX-Large (Line 267-284): Matches Tessera's extreme scale
+- ✅ XXXX-Large (Line 267-284): Matches extreme scale deployments
 
 **Assessment**: ElasticSearch sizing examples are **HIGHLY ACCURATE** and match real-world usage patterns.
 
@@ -337,7 +337,7 @@ Shows additional parameters for complex scenarios (CloudTrail, SNS notifications
 - **NO deployments** use `db.r5.*` instances
 - **NO deployments** use `db.m5.*` or `db.m6.*` instances
 - **Only instance types found**:
-  - `db.t3.small` (default in base.py + Hudl override)
+  - `db.t3.small` (default in base.py)
   - All other deployments rely on default `db.t3.small`
 
 **Conclusion**: The `db.r5.xlarge` recommendation in EXAMPLES.md (line 841) is **NOT validated** by real-world usage. This is a hypothetical "large production" configuration that no current customer uses.
@@ -354,9 +354,9 @@ Shows additional parameters for complex scenarios (CloudTrail, SNS notifications
 
 **Override Analysis**:
 
-- **Only 1 deployment** (Hudl) explicitly sets `db_multi_az: False` for cost optimization
+- **Only 1 deployment** explicitly sets `db_multi_az: False` for cost optimization
 - **All other deployments** (39+) use the default `True` value
-- **Cost impact**: Hudl saves $70/month with single-AZ configuration
+- **Cost impact**: Single-AZ configuration saves ~$70/month
 
 **Conclusion**: Multi-AZ default of `True` is **intentional and correct**. It provides high availability for production deployments, with cost-conscious users able to disable it.
 
@@ -377,7 +377,7 @@ Shows additional parameters for complex scenarios (CloudTrail, SNS notifications
 
 - **5 deployments** use `InstanceCount: 1` (development/cost-optimized)
 - **3 deployments** use `InstanceCount: 2` (explicitly set, matches default)
-- **2 deployments** use `InstanceCount: 4` (extreme scale: Tessera + 1 other)
+- **2 deployments** use `InstanceCount: 4` (extreme scale scenarios)
 - **30+ deployments** use default `2` (no override in variant files)
 
 **Conclusion**: Default of `2` is **correct and widely used**. Distribution shows:
@@ -390,7 +390,7 @@ Shows additional parameters for complex scenarios (CloudTrail, SNS notifications
 
 - Small Dev: 1 node (lines 185-195)
 - Medium Prod: 2 nodes (lines 197-212) - matches default
-- Large Prod: 4 nodes (lines 845-850) - matches Tessera
+- Large Prod: 4 nodes (lines 845-850) - matches extreme scale deployments
 
 **Cost Analysis from base.py**:
 
@@ -408,7 +408,7 @@ Shows additional parameters for complex scenarios (CloudTrail, SNS notifications
 | Item | Status | Finding | Impact on EXAMPLES.md |
 |------|--------|---------|----------------------|
 | db.r5.xlarge usage | ❌ Not found | Zero real deployments use r5 instances | Consider downgrading recommendation |
-| Multi-AZ default | ✅ Confirmed | base.py: True, only Hudl overrides to False | Accurate |
+| Multi-AZ default | ✅ Confirmed | base.py: True, only 1 deployment overrides to False | Accurate |
 | Search instance count | ✅ Confirmed | base.py: 2, real usage: 75%+ use default 2 | Accurate |
 
 **Action Item**: The only discrepancy found is the `db.r5.xlarge` recommendation, which appears to be aspirational rather than evidence-based. Recommend updating to `db.t3.large` or `db.t3.xlarge` for more realistic "large production" guidance.
@@ -474,7 +474,7 @@ This matches how users actually approach the docs:
 
 ## Appendix: Real Deployment Configurations
 
-### Tessera (Extreme Scale)
+### Example: Extreme Scale Deployment
 
 ```python
 "elastic_search_config": {
@@ -486,7 +486,7 @@ This matches how users actually approach the docs:
 # 45M documents * 256KB = 11.5TB total
 ```
 
-### Hudl (Cost-Optimized)
+### Example: Cost-Optimized Deployment
 
 ```python
 "elastic_search_config": {
@@ -503,7 +503,7 @@ This matches how users actually approach the docs:
 # Cost savings: $70.41/month vs default config
 ```
 
-### Inari (Large Production)
+### Example: Large Production Deployment
 
 ```python
 "elastic_search_config": {

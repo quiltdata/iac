@@ -965,7 +965,7 @@ module "quilt_prod" {
   db_deletion_protection = true
 
   # Large production: 4 data nodes for high availability and performance
-  # Default is 2. Use 4 for datasets >5TB or high query volume (e.g., Tessera: 45M docs, 11.5TB).
+  # Default is 2. Use 4 for datasets >5TB or high query volume (e.g., 45M docs, 11.5TB).
   search_instance_count = 4
   search_instance_type  = "m5.2xlarge.elasticsearch"
   search_volume_size    = 4096
@@ -998,7 +998,7 @@ module "quilt_prod" {
    - See X-Large example (line 244) for high-IOPS configuration
 5. Plan ElasticSearch storage with growth in mind
    - Estimate: (# documents) × (avg document size) × (1 + # replicas) × 1.5 safety factor
-   - Real example: Tessera with 45M docs × 256KB = 11.5TB requirement
+   - Real example: 45M docs × 256KB = 11.5TB requirement
 
 ### Operational Best Practices
 

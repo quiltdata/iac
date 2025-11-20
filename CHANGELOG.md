@@ -22,10 +22,11 @@ Optional release notice.
 
 - [Added] ElasticSearch configuration guide with sizing recommendations and EBS volume calculations
 - [Added] Complete variable reference (VARIABLES.md) with validation rules and examples
-- [Added] Comprehensive deployment examples (EXAMPLES.md) for multiple scenarios
+- [Added] Comprehensive deployment examples (EXAMPLES.md) with tiered parameter grouping and real-world validation
 - [Added] Installation and configuration documentation with enterprise prerequisites
 - [Added] Network, security, and AWS permissions guidance
-- [Added] Troubleshooting and health check procedures
+- [Enhanced] EXAMPLES.md with sizing rationale, best practices, and realistic instance types based on production deployments
+- [Removed] OPERATIONS.md moved to separate PR to maintain focused scope
 
 ### Security
 
@@ -38,6 +39,7 @@ Optional release notice.
 - [Added] ElasticSearch sizing configurations (Small, Medium, Large, X-Large)
 - [Added] Authentication examples for Google OAuth, Okta, OneLogin, and Azure AD
 - [Added] Network and CloudFormation parameter examples
+- [Improved] Database instance recommendations aligned with real-world usage (db.t3 instead of db.r5)
 
 ## [1.3.0] - 2025-05-05
 
