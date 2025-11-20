@@ -59,6 +59,8 @@ module "quilt" {
   cidr           = "10.0.0.0/16"
 
   # Development settings - cost optimized
+  # Note: db.t3.small is the recommended minimum for stable performance
+  # db.t3.micro may be too small for realistic dev workloads
   db_instance_class      = "db.t3.micro"
   db_multi_az            = false
   db_deletion_protection = false
@@ -578,6 +580,8 @@ module "quilt" {
   cidr           = "10.0.0.0/16"
 
   # High-availability database
+  # Note: db.r5.xlarge is for extreme scale. Most production deployments use db.t3.small to db.t3.large.
+  # Consider starting smaller (db.t3.medium) and scaling up based on actual usage.
   db_instance_class      = "db.r5.xlarge"
   db_multi_az            = true
   db_deletion_protection = true
@@ -585,6 +589,8 @@ module "quilt" {
   # High-performance ElasticSearch
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
+  # 4 nodes for extreme scale: Use for datasets >5TB or high query volume
+  # Most production deployments use 2 nodes (the default). Scale up as needed.
   search_instance_count          = 4
   search_instance_type           = "m5.2xlarge.elasticsearch"
   search_volume_size             = 4096
@@ -838,10 +844,14 @@ module "quilt_prod" {
   build_file_path = "./quilt-prod.yml"
   
   # Production settings
+  # Note: db.r5.xlarge is rarely needed unless you have >1TB data or high transaction volume
+  # Most customers use db.t3.small to db.t3.large. Consider starting smaller and scaling up.
   db_instance_class      = "db.r5.xlarge"
   db_multi_az            = true
   db_deletion_protection = true
-  
+
+  # Large production: 4 data nodes for high availability and performance
+  # Default is 2. Use 4 for datasets >5TB or high query volume (e.g., Tessera: 45M docs, 11.5TB).
   search_instance_count = 4
   search_instance_type  = "m5.2xlarge.elasticsearch"
   search_volume_size    = 4096
@@ -864,9 +874,17 @@ module "quilt_prod" {
 
 1. Use Multi-AZ for production databases and ElasticSearch
 2. Choose appropriate instance types based on workload
-3. Use gp3 volumes for better price/performance ratio
+3. **Use gp3 volumes for better price/performance ratio**
+   - gp3 provides ~20% cost savings vs gp2 for same performance
+   - gp3 baseline: 3,000 IOPS, 125 MB/s (vs gp2's size-based performance)
+   - Recommended for: Production workloads with >1TB storage
+   - When to keep gp2: Small dev environments (<500GB) where simplicity matters
 4. Configure IOPS and throughput for high-performance workloads
+   - gp3 allows independent IOPS (up to 16,000) and throughput (up to 1,000 MB/s) tuning
+   - See X-Large example (line 244) for high-IOPS configuration
 5. Plan ElasticSearch storage with growth in mind
+   - Estimate: (# documents) × (avg document size) × (1 + # replicas) × 1.5 safety factor
+   - Real example: Tessera with 45M docs × 256KB = 11.5TB requirement
 
 ### Operational Best Practices
 
