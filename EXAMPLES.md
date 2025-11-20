@@ -16,6 +16,25 @@
 
 This document provides comprehensive examples for deploying Quilt using different configurations and scenarios.
 
+## Parameter Example Style Guide
+
+When adding new examples to this document, use these grouping conventions for consistency:
+
+- `# REQUIRED` - Parameters needed for basic deployment (AdminEmail, CertificateArnELB, QuiltWebHost)
+- `# AUTHENTICATION` - At least one auth method must be enabled (PasswordAuth, GoogleAuth, OktaAuth, etc.)
+- `# [AUTH_TYPE]` - Parameters specific to auth provider (e.g., GOOGLE, AZURE, OKTA)
+- `# OPTIONAL FEATURES` - Optional capabilities (Qurator, CloudTrail, CanaryNotifications, etc.)
+- `# ADVANCED` - Advanced configurations (WAF, custom networking, IAM policies, etc.)
+
+**Additional guidelines:**
+
+- Add inline comments for clarity: `Parameter = "value"  # Brief explanation`
+- End complex examples with: `# For complete parameter reference, see VARIABLES.md`
+- Group related parameters logically within each section
+- Maintain alphabetical ordering within groups when practical
+
+**Why this structure?** 75% of real deployments use minimal 4-5 parameter configurations. This tiered approach helps users distinguish required vs optional parameters, reducing configuration errors and deployment time.
+
 ## Table of Contents
 
 - [Basic Examples](#basic-examples)
@@ -53,7 +72,7 @@ module "quilt" {
 
   name          = local.name
   template_file = local.build_file_path
-  
+
   internal       = false
   create_new_vpc = true
   cidr           = "10.0.0.0/16"
@@ -73,11 +92,16 @@ module "quilt" {
   search_volume_size             = 512
 
   parameters = {
+    # REQUIRED - Core deployment configuration
     AdminEmail        = "dev@YOUR-COMPANY.com"
     CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-DEV-CERT-ID"
     QuiltWebHost      = local.quilt_web_host
+
+    # AUTHENTICATION - At least one auth method must be enabled
     PasswordAuth      = "Enabled"
-    Qurator          = "Enabled"
+
+    # OPTIONAL FEATURES
+    Qurator          = "Enabled"  # Data quality features
   }
 }
 
@@ -109,7 +133,7 @@ output "quilt_url" {
 provider "aws" {
   region              = "YOUR-AWS-REGION"
   allowed_account_ids = ["YOUR-ACCOUNT-ID"]
-  
+
   default_tags {
     tags = {
       Environment = "production"
@@ -140,7 +164,7 @@ module "quilt" {
 
   name          = local.name
   template_file = local.build_file_path
-  
+
   internal       = false
   create_new_vpc = true
   cidr           = "10.0.0.0/16"
@@ -162,13 +186,18 @@ module "quilt" {
   stack_notification_arns = ["arn:aws:sns:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:quilt-notifications"]
 
   parameters = {
+    # REQUIRED - Core deployment configuration
     AdminEmail               = "admin@YOUR-COMPANY.com"
     CertificateArnELB        = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-PROD-CERT-ID"
     QuiltWebHost             = local.quilt_web_host
-    CloudTrailBucket         = "YOUR-CLOUDTRAIL-BUCKET"
+
+    # AUTHENTICATION - At least one auth method must be enabled
     PasswordAuth             = "Enabled"
-    Qurator                  = "Enabled"
-    CanaryNotificationsEmail = "ops@YOUR-COMPANY.com"
+
+    # OPTIONAL FEATURES
+    CloudTrailBucket         = "YOUR-CLOUDTRAIL-BUCKET"  # Audit logging
+    Qurator                  = "Enabled"  # Data quality features
+    CanaryNotificationsEmail = "ops@YOUR-COMPANY.com"  # Monitoring alerts
   }
 }
 
@@ -190,7 +219,7 @@ module "cnames" {
 ```hcl
 module "quilt" {
   # ... other configuration ...
-  
+
   search_dedicated_master_enabled = false
   search_zone_awareness_enabled   = false
   search_instance_count          = 1
@@ -207,7 +236,7 @@ module "quilt" {
 ```hcl
 module "quilt" {
   # ... other configuration ...
-  
+
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
   search_instance_count          = 2
@@ -224,7 +253,7 @@ module "quilt" {
 ```hcl
 module "quilt" {
   # ... other configuration ...
-  
+
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
   search_instance_count          = 2
@@ -241,7 +270,7 @@ module "quilt" {
 ```hcl
 module "quilt" {
   # ... other configuration ...
-  
+
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
   search_instance_count          = 2
@@ -259,7 +288,7 @@ module "quilt" {
 ```hcl
 module "quilt" {
   # ... other configuration ...
-  
+
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
   search_instance_count          = 2
@@ -277,7 +306,7 @@ module "quilt" {
 ```hcl
 module "quilt" {
   # ... other configuration ...
-  
+
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
   search_instance_count          = 4
@@ -304,17 +333,26 @@ variable "google_client_secret" {
 # main.tf
 module "quilt" {
   # ... other configuration ...
-  
+
   parameters = {
+    # REQUIRED - Core deployment configuration
     AdminEmail          = "admin@YOUR-COMPANY.com"
     CertificateArnELB   = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost        = "data.YOUR-COMPANY.com"
+
+    # AUTHENTICATION - At least one auth method must be enabled
     PasswordAuth        = "Enabled"
+
+    # GOOGLE - Required when GoogleAuth = "Enabled"
     GoogleAuth          = "Enabled"
     GoogleClientId      = "YOUR-ACCOUNT-ID-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
     GoogleClientSecret  = var.google_client_secret
-    SingleSignOnDomains = "YOUR-COMPANY.com,subsidiary.com"
+    SingleSignOnDomains = "YOUR-COMPANY.com,subsidiary.com"  # Auto-login for these domains
+
+    # OPTIONAL FEATURES
     Qurator            = "Enabled"
+
+    # For complete parameter reference, see VARIABLES.md
   }
 }
 ```
@@ -332,18 +370,27 @@ variable "okta_client_secret" {
 # main.tf
 module "quilt" {
   # ... other configuration ...
-  
+
   parameters = {
+    # REQUIRED - Core deployment configuration
     AdminEmail          = "admin@YOUR-COMPANY.com"
     CertificateArnELB   = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost        = "data.YOUR-COMPANY.com"
+
+    # AUTHENTICATION - At least one auth method must be enabled
     PasswordAuth        = "Enabled"
+
+    # OKTA - Required when OktaAuth = "Enabled"
     OktaAuth           = "Enabled"
     OktaBaseUrl        = "https://company.okta.com/oauth2/default"
     OktaClientId       = "0oa1234567890abcdef"
     OktaClientSecret   = var.okta_client_secret
-    SingleSignOnDomains = "YOUR-COMPANY.com"
+    SingleSignOnDomains = "YOUR-COMPANY.com"  # Auto-login for this domain
+
+    # OPTIONAL FEATURES
     Qurator            = "Enabled"
+
+    # For complete parameter reference, see VARIABLES.md
   }
 }
 ```
@@ -361,17 +408,26 @@ variable "azure_client_secret" {
 # main.tf
 module "quilt" {
   # ... other configuration ...
-  
+
   parameters = {
+    # REQUIRED - Core deployment configuration
     AdminEmail        = "admin@YOUR-COMPANY.com"
     CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost      = "data.YOUR-COMPANY.com"
+
+    # AUTHENTICATION - At least one auth method must be enabled
     PasswordAuth      = "Enabled"
+
+    # AZURE - Required when AzureAuth = "Enabled"
     AzureAuth         = "Enabled"
     AzureBaseUrl      = "https://login.microsoftonline.com/tenant-id/v2.0"
     AzureClientId     = "12345678-1234-1234-1234-YOUR-ACCOUNT-ID"
     AzureClientSecret = var.azure_client_secret
+
+    # OPTIONAL FEATURES
     Qurator          = "Enabled"
+
+    # For complete parameter reference, see VARIABLES.md
   }
 }
 ```
@@ -381,24 +437,33 @@ module "quilt" {
 ```hcl
 module "quilt" {
   # ... other configuration ...
-  
+
   parameters = {
+    # REQUIRED - Core deployment configuration
     AdminEmail           = "admin@YOUR-COMPANY.com"
     CertificateArnELB    = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost         = "data.YOUR-COMPANY.com"
-    
-    # Enable multiple auth providers
-    PasswordAuth         = "Enabled"
+
+    # AUTHENTICATION - At least one auth method must be enabled
+    PasswordAuth         = "Enabled"  # Fallback method
+
+    # GOOGLE - Required when GoogleAuth = "Enabled"
     GoogleAuth          = "Enabled"
     GoogleClientId      = var.google_client_id
     GoogleClientSecret  = var.google_client_secret
+
+    # OKTA - Required when OktaAuth = "Enabled"
     OktaAuth           = "Enabled"
     OktaBaseUrl        = "https://company.okta.com/oauth2/default"
     OktaClientId       = var.okta_client_id
     OktaClientSecret   = var.okta_client_secret
-    
-    SingleSignOnDomains = "YOUR-COMPANY.com,partner.com"
+
+    SingleSignOnDomains = "YOUR-COMPANY.com,partner.com"  # Shared SSO domains
+
+    # OPTIONAL FEATURES
     Qurator            = "Enabled"
+
+    # For complete parameter reference, see VARIABLES.md
   }
 }
 ```
@@ -413,22 +478,27 @@ module "quilt" {
 
   name          = "quilt-internet"
   template_file = "./quilt.yml"
-  
+
   # Internet-facing configuration
   internal       = false
   create_new_vpc = true
   cidr           = "10.0.0.0/16"
-  
+
   # VPC will be created with:
   # - Public subnets for ALB and NAT gateways
   # - Private subnets for Quilt services
   # - Isolated subnets for database and ElasticSearch
 
   parameters = {
+    # REQUIRED - Core deployment configuration
     AdminEmail        = "admin@YOUR-COMPANY.com"
     CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost      = "data.YOUR-COMPANY.com"
+
+    # AUTHENTICATION - At least one auth method must be enabled
     PasswordAuth      = "Enabled"
+
+    # OPTIONAL FEATURES
     Qurator          = "Enabled"
   }
 }
@@ -442,22 +512,27 @@ module "quilt" {
 
   name          = "quilt-internal"
   template_file = "./quilt.yml"
-  
+
   # Internal configuration for VPN access
   internal       = true
   create_new_vpc = true
   cidr           = "10.1.0.0/16"
-  
+
   # VPC will be created with:
   # - Private subnets for Quilt services and ALB
   # - Isolated subnets for database and ElasticSearch
   # - No public subnets (no internet gateway)
 
   parameters = {
+    # REQUIRED - Core deployment configuration
     AdminEmail        = "admin@YOUR-COMPANY.com"
     CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost      = "internal-data.YOUR-COMPANY.com"
+
+    # AUTHENTICATION - At least one auth method must be enabled
     PasswordAuth      = "Enabled"
+
+    # OPTIONAL FEATURES
     Qurator          = "Enabled"
   }
 }
@@ -471,7 +546,7 @@ module "quilt" {
 
   name          = "quilt-existing"
   template_file = "./quilt.yml"
-  
+
   # Use existing VPC
   create_new_vpc      = false
   internal           = false
@@ -484,10 +559,15 @@ module "quilt" {
   user_security_group = "YOUR-SECURITY-GROUP-ID"                                # For ALB access
 
   parameters = {
+    # REQUIRED - Core deployment configuration
     AdminEmail        = "admin@YOUR-COMPANY.com"
     CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost      = "data.YOUR-COMPANY.com"
+
+    # AUTHENTICATION - At least one auth method must be enabled
     PasswordAuth      = "Enabled"
+
+    # OPTIONAL FEATURES
     Qurator          = "Enabled"
   }
 }
@@ -511,7 +591,7 @@ module "quilt" {
 
   name          = "quilt-internal-existing"
   template_file = "./quilt.yml"
-  
+
   # Use existing VPC for internal deployment
   create_new_vpc      = false
   internal           = true
@@ -525,10 +605,15 @@ module "quilt" {
   api_endpoint        = aws_vpc_endpoint.api_gateway.id             # VPC endpoint
 
   parameters = {
+    # REQUIRED - Core deployment configuration
     AdminEmail        = "admin@YOUR-COMPANY.com"
     CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost      = "internal-data.YOUR-COMPANY.com"
+
+    # AUTHENTICATION - At least one auth method must be enabled
     PasswordAuth      = "Enabled"
+
+    # OPTIONAL FEATURES
     Qurator          = "Enabled"
   }
 }
@@ -542,7 +627,7 @@ module "quilt" {
 provider "aws" {
   region              = "YOUR-AWS-REGION"
   allowed_account_ids = ["YOUR-ACCOUNT-ID"]
-  
+
   default_tags {
     tags = {
       Environment = "production"
@@ -574,7 +659,7 @@ module "quilt" {
 
   name          = local.name
   template_file = local.build_file_path
-  
+
   internal       = false
   create_new_vpc = true
   cidr           = "10.0.0.0/16"
@@ -604,23 +689,34 @@ module "quilt" {
   ]
 
   parameters = {
+    # REQUIRED - Core deployment configuration
     AdminEmail                   = "admin@YOUR-COMPANY.com"
     CertificateArnELB           = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-PROD-CERT-ID"
     QuiltWebHost                = local.quilt_web_host
-    CloudTrailBucket            = "YOUR-CLOUDTRAIL-BUCKET-prod"
+
+    # AUTHENTICATION - At least one auth method must be enabled
     PasswordAuth                = "Enabled"
+
+    # OKTA - Required when OktaAuth = "Enabled"
     OktaAuth                    = "Enabled"
     OktaBaseUrl                 = "https://company.okta.com/oauth2/default"
     OktaClientId                = var.okta_client_id
     OktaClientSecret            = var.okta_client_secret
     SingleSignOnDomains         = "YOUR-COMPANY.com"
-    Qurator                     = "Enabled"
-    CanaryNotificationsEmail    = "ops@YOUR-COMPANY.com"
+
+    # OPTIONAL FEATURES
+    CloudTrailBucket            = "YOUR-CLOUDTRAIL-BUCKET-prod"  # Audit logging
+    Qurator                     = "Enabled"  # Data quality features
+    CanaryNotificationsEmail    = "ops@YOUR-COMPANY.com"  # Monitoring alerts
+
+    # ADVANCED - Custom IAM policies and security
     ManagedUserRoleExtraPolicies = join(",", [
       "arn:aws:iam::YOUR-ACCOUNT-ID:policy/DataScientistAccess",
       "arn:aws:iam::aws:policy/AmazonAthenaFullAccess"
     ])
-    WAFGeofenceCountries = "US,CA,GB,DE,FR,AU"
+    WAFGeofenceCountries = "US,CA,GB,DE,FR,AU"  # Geographic restrictions
+
+    # For complete parameter reference, see VARIABLES.md
   }
 }
 
@@ -664,7 +760,7 @@ module "quilt" {
 
   name          = "quilt-enterprise"
   template_file = "./quilt-enterprise.yml"
-  
+
   internal       = true  # Internal deployment for security
   create_new_vpc = true
   cidr           = "10.10.0.0/16"
@@ -687,18 +783,27 @@ module "quilt" {
   search_volume_throughput       = 1000
 
   parameters = {
+    # REQUIRED - Core deployment configuration
     AdminEmail                   = "admin@enterprise.com"
     CertificateArnELB           = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-ENTERPRISE-CERT-ID"
     QuiltWebHost                = "data.enterprise.com"
-    CloudTrailBucket            = "enterprise-security-logs"
-    PasswordAuth                = "Disabled"  # SSO only
+
+    # AUTHENTICATION - At least one auth method must be enabled
+    PasswordAuth                = "Disabled"  # SSO only for enhanced security
+
+    # OKTA - Required when OktaAuth = "Enabled"
     OktaAuth                    = "Enabled"
     OktaBaseUrl                 = "https://enterprise.okta.com/oauth2/default"
     OktaClientId                = var.okta_client_id
     OktaClientSecret            = var.okta_client_secret
     SingleSignOnDomains         = "enterprise.com"
-    Qurator                     = "Enabled"
-    CanaryNotificationsEmail    = "security-ops@enterprise.com"
+
+    # OPTIONAL FEATURES
+    CloudTrailBucket            = "enterprise-security-logs"  # Audit logging
+    Qurator                     = "Enabled"  # Data quality features
+    CanaryNotificationsEmail    = "security-ops@enterprise.com"  # Monitoring alerts
+
+    # ADVANCED - Custom IAM policies and security
     ManagedUserRoleExtraPolicies = join(",", [
       "arn:aws:iam::YOUR-ACCOUNT-ID:policy/EnterpriseDataGovernance",
       "arn:aws:iam::YOUR-ACCOUNT-ID:policy/ComplianceAuditAccess",
@@ -708,7 +813,9 @@ module "quilt" {
       "arn:aws:iam::YOUR-ACCOUNT-ID:role/DataGovernanceRole",
       "arn:aws:iam::YOUR-ACCOUNT-ID:role/ComplianceAuditRole"
     ])
-    WAFGeofenceCountries = "US,CA"  # Restrict to North America
+    WAFGeofenceCountries = "US,CA"  # Restrict to North America only
+
+    # For complete parameter reference, see VARIABLES.md
   }
 }
 ```
@@ -721,7 +828,7 @@ module "quilt" {
 # main.tf
 provider "aws" {
   region = var.aws_region
-  
+
   default_tags {
     tags = {
       Environment = terraform.workspace
@@ -776,7 +883,7 @@ locals {
       web_host          = "data.YOUR-COMPANY.com"
     }
   }
-  
+
   env_config = local.config[terraform.workspace]
 }
 
@@ -785,7 +892,7 @@ module "quilt" {
 
   name          = local.env_config.name
   template_file = "./quilt-${terraform.workspace}.yml"
-  
+
   internal       = false
   create_new_vpc = true
   cidr           = local.env_config.cidr
@@ -802,10 +909,15 @@ module "quilt" {
   search_volume_size             = local.env_config.search_volume_size
 
   parameters = {
+    # REQUIRED - Core deployment configuration
     AdminEmail        = "admin+${terraform.workspace}@YOUR-COMPANY.com"
     CertificateArnELB = local.env_config.cert_arn
     QuiltWebHost      = local.env_config.web_host
+
+    # AUTHENTICATION - At least one auth method must be enabled
     PasswordAuth      = "Enabled"
+
+    # OPTIONAL FEATURES
     Qurator          = "Enabled"
   }
 }
@@ -822,16 +934,16 @@ module "quilt" {
 # environments/dev/main.tf
 module "quilt_dev" {
   source = "../../"
-  
+
   name            = "quilt-dev"
   environment     = "dev"
   build_file_path = "./quilt-dev.yml"
-  
+
   # Development overrides
   db_instance_class      = "db.t3.micro"
   db_multi_az            = false
   db_deletion_protection = false
-  
+
   search_instance_count = 1
   search_instance_type  = "m5.large.elasticsearch"
   search_volume_size    = 512
@@ -840,11 +952,11 @@ module "quilt_dev" {
 # environments/prod/main.tf
 module "quilt_prod" {
   source = "../../"
-  
+
   name            = "quilt-prod"
   environment     = "prod"
   build_file_path = "./quilt-prod.yml"
-  
+
   # Production settings
   # Note: Real deployments use db.t3.small (default) to db.t3.large
   # Zero production deployments use r5 instances. Start with t3.large and scale if needed.
