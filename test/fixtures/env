@@ -1,0 +1,8 @@
+# ==============================================================================
+# REQUIRED USER VALUES
+# ==============================================================================
+
+# Quilt Configuration
+QUILT_CATALOG=nightly.quilttest.com
+QUILT_USER_BUCKET=quilt-example-bucket
+QUILT_TEMPLATE=test/stable.yaml
