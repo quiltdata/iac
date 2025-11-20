@@ -385,11 +385,12 @@ echo "✓ RDS: $MANUAL_COUNT manual snapshots available"
 
 # Verify Terraform state backup
 echo "Checking Terraform state backup..."
-STATE_BUCKET=$(terraform backend config -get bucket 2>/dev/null || echo "unknown")
-if aws s3 ls "s3://${STATE_BUCKET}/quilt/terraform.tfstate" >/dev/null 2>&1; then
+# Extract backend bucket from terraform configuration (works with Terraform 1.1+)
+STATE_BUCKET=$(grep -A 5 'backend "s3"' *.tf 2>/dev/null | grep 'bucket' | sed 's/.*bucket.*=.*"\(.*\)".*/\1/' | head -1 || echo "unknown")
+if [ "$STATE_BUCKET" != "unknown" ] && aws s3 ls "s3://${STATE_BUCKET}/quilt/terraform.tfstate" >/dev/null 2>&1; then
   echo "✓ Terraform: State file accessible"
 else
-  echo "⚠ Terraform: State file not accessible"
+  echo "⚠ Terraform: State file not accessible or backend not configured"
 fi
 
 echo "=== Backup Verification Complete ==="
