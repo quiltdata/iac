@@ -18,18 +18,44 @@ OPERATIONS.md (1,082 lines) was initially included in PR #88 but represents a se
 #### 1. Log Group Names Verification (Line 300)
 
 **Thread**: PRRT_kwDOJnJ_Ds5Y9t1F
-**Status**: ⏳ Needs Verification
+**Status**: ✅ VERIFIED - Issues Found
 **Priority**: HIGH (accuracy - incorrect info could break operations)
 
 **Task**: Verify that log group names at line 300 match actual CloudFormation template or deployed stack
 
 **Action Items**:
 
-- [ ] Check line 300 of OPERATIONS.md for log group names
-- [ ] Compare against CloudFormation template in repository
+- [x] Check line 300 of OPERATIONS.md for log group names
+- [x] Compare against CloudFormation template in repository
 - [ ] Verify against actual deployed stack (if available)
 - [ ] Update documentation if discrepancies found
-- [ ] Document the source of truth for log group names
+- [x] Document the source of truth for log group names
+
+**Verification Results** (2025-11-20):
+
+##### Issue 1: ECS Log Group Name - INCORRECT
+
+- **OPERATIONS.md (Lines 293, 297)**: References `/aws/ecs/quilt-prod`
+- **Template Reality**: [~/GitHub/deployment/t4/template/log.py:13](file:///Users/ernest/GitHub/deployment/t4/template/log.py#L13) creates LogGroup with `LogGroupName=Ref("AWS::StackName")`
+- **Actual Log Group**: The log group name is just the stack name (e.g., `quilt-prod`), NOT `/aws/ecs/quilt-prod`
+- **Correction Needed**: Change `/aws/ecs/quilt-prod` to just `quilt-prod` (or `${STACK_NAME}`)
+
+##### Issue 2: CloudTrail Log Group - DOES NOT EXIST
+
+- **OPERATIONS.md (Line 306)**: References `CloudTrail/QuiltAuditLogs`
+- **Template Reality**: [~/GitHub/deployment/t4/template/analytics.py:76-91](file:///Users/ernest/GitHub/deployment/t4/template/analytics.py#L76-L91) shows CloudTrail only logs to S3 bucket
+- **Actual Configuration**: CloudTrail writes to S3 bucket (CloudTrailBucket), NOT CloudWatch Logs
+- **Correction Needed**: Either:
+  1. Remove CloudWatch Logs CloudTrail example entirely, OR
+  2. Document querying CloudTrail via Athena/S3, OR
+  3. Note that CloudTrail CloudWatch Logs integration must be manually configured if desired
+
+##### Source of Truth
+
+- ECS/Container Logs: [~/GitHub/deployment/t4/template/log.py](file:///Users/ernest/GitHub/deployment/t4/template/log.py) (main LogGroup)
+- Lambda Logs: [~/GitHub/deployment/t4/template/helpers.py:263](file:///Users/ernest/GitHub/deployment/t4/template/helpers.py#L263) (pattern: `/quilt/${AWS::StackName}/<lambda-name>`)
+- Search Logs: [~/GitHub/deployment/t4/template/search.py:58](file:///Users/ernest/GitHub/deployment/t4/template/search.py#L58) (pattern: `/quilt/${AWS::StackName}/search/<suffix>`)
+- CloudTrail: S3 bucket only, no CloudWatch Logs group by default
 
 **Why Critical**: Operators using incorrect log group names will fail to retrieve logs during incident response.
 
@@ -85,9 +111,9 @@ OPERATIONS.md (1,082 lines) was initially included in PR #88 but represents a se
 
 ### Immediate Actions
 
-1. ⏳ Verify log group names at line 300
-2. ⏳ Check resource at line 308
-3. ⏳ Document source of truth for operational data
+1. ✅ Verify log group names at line 300 - COMPLETED (see findings above)
+2. ⏳ Check resource at line 308 - PENDING (related to CloudTrail, likely same issue)
+3. ✅ Document source of truth for operational data - COMPLETED
 
 ### After Verification
 
@@ -121,8 +147,8 @@ OPERATIONS.md (1,082 lines) was initially included in PR #88 but represents a se
 
 Before submitting operations guide PR:
 
-- [ ] B7: Log group names verified and accurate
-- [ ] B8: Non-existent resource issue resolved
+- [x] B7: Log group names verified - Issues identified (needs correction in OPERATIONS.md)
+- [ ] B8: Non-existent resource issue resolved - In progress (likely CloudTrail related)
 - [ ] All operational commands tested against actual deployment
 - [ ] All resource names match CloudFormation template
 - [ ] All log groups confirmed to exist
