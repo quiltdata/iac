@@ -580,9 +580,9 @@ module "quilt" {
   cidr           = "10.0.0.0/16"
 
   # High-availability database
-  # Note: db.r5.xlarge is for extreme scale. Most production deployments use db.t3.small to db.t3.large.
-  # Consider starting smaller (db.t3.medium) and scaling up based on actual usage.
-  db_instance_class      = "db.r5.xlarge"
+  # Note: Real deployments use db.t3.small (default) to db.t3.large
+  # Zero production deployments use r5 instances. Start with t3.large and scale if needed.
+  db_instance_class      = "db.t3.large"
   db_multi_az            = true
   db_deletion_protection = true
 
@@ -670,7 +670,9 @@ module "quilt" {
   cidr           = "10.10.0.0/16"
 
   # Enterprise-grade database
-  db_instance_class      = "db.r5.2xlarge"
+  # Note: This is a hypothetical extreme-scale example. No real deployments use r5 instances.
+  # For actual enterprise needs, start with db.t3.xlarge and scale based on metrics.
+  db_instance_class      = "db.t3.xlarge"
   db_multi_az            = true
   db_deletion_protection = true
 
@@ -765,7 +767,7 @@ locals {
     prod = {
       name                = "quilt-prod"
       cidr               = "10.2.0.0/16"
-      db_instance_class  = "db.r5.xlarge"
+      db_instance_class  = "db.t3.large"
       db_multi_az        = true
       search_instance_count = 4
       search_instance_type = "m5.2xlarge.elasticsearch"
@@ -844,9 +846,9 @@ module "quilt_prod" {
   build_file_path = "./quilt-prod.yml"
   
   # Production settings
-  # Note: db.r5.xlarge is rarely needed unless you have >1TB data or high transaction volume
-  # Most customers use db.t3.small to db.t3.large. Consider starting smaller and scaling up.
-  db_instance_class      = "db.r5.xlarge"
+  # Note: Real deployments use db.t3.small (default) to db.t3.large
+  # Zero production deployments use r5 instances. Start with t3.large and scale if needed.
+  db_instance_class      = "db.t3.large"
   db_multi_az            = true
   db_deletion_protection = true
 
