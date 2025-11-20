@@ -5,21 +5,25 @@ This document provides comprehensive operational procedures for cloud teams mana
 ## Quick Reference
 
 ### Emergency Procedures
+
 - **Service Down**: [Jump to Service Recovery](#service-recovery)
 - **Storage Full**: [Jump to Emergency Scaling](#emergency-scaling)
 - **Security Incident**: [Jump to Security Response](#security-incident-response)
 
 ### Daily Checklist
+
 - [ ] Health check (5 min) - [Instructions](#daily-health-checks)
 - [ ] Monitor alerts - [Dashboard Links](#monitoring-dashboards)
 - [ ] Review logs - [Log Locations](#log-management)
 
 ### Weekly Checklist
+
 - [ ] Backup verification (10 min) - [Instructions](#backup-verification)
 - [ ] Security updates (15 min) - [Instructions](#security-updates)
 - [ ] Capacity review (10 min) - [Instructions](#capacity-monitoring)
 
 ### Monthly Checklist
+
 - [ ] Capacity planning (20 min) - [Instructions](#capacity-planning)
 - [ ] Cost review (15 min) - [Instructions](#cost-optimization)
 - [ ] Security audit (30 min) - [Instructions](#security-audit)
@@ -29,6 +33,7 @@ This document provides comprehensive operational procedures for cloud teams mana
 ### Pre-Installation Checklist
 
 **Infrastructure Requirements**
+
 - [ ] AWS Account with appropriate permissions
 - [ ] SSL Certificate in AWS Certificate Manager
 - [ ] Domain name with DNS control
@@ -36,6 +41,7 @@ This document provides comprehensive operational procedures for cloud teams mana
 - [ ] CloudFormation template from Quilt
 
 **Team Requirements**
+
 - [ ] Terraform >= 1.5.0 installed
 - [ ] AWS CLI configured
 - [ ] Git repository for configuration
@@ -47,6 +53,7 @@ This document provides comprehensive operational procedures for cloud teams mana
 #### Phase 1: Environment Setup (30 minutes)
 
 **1. Create Project Structure**
+
 ```bash
 # Create dedicated directory
 mkdir quilt-${ENVIRONMENT}
@@ -61,6 +68,7 @@ mkdir -p {scripts,docs,backups}
 ```
 
 **2. Download and Configure Templates**
+
 ```bash
 # Download main configuration
 curl -o main.tf https://raw.githubusercontent.com/quiltdata/iac/main/examples/main.tf
@@ -88,6 +96,7 @@ EOF
 ```
 
 **3. Configure main.tf**
+
 ```bash
 # Edit main.tf with your values
 vim main.tf
@@ -106,6 +115,7 @@ vim main.tf
 #### Phase 2: Infrastructure Deployment (45 minutes)
 
 **1. Initialize Terraform**
+
 ```bash
 # Initialize
 terraform init
@@ -121,6 +131,7 @@ terraform fmt
 ```
 
 **2. Plan Deployment**
+
 ```bash
 # Create plan
 terraform plan -out=tfplan
@@ -134,6 +145,7 @@ terraform plan -out=tfplan
 ```
 
 **3. Deploy Infrastructure**
+
 ```bash
 # Apply configuration
 terraform apply tfplan
@@ -144,6 +156,7 @@ terraform apply tfplan
 ```
 
 **4. Verify Deployment**
+
 ```bash
 # Get deployment outputs
 terraform output admin_password > admin_password.txt
@@ -168,6 +181,7 @@ done
 #### Phase 3: Initial Configuration (15 minutes)
 
 **1. Access Quilt Catalog**
+
 ```bash
 # Get credentials
 ADMIN_EMAIL=$(terraform output -raw admin_email)
@@ -180,6 +194,7 @@ echo "Password: ${ADMIN_PASSWORD}"
 ```
 
 **2. Initial Setup Tasks**
+
 - [ ] Login to Quilt catalog
 - [ ] Change default admin password
 - [ ] Configure organization settings
@@ -187,6 +202,7 @@ echo "Password: ${ADMIN_PASSWORD}"
 - [ ] Test basic functionality (upload/download)
 
 **3. Documentation**
+
 ```bash
 # Create deployment documentation
 cat > docs/deployment-info.md << EOF
@@ -221,6 +237,7 @@ EOF
 #### Daily Health Checks (5 minutes)
 
 **Automated Health Check Script**
+
 ```bash
 #!/bin/bash
 # File: scripts/daily-health-check.sh
@@ -271,6 +288,7 @@ echo "=== Health Check Complete ==="
 ```
 
 **Usage:**
+
 ```bash
 # Make script executable
 chmod +x scripts/daily-health-check.sh
@@ -285,30 +303,39 @@ chmod +x scripts/daily-health-check.sh
 #### Log Management
 
 **Application Logs**
+
 ```bash
-# View ECS service logs
-aws logs describe-log-groups --log-group-name-prefix "/aws/ecs/quilt"
+# View ECS service logs (log group name matches stack name)
+STACK_NAME=$(terraform output -raw stack_name 2>/dev/null || echo "quilt-prod")
+aws logs describe-log-groups --log-group-name-prefix "${STACK_NAME}"
 
 # Stream recent logs
-aws logs tail "/aws/ecs/quilt-prod" --follow
+aws logs tail "${STACK_NAME}" --follow
 
 # Search for errors
 aws logs filter-log-events \
-  --log-group-name "/aws/ecs/quilt-prod" \
+  --log-group-name "${STACK_NAME}" \
   --start-time $(date -d '1 hour ago' +%s)000 \
   --filter-pattern "ERROR"
 ```
 
 **Infrastructure Logs**
-```bash
-# CloudTrail logs
-aws logs filter-log-events \
-  --log-group-name "CloudTrail/QuiltAuditLogs" \
-  --start-time $(date -d '24 hours ago' +%s)000 \
-  --filter-pattern "{ $.eventName = CreateDBInstance || $.eventName = ModifyDBInstance }"
 
-# VPC Flow Logs (if enabled)
-aws logs describe-log-groups --log-group-name-prefix "/aws/vpc/flowlogs"
+```bash
+# CloudTrail logs (stored in S3 bucket, not CloudWatch Logs by default)
+# To query CloudTrail events, use AWS CLI or Athena queries against the S3 bucket
+STACK_NAME=$(terraform output -raw stack_name 2>/dev/null || echo "quilt-prod")
+
+# List CloudTrail events using AWS CLI
+aws cloudtrail lookup-events \
+  --lookup-attributes AttributeKey=ResourceName,AttributeValue="${STACK_NAME}" \
+  --max-results 50
+
+# Alternative: Query CloudTrail S3 bucket directly (requires CloudTrail bucket name)
+# aws s3 ls s3://your-cloudtrail-bucket/AWSLogs/<account-id>/CloudTrail/
+
+# Note: VPC Flow Logs are not enabled by default in the CloudFormation template
+# To enable, configure VPC Flow Logs manually in the VPC settings
 ```
 
 ### Weekly Maintenance
@@ -316,6 +343,7 @@ aws logs describe-log-groups --log-group-name-prefix "/aws/vpc/flowlogs"
 #### Backup Verification (10 minutes)
 
 **Database Backup Check**
+
 ```bash
 #!/bin/bash
 # File: scripts/verify-backups.sh
@@ -370,6 +398,7 @@ echo "=== Backup Verification Complete ==="
 #### Security Updates (15 minutes)
 
 **Update Check Script**
+
 ```bash
 #!/bin/bash
 # File: scripts/check-updates.sh
@@ -404,6 +433,7 @@ echo "=== Update Check Complete ==="
 #### Capacity Planning (20 minutes)
 
 **Capacity Analysis Script**
+
 ```bash
 #!/bin/bash
 # File: scripts/capacity-analysis.sh
@@ -473,6 +503,7 @@ echo "=== Capacity Analysis Complete ==="
 **When**: Storage utilization > 90% or disk space alerts
 
 **Immediate Actions (15 minutes)**
+
 ```bash
 #!/bin/bash
 # File: scripts/emergency-es-scaling.sh
@@ -513,6 +544,7 @@ echo "Monitor progress with: aws es describe-elasticsearch-domain --domain-name 
 **When**: CPU > 90% or connection limit reached
 
 **Immediate Actions (10 minutes)**
+
 ```bash
 #!/bin/bash
 # File: scripts/emergency-db-scaling.sh
@@ -556,6 +588,7 @@ echo "Then: terraform apply emergency-db-scaling.tfplan"
 #### Quarterly Capacity Review
 
 **Capacity Planning Worksheet**
+
 ```bash
 #!/bin/bash
 # File: scripts/quarterly-capacity-review.sh
@@ -613,6 +646,7 @@ echo "Review and plan scaling operations based on trends."
 **Recovery Procedure (30-60 minutes)**
 
 **Step 1: Assess Situation (5 minutes)**
+
 ```bash
 # Check overall service status
 QUILT_URL=$(terraform output -raw quilt_url)
@@ -627,6 +661,7 @@ aws health describe-events --filter services=EC2,RDS,ES --query 'events[?eventTy
 ```
 
 **Step 2: Component-Level Diagnosis (10 minutes)**
+
 ```bash
 STACK_NAME=$(terraform output -raw stack_name 2>/dev/null || echo "quilt-prod")
 
@@ -644,6 +679,7 @@ aws elbv2 describe-load-balancers --names "$STACK_NAME"
 ```
 
 **Step 3: Recovery Actions**
+
 ```bash
 # If infrastructure drift detected
 terraform apply -auto-approve
@@ -663,6 +699,7 @@ aws ecs update-service --cluster "$STACK_NAME" --service "$STACK_NAME" --force-n
 **Recovery Procedure (45-90 minutes)**
 
 **Step 1: Identify Recovery Point**
+
 ```bash
 STACK_NAME=$(terraform output -raw stack_name 2>/dev/null || echo "quilt-prod")
 
@@ -677,6 +714,7 @@ read -p "Enter snapshot identifier: " SNAPSHOT_ID
 ```
 
 **Step 2: Update Configuration**
+
 ```bash
 # Backup current configuration
 cp main.tf main.tf.backup
@@ -689,6 +727,7 @@ terraform plan -out=recovery.tfplan
 ```
 
 **Step 3: Execute Recovery**
+
 ```bash
 # Apply recovery configuration
 terraform apply recovery.tfplan
@@ -699,6 +738,7 @@ aws rds describe-db-instances --db-instance-identifier "$STACK_NAME" \
 ```
 
 **Step 4: Verify Recovery**
+
 ```bash
 # Test database connectivity
 QUILT_URL=$(terraform output -raw quilt_url)
@@ -715,25 +755,27 @@ sed -i '/db_snapshot_identifier/d' main.tf
 **Immediate Actions (15 minutes)**
 
 **Step 1: Isolate and Assess**
+
 ```bash
 # Get current security group rules
 STACK_NAME=$(terraform output -raw stack_name 2>/dev/null || echo "quilt-prod")
 aws ec2 describe-security-groups --filters "Name=group-name,Values=*$STACK_NAME*"
 
-# Check recent access logs
+# Check recent access logs (log group name matches stack name)
 aws logs filter-log-events \
-  --log-group-name "/aws/ecs/$STACK_NAME" \
+  --log-group-name "$STACK_NAME" \
   --start-time $(date -d '2 hours ago' +%s)000 \
   --filter-pattern "ERROR"
 
-# Check CloudTrail for suspicious activity
-aws logs filter-log-events \
-  --log-group-name "CloudTrail/QuiltAuditLogs" \
-  --start-time $(date -d '24 hours ago' +%s)000 \
-  --filter-pattern "{ $.sourceIPAddress != \"10.*\" && $.sourceIPAddress != \"172.*\" && $.sourceIPAddress != \"192.168.*\" }"
+# Check CloudTrail for suspicious activity (using CloudTrail lookup-events)
+aws cloudtrail lookup-events \
+  --start-time $(date -d '24 hours ago' +%s) \
+  --max-results 100 \
+  --query 'Events[?Username!=`null`]'
 ```
 
 **Step 2: Immediate Containment**
+
 ```bash
 # Temporarily restrict access (if needed)
 # Update security groups to allow only known IPs
@@ -747,10 +789,11 @@ aws logs filter-log-events \
 ```
 
 **Step 3: Evidence Collection**
+
 ```bash
-# Export recent logs
+# Export recent logs (log group name matches stack name)
 aws logs create-export-task \
-  --log-group-name "/aws/ecs/$STACK_NAME" \
+  --log-group-name "$STACK_NAME" \
   --from $(date -d '7 days ago' +%s)000 \
   --to $(date +%s)000 \
   --destination "security-incident-$(date +%Y%m%d)" \
@@ -770,6 +813,7 @@ aws rds create-db-snapshot \
 ### Monitoring Dashboards
 
 #### CloudWatch Dashboard Setup
+
 ```bash
 #!/bin/bash
 # File: scripts/setup-monitoring.sh
@@ -823,6 +867,7 @@ echo "Dashboard created: https://console.aws.amazon.com/cloudwatch/home?region=$
 ```
 
 #### Alert Configuration
+
 ```bash
 #!/bin/bash
 # File: scripts/setup-alerts.sh
@@ -871,6 +916,7 @@ echo "Alerts configured. Check email for subscription confirmation."
 ### Performance Monitoring
 
 #### Application Performance Monitoring
+
 ```bash
 #!/bin/bash
 # File: scripts/performance-monitoring.sh
@@ -910,6 +956,7 @@ echo "=== Performance Monitoring Complete ==="
 ### Cost Monitoring
 
 #### Monthly Cost Analysis
+
 ```bash
 #!/bin/bash
 # File: scripts/cost-analysis.sh
@@ -959,6 +1006,7 @@ echo "=== Cost Analysis Complete ==="
 ```
 
 #### Cost Optimization Recommendations
+
 ```bash
 #!/bin/bash
 # File: scripts/cost-optimization.sh
@@ -1000,6 +1048,7 @@ echo "=== Cost Optimization Complete ==="
 ### Onboarding New Team Members
 
 #### Access Setup Checklist
+
 - [ ] AWS IAM user created with appropriate permissions
 - [ ] Terraform access configured
 - [ ] Git repository access granted
@@ -1008,6 +1057,7 @@ echo "=== Cost Optimization Complete ==="
 - [ ] Training on procedures completed
 
 #### Required Permissions
+
 ```json
 {
   "Version": "2012-10-17",
@@ -1040,6 +1090,7 @@ echo "=== Cost Optimization Complete ==="
 ### Change Management
 
 #### Change Request Process
+
 1. **Planning Phase**
    - Document proposed changes
    - Assess impact and risks
@@ -1063,6 +1114,7 @@ echo "=== Cost Optimization Complete ==="
    - Conduct lessons learned review
 
 #### Emergency Change Process
+
 1. **Immediate Assessment** (5 minutes)
    - Identify scope and urgency
    - Notify team lead and stakeholders
