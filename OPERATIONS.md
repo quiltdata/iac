@@ -39,6 +39,7 @@ This document provides comprehensive operational procedures for cloud teams mana
 - [ ] Domain name with DNS control
 - [ ] S3 bucket for Terraform state
 - [ ] CloudFormation template from Quilt
+- [ ] (Optional) Separate IAM template for external IAM pattern
 
 **Team Requirements**
 
@@ -230,6 +231,235 @@ cat > docs/deployment-info.md << EOF
 EOF
 ```
 
+### Externalized IAM Pattern (Optional)
+
+#### Overview
+
+For enterprises with strict IAM governance requirements, Quilt supports deploying IAM resources in a separate CloudFormation stack. This allows security teams to manage IAM independently from application resources.
+
+**When to Use External IAM:**
+- Organization requires separate approval for IAM changes
+- Security team manages IAM resources independently
+- Compliance requires IAM resource separation
+- Multiple teams need different access controls
+
+**Default Behavior (Inline IAM):**
+- All resources (IAM + Application) in single stack
+- Simpler deployment and management
+- Recommended for most deployments
+
+#### Preparing IAM Templates
+
+**Step 1: Obtain Split Script**
+
+Contact Quilt support for the IAM split script, or use the reference script at:
+`https://github.com/quiltdata/scripts/iam-split/split_iam.py`
+
+**Step 2: Split CloudFormation Template**
+
+```bash
+# Split your monolithic template
+python3 split_iam.py \
+  --input quilt-template.yaml \
+  --output-iam quilt-iam.yaml \
+  --output-app quilt-app.yaml \
+  --config config.yaml
+
+# Validate output templates
+aws cloudformation validate-template --template-body file://quilt-iam.yaml
+aws cloudformation validate-template --template-body file://quilt-app.yaml
+```
+
+**Step 3: Upload Templates to S3**
+
+```bash
+# Upload both templates to S3
+aws s3 cp quilt-iam.yaml s3://your-templates-bucket/quilt-iam.yaml
+aws s3 cp quilt-app.yaml s3://your-templates-bucket/quilt-app.yaml
+
+# Get HTTPS URLs for Terraform configuration
+IAM_TEMPLATE_URL="https://your-templates-bucket.s3.YOUR-REGION.amazonaws.com/quilt-iam.yaml"
+APP_TEMPLATE_URL="https://your-templates-bucket.s3.YOUR-REGION.amazonaws.com/quilt-app.yaml"
+```
+
+#### Configuring External IAM in Terraform
+
+**Update main.tf:**
+
+```hcl
+module "quilt" {
+  source = "github.com/quiltdata/iac//modules/quilt?ref=main"
+
+  # Standard configuration (unchanged)
+  name              = local.name
+  quilt_web_host    = local.quilt_web_host
+  # ... other variables ...
+
+  # External IAM configuration (new)
+  iam_template_url  = "https://your-templates-bucket.s3.YOUR-REGION.amazonaws.com/quilt-iam.yaml"
+  template_url      = "https://your-templates-bucket.s3.YOUR-REGION.amazonaws.com/quilt-app.yaml"
+
+  # Optional: Override IAM stack name
+  # iam_stack_name  = "custom-iam-stack-name"
+
+  # Optional: Pass parameters to IAM template
+  # iam_parameters = {
+  #   CustomParameter = "value"
+  # }
+
+  # Optional: Tag IAM stack separately
+  # iam_tags = {
+  #   ManagedBy = "Security-Team"
+  #   Compliance = "SOC2"
+  # }
+}
+```
+
+**Verify Configuration:**
+
+```bash
+# Plan deployment
+terraform plan
+
+# Look for IAM module instantiation in plan output:
+# - module.quilt.module.iam[0] should be created
+# - module.quilt.aws_cloudformation_stack.stack should reference IAM outputs
+```
+
+#### Deployment with External IAM
+
+**Full Deployment Process:**
+
+```bash
+# Initialize Terraform (if needed)
+terraform init
+
+# Deploy both IAM and application stacks
+terraform apply
+
+# Monitor deployment
+# IAM stack deploys first (~5 minutes)
+# Application stack deploys after IAM complete (~15 minutes)
+
+# Verify IAM stack outputs
+terraform output -json | jq '.iam_role_arns'
+terraform output -json | jq '.iam_policy_arns'
+```
+
+#### Managing IAM Updates
+
+**Scenario 1: Update IAM Policies (No ARN Changes)**
+
+```bash
+# 1. Update IAM template
+vim quilt-iam.yaml
+# Modify policy statements
+
+# 2. Upload updated template
+aws s3 cp quilt-iam.yaml s3://your-templates-bucket/quilt-iam.yaml
+
+# 3. Apply changes (IAM stack only updates)
+terraform apply
+# Impact: No application downtime
+```
+
+**Scenario 2: Update IAM Resources (ARN Changes)**
+
+```bash
+# 1. Update IAM template
+vim quilt-iam.yaml
+# Modify role definitions
+
+# 2. Upload updated template
+aws s3 cp quilt-iam.yaml s3://your-templates-bucket/quilt-iam.yaml
+
+# 3. Apply changes (both stacks update)
+terraform apply
+# Impact: Brief service disruption during application stack update
+# Recommendation: Schedule during maintenance window
+```
+
+#### Migrating from Inline to External IAM
+
+**Migration Steps:**
+
+```bash
+# 1. Export current state
+terraform show > terraform-state-backup.txt
+
+# 2. Split your current template
+python3 split_iam.py \
+  --input current-template.yaml \
+  --output-iam quilt-iam.yaml \
+  --output-app quilt-app.yaml
+
+# 3. Upload templates
+aws s3 cp quilt-iam.yaml s3://your-templates-bucket/quilt-iam.yaml
+aws s3 cp quilt-app.yaml s3://your-templates-bucket/quilt-app.yaml
+
+# 4. Update main.tf with iam_template_url
+
+# 5. Plan migration
+terraform plan -out=migration.tfplan
+# Review plan carefully - should show IAM stack creation
+
+# 6. Execute migration during maintenance window
+terraform apply migration.tfplan
+
+# Note: This creates new IAM stack but may cause application stack replacement
+# Test in non-production environment first
+```
+
+#### Troubleshooting External IAM
+
+**Issue: IAM stack not found**
+
+```bash
+# Check IAM stack exists
+STACK_NAME=$(terraform output -raw stack_name 2>/dev/null || echo "quilt-prod")
+aws cloudformation describe-stacks --stack-name "${STACK_NAME}-iam"
+
+# Verify iam_template_url is set
+terraform show | grep iam_template_url
+```
+
+**Issue: Missing IAM outputs**
+
+```bash
+# Verify IAM stack has all required outputs
+aws cloudformation describe-stacks \
+  --stack-name "${STACK_NAME}-iam" \
+  --query 'Stacks[0].Outputs[].OutputKey' \
+  --output text | wc -l
+# Should show 32 outputs (24 roles + 8 policies)
+```
+
+**Issue: Application stack parameter errors**
+
+```bash
+# Check parameter transformation
+terraform console
+# Enter: module.quilt.local.iam_parameters
+# Should show map of 32 IAM parameters
+
+# Verify CloudFormation stack parameters
+aws cloudformation describe-stacks \
+  --stack-name "${STACK_NAME}" \
+  --query 'Stacks[0].Parameters[?ParameterKey==`SearchHandlerRole`]'
+```
+
+**Issue: Cannot delete IAM stack**
+
+```bash
+# Error: Export X is still imported by stack Y
+# Solution: Delete application stack first
+terraform destroy -target=module.quilt.aws_cloudformation_stack.stack
+terraform destroy -target=module.quilt.module.iam[0]
+
+# Or use full destroy (handles order automatically)
+terraform destroy
+```
+
 ## Maintenance Procedures
 
 ### Daily Operations
@@ -282,6 +512,17 @@ if [ "$DB_STATUS" = "available" ]; then
   echo "✓ Database: Available"
 else
   echo "⚠ Database: Status is $DB_STATUS"
+fi
+
+# 5. IAM Stack Health (if using external IAM)
+echo "Checking IAM stack health (if external IAM enabled)..."
+IAM_STACK_STATUS=$(aws cloudformation describe-stacks --stack-name "${STACK_NAME}-iam" --query 'Stacks[0].StackStatus' --output text 2>/dev/null || echo "not-found")
+if [ "$IAM_STACK_STATUS" = "CREATE_COMPLETE" ] || [ "$IAM_STACK_STATUS" = "UPDATE_COMPLETE" ]; then
+  echo "✓ IAM Stack: $IAM_STACK_STATUS"
+elif [ "$IAM_STACK_STATUS" = "not-found" ]; then
+  echo "ℹ IAM Stack: Using inline IAM (no separate stack)"
+else
+  echo "⚠ IAM Stack: Status is $IAM_STACK_STATUS"
 fi
 
 echo "=== Health Check Complete ==="
@@ -1097,22 +1338,26 @@ echo "=== Cost Optimization Complete ==="
    - Assess impact and risks
    - Schedule maintenance window
    - Notify stakeholders
+   - **For External IAM**: Coordinate with security team if IAM changes required
 
 2. **Testing Phase**
    - Test changes in development environment
    - Validate rollback procedures
    - Review with team lead
+   - **For External IAM**: Verify IAM policy changes don't break application
 
 3. **Implementation Phase**
    - Execute during maintenance window
    - Monitor for issues
    - Validate successful deployment
    - Update documentation
+   - **For External IAM**: Deploy IAM changes before application changes
 
 4. **Post-Implementation**
    - Confirm system stability
    - Update runbooks if needed
    - Conduct lessons learned review
+   - **For External IAM**: Verify IAM roles have correct permissions
 
 #### Emergency Change Process
 
