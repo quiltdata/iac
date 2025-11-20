@@ -2,12 +2,14 @@
 
 Deploy and maintain Quilt stacks with Terraform using this comprehensive Infrastructure as Code (IaC) repository.
 
+> **📚 Complete Documentation**: This README covers common configuration scenarios and deployment workflows. For a complete reference of all Terraform variables with types, defaults, and validation rules, see [VARIABLES.md](VARIABLES.md). For comprehensive deployment examples covering multiple scenarios, see [EXAMPLES.md](EXAMPLES.md). For operational procedures and maintenance guides, see [OPERATIONS.md](OPERATIONS.md).
+
 ## Table of Contents
 
 - [Cloud Team Operations Guide](#cloud-team-operations-guide)
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
-- [ElasticSearch Configuration](#elasticsearch-configuration)
+- [Rightsize Your Search Domain](#rightsize-your-search-domain)
 - [Database Configuration](#database-configuration)
 - [Network Configuration](#network-configuration)
 - [CloudFormation Parameters](#cloudformation-parameters)
@@ -570,7 +572,7 @@ Quilt provides Terraform-compatible CloudFormation templates via email:
 
 **Storage Considerations:**
 - **Database Storage**: 100GB minimum, auto-scaling enabled
-- **ElasticSearch Storage**: Size based on data volume (see [ElasticSearch Configuration](#elasticsearch-configuration))
+- **ElasticSearch Storage**: Size based on data volume (see [Rightsize Your Search Domain](#rightsize-your-search-domain))
 - **Application Logs**: CloudWatch Logs with appropriate retention policies
 
 ### AWS Permissions
@@ -753,96 +755,6 @@ terraform init
 terraform plan -out=tfplan
 terraform apply tfplan
 ```
-
-## ElasticSearch Configuration
-
-**This section addresses ElasticSearch EBS volume specifications and sizing.**
-
-### Understanding ElasticSearch Storage Requirements
-
-Your primary consideration is the **total data node disk size**. Calculate your storage needs using:
-
-1. **Source data size**: Average document size × total number of documents
-2. **AWS formula**: `Source data × (1 + number of replicas) × 1.45 = minimum storage requirement`
-3. **Production multiplier**: For production with 1 replica, multiply source data by 3 (rounded up from 2.9)
-
-### ElasticSearch Sizing Configurations
-
-#### Small (Development/Testing)
-```hcl
-module "quilt" {
-  # ... other configuration ...
-  
-  search_dedicated_master_enabled = false
-  search_zone_awareness_enabled   = false
-  search_instance_count          = 1
-  search_instance_type           = "m5.large.elasticsearch"
-  search_volume_size             = 512
-  search_volume_type             = "gp2"
-}
-```
-
-#### Medium (Default Production)
-```hcl
-module "quilt" {
-  # ... other configuration ...
-  
-  search_dedicated_master_enabled = true
-  search_zone_awareness_enabled   = true
-  search_instance_count          = 2
-  search_instance_type           = "m5.xlarge.elasticsearch"
-  search_volume_size             = 1024
-  search_volume_type             = "gp2"
-}
-```
-
-#### Large (High Volume)
-```hcl
-module "quilt" {
-  # ... other configuration ...
-  
-  search_dedicated_master_enabled = true
-  search_zone_awareness_enabled   = true
-  search_instance_count          = 2
-  search_instance_type           = "m5.xlarge.elasticsearch"
-  search_volume_size             = 2048  # 2TB
-  search_volume_type             = "gp3"
-}
-```
-
-#### X-Large (Enterprise)
-```hcl
-module "quilt" {
-  # ... other configuration ...
-  
-  search_dedicated_master_enabled = true
-  search_zone_awareness_enabled   = true
-  search_instance_count          = 2
-  search_instance_type           = "m5.2xlarge.elasticsearch"
-  search_volume_size             = 3072  # 3TB
-  search_volume_type             = "gp3"
-  search_volume_iops             = 16000
-}
-```
-
-### ElasticSearch Volume Types
-
-| Volume Type | Use Case | IOPS | Throughput | Cost |
-|-------------|----------|------|------------|------|
-| `gp2` | General purpose, baseline performance | 3 IOPS/GiB (min 100, max 16,000) | Up to 250 MiB/s | Lower |
-| `gp3` | General purpose, configurable performance | 3,000 baseline, up to 16,000 | 125 MiB/s baseline, up to 1,000 MiB/s | Optimized |
-| `io1` | High IOPS, consistent performance | Up to 64,000 | Up to 1,000 MiB/s | Higher |
-
-### Scaling ElasticSearch Storage
-
-**Important**: Resizing existing domains is supported but requires time and may reduce quality of service during the blue/green update. Plan for growth in your initial sizing.
-
-To increase storage:
-
-1. Update `search_volume_size` in your configuration
-2. Run `terraform plan` to verify changes
-3. Run `terraform apply` during a maintenance window
-4. Monitor the domain during the update process
 
 | Argument           | `internal = true` (private ALB for VPN)       | `internal = false` (internet-facing ALB) |
 |--------------------|-----------------------------------------------|------------------------------------------|
