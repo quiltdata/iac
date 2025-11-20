@@ -1,5 +1,13 @@
 # Changelog
 
+## Policy
+
+**Comprehensiveness**: Include all notable changes (features, fixes, breaking changes, documentation).
+**Conciseness**: Keep entries brief - one line per change when possible.
+**Clarity**: Focus on impact and outcome, not implementation details.
+
+For documentation PRs: List all major additions but avoid redundant detail. Group related changes.
+
 <!-- template:
 ## [Unreleased] - YYYY-MM-DD
 
@@ -12,31 +20,24 @@ Optional release notice.
 
 ### Documentation
 
-- [Added] Comprehensive installation and configuration documentation with step-by-step guides
-- [Added] Enterprise-aligned prerequisites section referencing docs.quilt.bio for complete guidance
-- [Added] Detailed ElasticSearch configuration guide with sizing recommendations and EBS volume calculations
-- [Added] Complete variable reference documentation (VARIABLES.md) with validation rules and examples
-- [Added] Comprehensive deployment examples (EXAMPLES.md) covering multiple scenarios and configurations
-- [Added] Cloud team operations guide (OPERATIONS.md) with installation, maintenance, and disaster recovery procedures
-- [Added] Network configuration guidance for both internet-facing and VPN-only deployments
-- [Added] AWS permissions documentation with complete IAM policy examples
-- [Added] Security, compliance, and monitoring considerations for enterprise deployments
-- [Added] Troubleshooting guides and health check procedures
+- [Added] ElasticSearch configuration guide with sizing recommendations and EBS volume calculations
+- [Added] Complete variable reference (VARIABLES.md) with validation rules and examples
+- [Added] Comprehensive deployment examples (EXAMPLES.md) for multiple scenarios
+- [Added] Installation and configuration documentation with enterprise prerequisites
+- [Added] Network, security, and AWS permissions guidance
+- [Added] Troubleshooting and health check procedures
 
 ### Security
 
-- [Changed] **BREAKING CHANGE**: Replaced all hardcoded values in examples with placeholder values to prevent accidental deployment
-- [Added] Prominent security warnings in all example configurations requiring value replacement before use
-- [Changed] AWS account IDs, regions, domains, and other sensitive values now use YOUR-* placeholder format
-- [Added] Comprehensive replacement checklists to guide safe configuration
+- [Changed] **BREAKING CHANGE**: Replaced hardcoded values with YOUR-* placeholders to prevent accidental deployment
+- [Added] Security warnings and replacement checklists in all example configurations
 
 ### Examples
 
-- [Enhanced] examples/main.tf with comprehensive configuration options and detailed comments
-- [Added] Multiple ElasticSearch sizing configurations (Small, Medium, Large, X-Large)
-- [Added] Complete authentication examples for Google OAuth, Okta, OneLogin, and Azure AD
-- [Added] Network configuration examples for existing VPC integration
-- [Added] CloudFormation parameter examples with proper validation
+- [Enhanced] examples/main.tf with comprehensive configuration options
+- [Added] ElasticSearch sizing configurations (Small, Medium, Large, X-Large)
+- [Added] Authentication examples for Google OAuth, Okta, OneLogin, and Azure AD
+- [Added] Network and CloudFormation parameter examples
 
 ## [1.3.0] - 2025-05-05
 

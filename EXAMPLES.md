@@ -7,6 +7,10 @@
 > - `YOUR-ACCOUNT-ID`: Replace with your AWS account ID
 > - `YOUR-AWS-REGION`: Replace with your AWS region (e.g., us-east-1, us-west-2)
 > - `YOUR-COMPANY`: Replace with your company/organization name
+> - `YOUR-VPC-ID`: Replace with your VPC ID (e.g., vpc-abc12345)
+> - `YOUR-*-SUBNET-*`: Replace with your subnet IDs (e.g., subnet-abc12345)
+> - `YOUR-SECURITY-GROUP-ID`: Replace with your security group ID (e.g., sg-abc12345)
+> - `YOUR-ROUTE53-ZONE-ID`: Replace with your Route53 hosted zone ID
 > - All certificate ARNs, domain names, and other placeholder values
 >
 
@@ -301,7 +305,7 @@ module "quilt" {
   
   parameters = {
     AdminEmail          = "admin@YOUR-COMPANY.com"
-    CertificateArnELB   = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
+    CertificateArnELB   = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost        = "data.YOUR-COMPANY.com"
     PasswordAuth        = "Enabled"
     GoogleAuth          = "Enabled"
@@ -329,7 +333,7 @@ module "quilt" {
   
   parameters = {
     AdminEmail          = "admin@YOUR-COMPANY.com"
-    CertificateArnELB   = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
+    CertificateArnELB   = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost        = "data.YOUR-COMPANY.com"
     PasswordAuth        = "Enabled"
     OktaAuth           = "Enabled"
@@ -358,7 +362,7 @@ module "quilt" {
   
   parameters = {
     AdminEmail        = "admin@YOUR-COMPANY.com"
-    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost      = "data.YOUR-COMPANY.com"
     PasswordAuth      = "Enabled"
     AzureAuth         = "Enabled"
@@ -378,7 +382,7 @@ module "quilt" {
   
   parameters = {
     AdminEmail           = "admin@YOUR-COMPANY.com"
-    CertificateArnELB    = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
+    CertificateArnELB    = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost         = "data.YOUR-COMPANY.com"
     
     # Enable multiple auth providers
@@ -420,7 +424,7 @@ module "quilt" {
 
   parameters = {
     AdminEmail        = "admin@YOUR-COMPANY.com"
-    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost      = "data.YOUR-COMPANY.com"
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
@@ -449,7 +453,7 @@ module "quilt" {
 
   parameters = {
     AdminEmail        = "admin@YOUR-COMPANY.com"
-    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost      = "internal-data.YOUR-COMPANY.com"
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
@@ -469,17 +473,17 @@ module "quilt" {
   # Use existing VPC
   create_new_vpc      = false
   internal           = false
-  vpc_id             = "vpc-12345678"
-  
+  vpc_id             = "YOUR-VPC-ID"
+
   # Subnet configuration for internet-facing deployment
-  intra_subnets       = ["subnet-isolated1", "subnet-isolated2"]    # For DB & ElasticSearch
-  private_subnets     = ["subnet-private1", "subnet-private2"]      # For Quilt services
-  public_subnets      = ["subnet-public1", "subnet-public2"]        # For ALB
-  user_security_group = "sg-12345678"                               # For ALB access
+  intra_subnets       = ["YOUR-ISOLATED-SUBNET-1", "YOUR-ISOLATED-SUBNET-2"]    # For DB & ElasticSearch
+  private_subnets     = ["YOUR-PRIVATE-SUBNET-1", "YOUR-PRIVATE-SUBNET-2"]      # For Quilt services
+  public_subnets      = ["YOUR-PUBLIC-SUBNET-1", "YOUR-PUBLIC-SUBNET-2"]        # For ALB
+  user_security_group = "YOUR-SECURITY-GROUP-ID"                                # For ALB access
 
   parameters = {
     AdminEmail        = "admin@YOUR-COMPANY.com"
-    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost      = "data.YOUR-COMPANY.com"
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
@@ -492,11 +496,11 @@ module "quilt" {
 ```hcl
 # Create VPC endpoint for API Gateway
 resource "aws_vpc_endpoint" "api_gateway" {
-  vpc_id              = "vpc-12345678"
+  vpc_id              = "YOUR-VPC-ID"
   service_name        = "com.amazonaws.YOUR-AWS-REGION.execute-api"
   vpc_endpoint_type   = "Interface"
-  subnet_ids          = ["subnet-private1", "subnet-private2"]
-  security_group_ids  = ["sg-12345678"]
+  subnet_ids          = ["YOUR-PRIVATE-SUBNET-1", "YOUR-PRIVATE-SUBNET-2"]
+  security_group_ids  = ["YOUR-SECURITY-GROUP-ID"]
   private_dns_enabled = true
 }
 
@@ -509,18 +513,18 @@ module "quilt" {
   # Use existing VPC for internal deployment
   create_new_vpc      = false
   internal           = true
-  vpc_id             = "vpc-12345678"
-  
+  vpc_id             = "YOUR-VPC-ID"
+
   # Subnet configuration for internal deployment
-  intra_subnets       = ["subnet-isolated1", "subnet-isolated2"]    # For DB & ElasticSearch
-  private_subnets     = ["subnet-private1", "subnet-private2"]      # For Quilt services
-  user_subnets        = ["subnet-user1", "subnet-user2"]           # For internal ALB
-  user_security_group = "sg-12345678"                               # For ALB access
+  intra_subnets       = ["YOUR-ISOLATED-SUBNET-1", "YOUR-ISOLATED-SUBNET-2"]    # For DB & ElasticSearch
+  private_subnets     = ["YOUR-PRIVATE-SUBNET-1", "YOUR-PRIVATE-SUBNET-2"]      # For Quilt services
+  user_subnets        = ["YOUR-USER-SUBNET-1", "YOUR-USER-SUBNET-2"]           # For internal ALB
+  user_security_group = "YOUR-SECURITY-GROUP-ID"                                # For ALB access
   api_endpoint        = aws_vpc_endpoint.api_gateway.id             # VPC endpoint
 
   parameters = {
     AdminEmail        = "admin@YOUR-COMPANY.com"
-    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/cert-id"
+    CertificateArnELB = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERTIFICATE-ID"
     QuiltWebHost      = "internal-data.YOUR-COMPANY.com"
     PasswordAuth      = "Enabled"
     Qurator          = "Enabled"
