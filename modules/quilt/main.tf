@@ -53,8 +53,9 @@ locals {
 
 # Data source to query IAM stack outputs (only when external IAM pattern active)
 data "aws_cloudformation_stack" "iam" {
-  count = var.iam_template_url != null ? 1 : 0
-  name  = local.iam_stack_name
+  count      = var.iam_template_url != null ? 1 : 0
+  name       = local.iam_stack_name
+  depends_on = [module.iam]
 }
 
 module "vpc" {
