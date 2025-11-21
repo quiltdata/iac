@@ -267,9 +267,7 @@ class StackValidator:
         try:
             # List roles with stack name prefix
             response = self.iam_client.list_roles()
-            roles = [
-                r for r in response["Roles"] if r["RoleName"].startswith(stack_name)
-            ]
+            roles = [r for r in response["Roles"] if r["RoleName"].startswith(stack_name)]
 
             if len(roles) < 20:  # Expect at least 20 roles
                 return ValidationResult(
@@ -349,9 +347,7 @@ class StackValidator:
             # Get ALB DNS name
             response = self.elbv2_client.describe_load_balancers()
             albs = [
-                alb
-                for alb in response["LoadBalancers"]
-                if stack_name in alb["LoadBalancerName"]
+                alb for alb in response["LoadBalancers"] if stack_name in alb["LoadBalancerName"]
             ]
 
             if not albs:
@@ -501,11 +497,7 @@ class StackValidator:
                 passed=True,
                 test_name="s3_bucket_valid",
                 message=f"S3 bucket '{bucket_name}' exists and is accessible in region '{bucket_region}'"
-                + (
-                    f" with {len(template_paths)} template(s) available"
-                    if template_paths
-                    else ""
-                ),
+                + (f" with {len(template_paths)} template(s) available" if template_paths else ""),
                 details={
                     "bucket_region": bucket_region,
                 },

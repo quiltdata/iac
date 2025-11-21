@@ -145,9 +145,7 @@ class TerraformOrchestrator:
 
         return self._run_command(cmd)
 
-    def output(
-        self, name: Optional[str] = None, json_format: bool = True
-    ) -> TerraformResult:
+    def output(self, name: Optional[str] = None, json_format: bool = True) -> TerraformResult:
         """Run terraform output.
 
         Args:
@@ -230,7 +228,7 @@ class TerraformOrchestrator:
             return TerraformResult(
                 success=False,
                 command=" ".join(cmd),
-                stdout="".join(stdout_lines) if 'stdout_lines' in locals() else "",
+                stdout="".join(stdout_lines) if "stdout_lines" in locals() else "",
                 stderr="Command timed out after 1 hour",
                 return_code=124,
             )

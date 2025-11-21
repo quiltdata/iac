@@ -39,7 +39,9 @@ class DeploymentConfig:
 
     # Templates
     template_bucket: Optional[str] = None  # S3 bucket for CloudFormation templates
-    template_prefix: Optional[str] = None  # Local path prefix for template files (e.g., "test/fixtures/stable")
+    template_prefix: Optional[str] = (
+        None  # Local path prefix for template files (e.g., "test/fixtures/stable")
+    )
     iam_template_url: Optional[str] = None
     app_template_url: Optional[str] = None
 
@@ -113,14 +115,25 @@ class DeploymentConfig:
             template_prefix=config.get("template_prefix"),  # Optional template path prefix
             # Optional authentication (from overrides or environment)
             google_client_id=overrides.get("google_client_id") or os.getenv("GOOGLE_CLIENT_ID"),
-            google_client_secret=overrides.get("google_client_secret") or os.getenv("GOOGLE_CLIENT_SECRET"),
+            google_client_secret=overrides.get("google_client_secret")
+            or os.getenv("GOOGLE_CLIENT_SECRET"),
             okta_base_url=overrides.get("okta_base_url") or os.getenv("OKTA_BASE_URL"),
             okta_client_id=overrides.get("okta_client_id") or os.getenv("OKTA_CLIENT_ID"),
-            okta_client_secret=overrides.get("okta_client_secret") or os.getenv("OKTA_CLIENT_SECRET"),
+            okta_client_secret=overrides.get("okta_client_secret")
+            or os.getenv("OKTA_CLIENT_SECRET"),
             **{
                 k: v
                 for k, v in overrides.items()
-                if k not in ["name", "pattern", "google_client_id", "google_client_secret", "okta_base_url", "okta_client_id", "okta_client_secret"]
+                if k
+                not in [
+                    "name",
+                    "pattern",
+                    "google_client_id",
+                    "google_client_secret",
+                    "okta_base_url",
+                    "okta_client_id",
+                    "okta_client_secret",
+                ]
             },
         )
 
@@ -150,9 +163,7 @@ class DeploymentConfig:
         raise ValueError("No suitable VPC found")
 
     @staticmethod
-    def _select_subnets(
-        subnets: List[Dict[str, Any]], vpc_id: str
-    ) -> List[Dict[str, Any]]:
+    def _select_subnets(subnets: List[Dict[str, Any]], vpc_id: str) -> List[Dict[str, Any]]:
         """Select public subnets in the VPC (need at least 2).
 
         Args:
@@ -166,15 +177,11 @@ class DeploymentConfig:
             ValueError: If fewer than 2 public subnets found
         """
         public_subnets = [
-            s
-            for s in subnets
-            if s["vpc_id"] == vpc_id and s["classification"] == "public"
+            s for s in subnets if s["vpc_id"] == vpc_id and s["classification"] == "public"
         ]
 
         if len(public_subnets) < 2:
-            raise ValueError(
-                f"Need at least 2 public subnets, found {len(public_subnets)}"
-            )
+            raise ValueError(f"Need at least 2 public subnets, found {len(public_subnets)}")
 
         return public_subnets[:2]  # Return first 2
 
@@ -194,11 +201,7 @@ class DeploymentConfig:
         Raises:
             ValueError: If no suitable security groups found
         """
-        sgs = [
-            sg
-            for sg in security_groups
-            if sg["vpc_id"] == vpc_id and sg.get("in_use", False)
-        ]
+        sgs = [sg for sg in security_groups if sg["vpc_id"] == vpc_id and sg.get("in_use", False)]
 
         if not sgs:
             raise ValueError(f"No suitable security groups found in VPC {vpc_id}")
@@ -206,9 +209,7 @@ class DeploymentConfig:
         return sgs[:3]  # Return up to 3
 
     @staticmethod
-    def _select_certificate(
-        certificates: List[Dict[str, Any]], domain: str
-    ) -> Dict[str, Any]:
+    def _select_certificate(certificates: List[Dict[str, Any]], domain: str) -> Dict[str, Any]:
         """Select certificate matching domain.
 
         Args:
@@ -229,9 +230,7 @@ class DeploymentConfig:
         raise ValueError(f"No valid certificate found for domain {domain}")
 
     @staticmethod
-    def _select_route53_zone(
-        zones: List[Dict[str, Any]], domain: str
-    ) -> Dict[str, Any]:
+    def _select_route53_zone(zones: List[Dict[str, Any]], domain: str) -> Dict[str, Any]:
         """Select Route53 zone matching domain.
 
         Args:
@@ -279,20 +278,24 @@ class DeploymentConfig:
 
         # Google OAuth (only if configured)
         if self.google_client_secret:
-            params.update({
-                "GoogleAuth": "Enabled",
-                "GoogleClientId": self.google_client_id or "",
-                "GoogleClientSecret": self.google_client_secret,
-            })
+            params.update(
+                {
+                    "GoogleAuth": "Enabled",
+                    "GoogleClientId": self.google_client_id or "",
+                    "GoogleClientSecret": self.google_client_secret,
+                }
+            )
 
         # Okta OAuth (only if configured)
         if self.okta_client_secret:
-            params.update({
-                "OktaAuth": "Enabled",
-                "OktaBaseUrl": self.okta_base_url or "",
-                "OktaClientId": self.okta_client_id or "",
-                "OktaClientSecret": self.okta_client_secret,
-            })
+            params.update(
+                {
+                    "OktaAuth": "Enabled",
+                    "OktaBaseUrl": self.okta_base_url or "",
+                    "OktaClientId": self.okta_client_id or "",
+                    "OktaClientSecret": self.okta_client_secret,
+                }
+            )
 
         return params
 
@@ -311,32 +314,28 @@ class DeploymentConfig:
         config = {
             "name": self.deployment_name,
             "template_file": self.get_template_file_path(),
-
             # Network configuration
             "create_new_vpc": False,  # Use existing VPC from config
             "vpc_id": self.vpc_id,
-            "intra_subnets": self._get_intra_subnets(),    # For DB & ES
-            "private_subnets": self._get_private_subnets(), # For app
-            "public_subnets": self.subnet_ids,              # For ALB
+            "intra_subnets": self._get_intra_subnets(),  # For DB & ES
+            "private_subnets": self._get_private_subnets(),  # For app
+            "public_subnets": self.subnet_ids,  # For ALB
             "user_security_group": self.security_group_ids[0] if self.security_group_ids else "",
-
             # Database configuration
             "db_instance_class": self.db_instance_class,
             "db_multi_az": False,  # Single-AZ for testing
             "db_deletion_protection": False,  # Allow deletion for testing
-
             # ElasticSearch configuration
             "search_instance_type": self.search_instance_type,
             "search_instance_count": 1,  # Single node for testing
             "search_volume_size": self.search_volume_size,
             "search_dedicated_master_enabled": False,
             "search_zone_awareness_enabled": False,
-
             # CloudFormation parameters (required + optional)
             "parameters": {
                 **self.get_required_cfn_parameters(),
                 **self.get_optional_cfn_parameters(),
-            }
+            },
         }
 
         # Add external IAM configuration if applicable
@@ -417,9 +416,7 @@ class DeploymentConfig:
             else:
                 vars_dict["iam_template_url"] = self.iam_template_url
 
-            vars_dict["template_url"] = (
-                self.app_template_url or self._default_app_template_url()
-            )
+            vars_dict["template_url"] = self.app_template_url or self._default_app_template_url()
         else:
             vars_dict["template_url"] = self._default_monolithic_template_url()
 
@@ -464,11 +461,13 @@ class DeploymentConfig:
         prefix = Path(self.template_prefix)
 
         if self.pattern == "external-iam":
+            # Upload stable-iam.yaml as quilt-iam.yaml and stable-app.yaml as quilt-app.yaml
             return {
-                str(prefix) + "-iam.yaml": TEMPLATE_IAM,
-                str(prefix) + "-app.yaml": TEMPLATE_APP,
+                str(prefix) + "-iam.yaml": "quilt-iam.yaml",
+                str(prefix) + "-app.yaml": "quilt-app.yaml",
             }
         else:
+            # Upload stable.yaml as quilt.yaml (or keep as quilt-monolithic.yaml)
             return {
-                str(prefix) + ".yaml": TEMPLATE_MONOLITHIC,
+                str(prefix) + ".yaml": "quilt.yaml",
             }
