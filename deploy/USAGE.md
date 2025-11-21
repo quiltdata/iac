@@ -237,6 +237,7 @@ The script reads `../test/fixtures/config.json` which contains:
   "environment": "iac",
   "domain": "quilttest.com",
   "email": "dev@quiltdata.io",
+  "template_bucket": "quilt-templates-iac-712023778557",
   "detected": {
     "vpcs": [...],
     "subnets": [...],
@@ -246,6 +247,16 @@ The script reads `../test/fixtures/config.json` which contains:
   }
 }
 ```
+
+**Required Fields:**
+
+- `account_id` - AWS account ID
+- `region` - AWS region (e.g., "us-east-1")
+- `environment` - Environment name (e.g., "iac", "prod", "dev")
+- `domain` - Base domain for deployment
+- `email` - Admin email address
+- `template_bucket` - S3 bucket containing CloudFormation templates (quilt-iam.yaml, quilt-app.yaml)
+- `detected` - Auto-detected AWS resources (VPCs, subnets, certificates, etc.)
 
 **Resource Selection Logic:**
 

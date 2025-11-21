@@ -32,6 +32,7 @@ class DeploymentConfig:
     pattern: str  # "external-iam" or "inline-iam"
 
     # Templates
+    template_bucket: Optional[str] = None  # S3 bucket for CloudFormation templates
     iam_template_url: Optional[str] = None
     app_template_url: Optional[str] = None
 
@@ -94,6 +95,7 @@ class DeploymentConfig:
             quilt_web_host=f"{deployment_name}.{domain}",
             admin_email=config["email"],
             pattern=overrides.get("pattern", "external-iam"),
+            template_bucket=config.get("template_bucket"),  # Optional custom bucket
             **{
                 k: v
                 for k, v in overrides.items()
@@ -274,10 +276,8 @@ class DeploymentConfig:
         Returns:
             S3 URL for IAM template
         """
-        return (
-            f"https://quilt-templates-{self.environment}-{self.aws_account_id}"
-            f".s3.{self.aws_region}.amazonaws.com/quilt-iam.yaml"
-        )
+        bucket = self.template_bucket or f"quilt-templates-{self.environment}-{self.aws_account_id}"
+        return f"https://{bucket}.s3.{self.aws_region}.amazonaws.com/quilt-iam.yaml"
 
     def _default_app_template_url(self) -> str:
         """Default application template URL.
@@ -285,10 +285,8 @@ class DeploymentConfig:
         Returns:
             S3 URL for application template
         """
-        return (
-            f"https://quilt-templates-{self.environment}-{self.aws_account_id}"
-            f".s3.{self.aws_region}.amazonaws.com/quilt-app.yaml"
-        )
+        bucket = self.template_bucket or f"quilt-templates-{self.environment}-{self.aws_account_id}"
+        return f"https://{bucket}.s3.{self.aws_region}.amazonaws.com/quilt-app.yaml"
 
     def _default_monolithic_template_url(self) -> str:
         """Default monolithic template URL.
@@ -296,7 +294,5 @@ class DeploymentConfig:
         Returns:
             S3 URL for monolithic template
         """
-        return (
-            f"https://quilt-templates-{self.environment}-{self.aws_account_id}"
-            f".s3.{self.aws_region}.amazonaws.com/quilt-monolithic.yaml"
-        )
+        bucket = self.template_bucket or f"quilt-templates-{self.environment}-{self.aws_account_id}"
+        return f"https://{bucket}.s3.{self.aws_region}.amazonaws.com/quilt-monolithic.yaml"
