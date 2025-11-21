@@ -110,11 +110,15 @@ class TerraformOrchestrator:
         cmd = [self.terraform_bin, "apply"]
 
         if plan_file:
+            # When applying a plan file, don't use -auto-approve
+            # (plan is already approved)
             cmd.append(str(plan_file))
         elif var_file:
             cmd.extend(["-var-file", str(var_file)])
-
-        if auto_approve:
+            if auto_approve:
+                cmd.append("-auto-approve")
+        elif auto_approve:
+            # No plan file, no var file, just auto-approve
             cmd.append("-auto-approve")
 
         return self._run_command(cmd)
