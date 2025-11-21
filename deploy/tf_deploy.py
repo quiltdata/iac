@@ -381,8 +381,8 @@ Examples:
         subparser.add_argument(
             "--config",
             type=Path,
-            default=Path("test/fixtures/config.json"),
-            help="Config file path",
+            default=Path("../test/fixtures/config.json"),
+            help="Config file path (default: ../test/fixtures/config.json)",
         )
         subparser.add_argument(
             "--pattern",

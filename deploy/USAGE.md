@@ -30,7 +30,7 @@ uv sync  # or: pip install -r requirements.txt
 ./tf_deploy.py [command] [options]
 ```
 
-**Note:** When using `--directory deploy` from project root, config paths should be `../test/fixtures/config.json`.
+**Note:** The default config path is `../test/fixtures/config.json`, which works from both the deploy directory and when using `--directory deploy` from project root. No need to specify `--config` for the default test configuration.
 
 ## Quick Start
 
