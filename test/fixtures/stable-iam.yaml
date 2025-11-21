@@ -62,23 +62,6 @@ Resources:
       ManagedPolicyArns:
         - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
     Type: AWS::IAM::Role
-  TabulatorOpenQueryRole:
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: ''
-            Effect: Allow
-            Principal:
-              AWS:
-                - !Sub '${AmazonECSTaskExecutionRole.Arn}'
-            Action:
-              - sts:AssumeRole
-      Path: !Sub '/quilt/${AWS::StackName}/${AWS::Region}/'
-      ManagedPolicyArns:
-        - !Ref 'BucketReadPolicy'
-        - !Ref 'UserAthenaManagedRolePolicy'
-    Type: AWS::IAM::Role
 Outputs:
   BucketReadPolicyArn:
     Description: ARN of BucketReadPolicy
@@ -119,12 +102,3 @@ Outputs:
     Export:
       Name:
         Fn::Sub: ${AWS::StackName}-TimestampResourceHandlerRoleArn
-  TabulatorOpenQueryRoleArn:
-    Description: ARN of TabulatorOpenQueryRole
-    Value:
-      Fn::GetAtt:
-        - TabulatorOpenQueryRole
-        - Arn
-    Export:
-      Name:
-        Fn::Sub: ${AWS::StackName}-TabulatorOpenQueryRoleArn

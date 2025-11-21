@@ -62,7 +62,6 @@ Metadata:
           - BucketReadPolicy
           - BucketWritePolicy
           - RegistryAssumeRolePolicy
-          - TabulatorOpenQueryRole
           - TimestampResourceHandlerRole
       - Label:
           default: GxP qualification
@@ -429,11 +428,6 @@ Parameters:
     MinLength: 1
     AllowedPattern: ^arn:aws:iam::[0-9]{12}:policy\/[a-zA-Z0-9+=,.@_\-\/]+$
     Description: ARN of the RegistryAssumeRolePolicy
-  TabulatorOpenQueryRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the TabulatorOpenQueryRole
   TimestampResourceHandlerRole:
     Type: String
     MinLength: 1
@@ -3094,7 +3088,7 @@ Resources:
             - Name: QUILT_TABULATOR_SPILL_BUCKET
               Value: !Ref 'TabulatorBucket'
             - Name: QUILT_TABULATOR_OPEN_QUERY_ROLE
-              Value: !Ref 'TabulatorOpenQueryRole'
+              Value: !GetAtt 'TabulatorOpenQueryRole.Arn'
             - Name: QUILT_TABULATOR_ENABLED
               Value: '1'
             - Name: QUILT_S3_EVENTBRIDGE_QUEUE_URL
@@ -3449,7 +3443,7 @@ Resources:
             - Name: QUILT_TABULATOR_SPILL_BUCKET
               Value: !Ref 'TabulatorBucket'
             - Name: QUILT_TABULATOR_OPEN_QUERY_ROLE
-              Value: !Ref 'TabulatorOpenQueryRole'
+              Value: !GetAtt 'TabulatorOpenQueryRole.Arn'
             - Name: QUILT_TABULATOR_ENABLED
               Value: '1'
             - Name: QUILT_S3_EVENTBRIDGE_QUEUE_URL
@@ -3989,7 +3983,7 @@ Resources:
             - Name: QUILT_TABULATOR_SPILL_BUCKET
               Value: !Ref 'TabulatorBucket'
             - Name: QUILT_TABULATOR_OPEN_QUERY_ROLE
-              Value: !Ref 'TabulatorOpenQueryRole'
+              Value: !GetAtt 'TabulatorOpenQueryRole.Arn'
             - Name: QUILT_TABULATOR_ENABLED
               Value: '1'
             - Name: QUILT_S3_EVENTBRIDGE_QUEUE_URL
@@ -6296,6 +6290,23 @@ Resources:
                                   - ','
                                   - !Ref 'S3BucketPolicyExcludeArnsFromDeny'
     Type: AWS::S3::BucketPolicy
+  TabulatorOpenQueryRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              AWS:
+                - !Sub '${AmazonECSTaskExecutionRole.Arn}'
+            Action:
+              - sts:AssumeRole
+      Path: !Sub '/quilt/${AWS::StackName}/${AWS::Region}/'
+      ManagedPolicyArns:
+        - !Ref 'BucketReadPolicy'
+        - !Ref 'UserAthenaManagedRolePolicy'
+    Type: AWS::IAM::Role
   TabulatorOpenQueryWorkGroup:
     Properties:
       Name: !Sub 'QuiltTabulatorOpenQuery-${AWS::StackName}'
