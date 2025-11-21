@@ -3,6 +3,7 @@
 # ==============================================================================
 
 # Quilt Configuration
-QUILT_CATALOG=nightly.quilttest.com
-QUILT_USER_BUCKET=quilt-example-bucket
+QUILT_CATALOG=iac-test.quilttest.com
+QUILT_USER_BUCKET=quilt-ernest-staging
 QUILT_TEMPLATE=test/stable.yaml
+QUILT_EMAIL=dev@quiltdata.io
