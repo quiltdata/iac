@@ -61,10 +61,8 @@ Metadata:
           - ApiRole
           - BucketReadPolicy
           - BucketWritePolicy
-          - ManagedUserRole
           - RegistryAssumeRolePolicy
           - S3ProxyRole
-          - T4BucketReadRole
           - TabulatorOpenQueryRole
           - TimestampResourceHandlerRole
       - Label:
@@ -427,11 +425,6 @@ Parameters:
     MinLength: 1
     AllowedPattern: ^arn:aws:iam::[0-9]{12}:policy\/[a-zA-Z0-9+=,.@_\-\/]+$
     Description: ARN of the BucketWritePolicy
-  ManagedUserRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the ManagedUserRole
   RegistryAssumeRolePolicy:
     Type: String
     MinLength: 1
@@ -442,11 +435,6 @@ Parameters:
     MinLength: 1
     AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
     Description: ARN of the S3ProxyRole
-  T4BucketReadRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the T4BucketReadRole
   TabulatorOpenQueryRole:
     Type: String
     MinLength: 1
@@ -2813,6 +2801,29 @@ Resources:
               ForAnyValue:StringEquals:
                 aws:CalledVia: athena.amazonaws.com
     Type: AWS::IAM::ManagedPolicy
+  T4BucketReadRole:
+    Properties:
+      RoleName: !Sub 'ReadQuiltV2-${AWS::StackName}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              AWS:
+                - !GetAtt 'AmazonECSTaskExecutionRole.Arn'
+                - arn:aws:iam::712023778557:user/kevin-staging
+                - arn:aws:iam::712023778557:user/ernest-staging
+                - arn:aws:iam::712023778557:user/nl0-staging
+                - arn:aws:iam::712023778557:user/sergey
+                - arn:aws:iam::712023778557:user/fiskus-staging
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - !Ref 'T4DefaultBucketReadPolicy'
+        - !Ref 'BucketReadPolicy'
+        - !Ref 'UserAthenaNonManagedRolePolicy'
+    Type: AWS::IAM::Role
   T4BucketWriteRole:
     Properties:
       RoleName: !Sub 'ReadWriteQuiltV2-${AWS::StackName}'
@@ -2900,6 +2911,38 @@ Resources:
             Action: athena:GetDataCatalog
             Resource: !Sub 'arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:datacatalog/${TabulatorDataCatalog}'
     Type: AWS::IAM::ManagedPolicy
+  ManagedUserRole:
+    Properties:
+      Path: !Sub '/quilt/${AWS::StackName}/${AWS::Region}/'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              AWS:
+                - !GetAtt 'AmazonECSTaskExecutionRole.Arn'
+                - arn:aws:iam::712023778557:user/kevin-staging
+                - arn:aws:iam::712023778557:user/ernest-staging
+                - arn:aws:iam::712023778557:user/nl0-staging
+                - arn:aws:iam::712023778557:user/sergey
+                - arn:aws:iam::712023778557:user/fiskus-staging
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - ','
+        -   - ${base_policies}${extra_policies}
+            - base_policies:
+                - ','
+                -   - !Ref 'ManagedUserRoleBasePolicy'
+                    - !Ref 'BucketReadPolicy'
+                    - !Ref 'BucketWritePolicy'
+                    - !Ref 'UserAthenaManagedRolePolicy'
+              extra_policies:
+                - ManagedUserRoleExtraPoliciesEmpty
+                - ''
+                - !Sub ',${ManagedUserRoleExtraPolicies}'
+    Type: AWS::IAM::Role
   RegistryTaskDefinition:
     Properties:
       Family: !Sub '${AWS::StackName}-registry'
@@ -2951,9 +2994,9 @@ Resources:
             - Name: QUILT_LOG_LEVEL
               Value: INFO
             - Name: QUILT_MANAGED_USER_ROLE_ARN
-              Value: !Ref 'ManagedUserRole'
+              Value: !GetAtt 'ManagedUserRole.Arn'
             - Name: QUILT_READ_ROLE_ARN
-              Value: !Ref 'T4BucketReadRole'
+              Value: !GetAtt 'T4BucketReadRole.Arn'
             - Name: QUILT_QPE_ROLE_ARN
               Value: !GetAtt 'PackagerRole.Arn'
             - Name: QUILT_SERVER_CONFIG
@@ -3243,9 +3286,9 @@ Resources:
             - Name: QUILT_LOG_LEVEL
               Value: INFO
             - Name: QUILT_MANAGED_USER_ROLE_ARN
-              Value: !Ref 'ManagedUserRole'
+              Value: !GetAtt 'ManagedUserRole.Arn'
             - Name: QUILT_READ_ROLE_ARN
-              Value: !Ref 'T4BucketReadRole'
+              Value: !GetAtt 'T4BucketReadRole.Arn'
             - Name: QUILT_QPE_ROLE_ARN
               Value: !GetAtt 'PackagerRole.Arn'
             - Name: QUILT_SERVER_CONFIG
@@ -3306,9 +3349,9 @@ Resources:
             - Name: QUILT_LOG_LEVEL
               Value: INFO
             - Name: QUILT_MANAGED_USER_ROLE_ARN
-              Value: !Ref 'ManagedUserRole'
+              Value: !GetAtt 'ManagedUserRole.Arn'
             - Name: QUILT_READ_ROLE_ARN
-              Value: !Ref 'T4BucketReadRole'
+              Value: !GetAtt 'T4BucketReadRole.Arn'
             - Name: QUILT_QPE_ROLE_ARN
               Value: !GetAtt 'PackagerRole.Arn'
             - Name: QUILT_SERVER_CONFIG
@@ -3827,9 +3870,9 @@ Resources:
             - Name: QUILT_LOG_LEVEL
               Value: INFO
             - Name: QUILT_MANAGED_USER_ROLE_ARN
-              Value: !Ref 'ManagedUserRole'
+              Value: !GetAtt 'ManagedUserRole.Arn'
             - Name: QUILT_READ_ROLE_ARN
-              Value: !Ref 'T4BucketReadRole'
+              Value: !GetAtt 'T4BucketReadRole.Arn'
             - Name: QUILT_QPE_ROLE_ARN
               Value: !GetAtt 'PackagerRole.Arn'
             - Name: QUILT_SERVER_CONFIG

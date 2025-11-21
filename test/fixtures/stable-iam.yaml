@@ -30,62 +30,6 @@ Resources:
           Action: sts:AssumeRole
           NotResource: '*'
     Type: AWS::IAM::ManagedPolicy
-  T4BucketReadRole:
-    Properties:
-      RoleName: !Sub 'ReadQuiltV2-${AWS::StackName}'
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: ''
-            Effect: Allow
-            Principal:
-              AWS:
-                - !GetAtt 'AmazonECSTaskExecutionRole.Arn'
-                - arn:aws:iam::712023778557:user/kevin-staging
-                - arn:aws:iam::712023778557:user/ernest-staging
-                - arn:aws:iam::712023778557:user/nl0-staging
-                - arn:aws:iam::712023778557:user/sergey
-                - arn:aws:iam::712023778557:user/fiskus-staging
-            Action:
-              - sts:AssumeRole
-      ManagedPolicyArns:
-        - !Ref 'T4DefaultBucketReadPolicy'
-        - !Ref 'BucketReadPolicy'
-        - !Ref 'UserAthenaNonManagedRolePolicy'
-    Type: AWS::IAM::Role
-  ManagedUserRole:
-    Properties:
-      Path: !Sub '/quilt/${AWS::StackName}/${AWS::Region}/'
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: ''
-            Effect: Allow
-            Principal:
-              AWS:
-                - !GetAtt 'AmazonECSTaskExecutionRole.Arn'
-                - arn:aws:iam::712023778557:user/kevin-staging
-                - arn:aws:iam::712023778557:user/ernest-staging
-                - arn:aws:iam::712023778557:user/nl0-staging
-                - arn:aws:iam::712023778557:user/sergey
-                - arn:aws:iam::712023778557:user/fiskus-staging
-            Action:
-              - sts:AssumeRole
-      ManagedPolicyArns: !Split
-        - ','
-        - !Sub
-            - ${base_policies}${extra_policies}
-            - base_policies: !Join
-                - ','
-                -   - !Ref 'ManagedUserRoleBasePolicy'
-                    - !Ref 'BucketReadPolicy'
-                    - !Ref 'BucketWritePolicy'
-                    - !Ref 'UserAthenaManagedRolePolicy'
-              extra_policies: !If
-                - ManagedUserRoleExtraPoliciesEmpty
-                - ''
-                - !Sub ',${ManagedUserRoleExtraPolicies}'
-    Type: AWS::IAM::Role
   S3ProxyRole:
     Properties:
       Path: !Sub '/quilt/${AWS::StackName}/${AWS::Region}/'
@@ -176,24 +120,6 @@ Outputs:
     Export:
       Name:
         Fn::Sub: ${AWS::StackName}-RegistryAssumeRolePolicyArn
-  T4BucketReadRoleArn:
-    Description: ARN of T4BucketReadRole
-    Value:
-      Fn::GetAtt:
-        - T4BucketReadRole
-        - Arn
-    Export:
-      Name:
-        Fn::Sub: ${AWS::StackName}-T4BucketReadRoleArn
-  ManagedUserRoleArn:
-    Description: ARN of ManagedUserRole
-    Value:
-      Fn::GetAtt:
-        - ManagedUserRole
-        - Arn
-    Export:
-      Name:
-        Fn::Sub: ${AWS::StackName}-ManagedUserRoleArn
   S3ProxyRoleArn:
     Description: ARN of S3ProxyRole
     Value:
