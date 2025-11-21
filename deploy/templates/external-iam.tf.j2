@@ -9,10 +9,6 @@ resource "aws_cloudformation_stack" "iam" {
 
   capabilities = ["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"]
 
-  parameters = {
-    StackNamePrefix = var.name
-  }
-
   tags = {
     Name        = "${var.name}-iam"
     Component   = "IAM"
