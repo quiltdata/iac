@@ -2,6 +2,9 @@
   "version": "1.0",
   "scanned_at": "2025-11-20T23:04:05.357Z",
   "account_id": "712023778557",
+  "dommain": "quilttest.com",
+  "environment": "iac",
+  "email": "dev@quiltdata.io",
   "region": "us-east-1",
   "detected": {
     "vpcs": [

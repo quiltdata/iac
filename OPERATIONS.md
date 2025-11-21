@@ -238,12 +238,14 @@ EOF
 For enterprises with strict IAM governance requirements, Quilt supports deploying IAM resources in a separate CloudFormation stack. This allows security teams to manage IAM independently from application resources.
 
 **When to Use External IAM:**
+
 - Organization requires separate approval for IAM changes
 - Security team manages IAM resources independently
 - Compliance requires IAM resource separation
 - Multiple teams need different access controls
 
 **Default Behavior (Inline IAM):**
+
 - All resources (IAM + Application) in single stack
 - Simpler deployment and management
 - Recommended for most deployments
