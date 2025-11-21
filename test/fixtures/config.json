@@ -6,7 +6,7 @@
   "environment": "iac",
   "email": "dev@quiltdata.io",
   "region": "us-east-1",
-  "template_bucket": "quilt-templates-iac-712023778557",
+  "template_bucket": "quilt-ernest-staging",
   "detected": {
     "vpcs": [
       {
