@@ -33,6 +33,7 @@ class StackValidator:
         self.cf_client = boto3.client("cloudformation", region_name=aws_region)
         self.iam_client = boto3.client("iam", region_name=aws_region)
         self.elbv2_client = boto3.client("elbv2", region_name=aws_region)
+        self.s3_client = boto3.client("s3", region_name=aws_region)
 
     def validate_stack(
         self, stack_name: str, expected_resources: Optional[Dict[str, int]] = None
@@ -385,4 +386,134 @@ class StackValidator:
                 passed=False,
                 test_name="application_accessible",
                 message=f"Failed to access application: {e}",
+            )
+
+    def validate_s3_bucket(
+        self,
+        bucket_name: str,
+        expected_region: Optional[str] = None,
+        template_paths: Optional[List[str]] = None,
+    ) -> ValidationResult:
+        """Validate S3 bucket exists and is accessible in the correct region.
+
+        Args:
+            bucket_name: S3 bucket name
+            expected_region: Expected bucket region (defaults to validator's region)
+            template_paths: Optional list of template paths to validate (e.g., ["quilt-iam.yaml", "quilt-app.yaml"])
+
+        Returns:
+            ValidationResult
+        """
+        if expected_region is None:
+            expected_region = self.aws_region
+
+        try:
+            # Check if bucket exists and is accessible
+            try:
+                response = self.s3_client.head_bucket(Bucket=bucket_name)
+            except self.s3_client.exceptions.NoSuchBucket:
+                return ValidationResult(
+                    passed=False,
+                    test_name="s3_bucket_exists",
+                    message=f"S3 bucket '{bucket_name}' does not exist",
+                )
+            except self.s3_client.exceptions.ClientError as e:
+                error_code = e.response.get("Error", {}).get("Code", "")
+                if error_code == "403":
+                    return ValidationResult(
+                        passed=False,
+                        test_name="s3_bucket_exists",
+                        message=f"S3 bucket '{bucket_name}' exists but access is forbidden (403)",
+                    )
+                raise
+
+            # Get bucket location
+            try:
+                location_response = self.s3_client.get_bucket_location(Bucket=bucket_name)
+                bucket_region = location_response.get("LocationConstraint")
+
+                # Handle special case: us-east-1 returns None for LocationConstraint
+                if bucket_region is None:
+                    bucket_region = "us-east-1"
+
+                # Validate region matches
+                if bucket_region != expected_region:
+                    return ValidationResult(
+                        passed=False,
+                        test_name="s3_bucket_region",
+                        message=f"S3 bucket '{bucket_name}' is in region '{bucket_region}' but expected '{expected_region}'. "
+                        f"The bucket must be in the same region as the deployment. "
+                        f"Please use endpoint: s3.{bucket_region}.amazonaws.com",
+                        details={
+                            "bucket_region": bucket_region,
+                            "expected_region": expected_region,
+                        },
+                    )
+
+            except self.s3_client.exceptions.ClientError as e:
+                error_code = e.response.get("Error", {}).get("Code", "")
+                if "301" in str(e) or "PermanentRedirect" in str(e):
+                    return ValidationResult(
+                        passed=False,
+                        test_name="s3_bucket_region",
+                        message=f"S3 bucket '{bucket_name}' exists but is in a different region. "
+                        f"The bucket must be addressed using the correct regional endpoint.",
+                    )
+                raise
+
+            # Validate template files exist and are accessible
+            if template_paths:
+                missing_templates = []
+                access_denied_templates = []
+
+                for template_path in template_paths:
+                    try:
+                        self.s3_client.head_object(Bucket=bucket_name, Key=template_path)
+                    except self.s3_client.exceptions.ClientError as e:
+                        error_code = e.response.get("Error", {}).get("Code", "")
+                        if error_code == "404":
+                            missing_templates.append(template_path)
+                        elif error_code == "403":
+                            access_denied_templates.append(template_path)
+                        else:
+                            raise
+
+                if missing_templates:
+                    return ValidationResult(
+                        passed=False,
+                        test_name="s3_templates_exist",
+                        message=f"Templates not found in bucket '{bucket_name}': {', '.join(missing_templates)}. "
+                        f"Please upload the templates to the bucket first.",
+                        details={"missing_templates": missing_templates},
+                    )
+
+                if access_denied_templates:
+                    return ValidationResult(
+                        passed=False,
+                        test_name="s3_templates_accessible",
+                        message=f"Access denied to templates in bucket '{bucket_name}': {', '.join(access_denied_templates)}. "
+                        f"CloudFormation needs read access to these templates. "
+                        f"Add a bucket policy allowing CloudFormation to read these files.",
+                        details={"access_denied_templates": access_denied_templates},
+                    )
+
+            return ValidationResult(
+                passed=True,
+                test_name="s3_bucket_valid",
+                message=f"S3 bucket '{bucket_name}' exists and is accessible in region '{bucket_region}'"
+                + (
+                    f" with {len(template_paths)} template(s) available"
+                    if template_paths
+                    else ""
+                ),
+                details={
+                    "bucket_region": bucket_region,
+                },
+            )
+
+        except Exception as e:
+            return ValidationResult(
+                passed=False,
+                test_name="s3_bucket_validation",
+                message=f"Failed to validate S3 bucket '{bucket_name}': {e}",
             )

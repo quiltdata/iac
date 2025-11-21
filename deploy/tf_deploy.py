@@ -17,7 +17,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from lib.config import DeploymentConfig
+from lib.config import (
+    DeploymentConfig,
+    TEMPLATE_APP,
+    TEMPLATE_IAM,
+    TEMPLATE_MONOLITHIC,
+)
 from lib.terraform import TerraformOrchestrator
 from lib.validator import StackValidator
 from lib.utils import confirm_action, setup_logging, write_terraform_files
@@ -54,6 +59,49 @@ class StackDeployer:
         # Initialize components
         self.terraform = TerraformOrchestrator(output_dir)
         self.validator = StackValidator(config.aws_region)
+
+    def _upload_templates(self) -> int:
+        """Upload CloudFormation templates to S3.
+
+        Returns:
+            Exit code
+        """
+        if not self.config.template_bucket:
+            self.logger.info("No template bucket configured, skipping upload")
+            return EXIT_SUCCESS
+
+        try:
+            import boto3
+
+            s3_client = boto3.client("s3", region_name=self.config.aws_region)
+
+            # Get template files from config
+            template_files = self.config.get_template_files()
+
+            for local_path, s3_key in template_files.items():
+                template_path = Path(local_path)
+
+                if not template_path.exists():
+                    self.logger.error(f"Template file not found: {template_path}")
+                    return EXIT_CONFIG_ERROR
+
+                self.logger.info(f"Uploading {template_path.name} to s3://{self.config.template_bucket}/{s3_key}")
+
+                with open(template_path, "rb") as f:
+                    s3_client.put_object(
+                        Bucket=self.config.template_bucket,
+                        Key=s3_key,
+                        Body=f,
+                        ContentType="text/yaml",
+                    )
+
+                self.logger.info(f"Successfully uploaded {s3_key}")
+
+            return EXIT_SUCCESS
+
+        except Exception as e:
+            self.logger.error(f"Failed to upload templates: {e}")
+            return EXIT_AWS_ERROR
 
     def create(self) -> int:
         """Create stack configuration files.
@@ -98,7 +146,39 @@ class StackDeployer:
         if result != EXIT_SUCCESS:
             return result
 
-        # Step 2: Initialize Terraform
+        # Step 2: Upload templates to S3 (if template bucket specified)
+        if self.config.template_bucket:
+            result = self._upload_templates()
+            if result != EXIT_SUCCESS:
+                return result
+
+        # Step 3: Validate template bucket (if specified)
+        if self.config.template_bucket:
+            self.logger.info(f"Validating S3 bucket: {self.config.template_bucket}")
+
+            # Determine which templates to validate based on pattern
+            template_paths = []
+            if self.config.pattern == "external-iam":
+                template_paths = [TEMPLATE_IAM, TEMPLATE_APP]
+            else:
+                template_paths = [TEMPLATE_MONOLITHIC]
+
+            bucket_result = self.validator.validate_s3_bucket(
+                self.config.template_bucket,
+                self.config.aws_region,
+                template_paths=template_paths,
+            )
+
+            if not bucket_result.passed:
+                self.logger.error(f"S3 bucket validation failed: {bucket_result.message}")
+                if bucket_result.details:
+                    for key, value in bucket_result.details.items():
+                        self.logger.error(f"  {key}: {value}")
+                return EXIT_VALIDATION_ERROR
+
+            self.logger.info(bucket_result.message)
+
+        # Step 4: Initialize Terraform
         self.logger.info("Initializing Terraform...")
         tf_result = self.terraform.init()
         if not tf_result.success:
@@ -106,7 +186,7 @@ class StackDeployer:
             self.logger.error(tf_result.stderr)
             return EXIT_TERRAFORM_ERROR
 
-        # Step 3: Validate
+        # Step 5: Validate Terraform configuration
         self.logger.info("Validating Terraform configuration...")
         tf_result = self.terraform.validate()
         if not tf_result.success:
@@ -114,7 +194,7 @@ class StackDeployer:
             self.logger.error(tf_result.stderr)
             return EXIT_VALIDATION_ERROR
 
-        # Step 4: Plan
+        # Step 6: Plan
         self.logger.info("Planning deployment...")
         # Use filenames relative to working directory since Terraform runs in output_dir
         plan_file = Path("terraform.tfplan")
@@ -137,13 +217,13 @@ class StackDeployer:
             self.logger.info("Dry run complete")
             return EXIT_SUCCESS
 
-        # Step 5: Confirm
+        # Step 7: Confirm
         if not auto_approve:
             if not confirm_action("Apply this plan?"):
                 self.logger.info("Deployment cancelled by user")
                 return EXIT_USER_CANCELLED
 
-        # Step 6: Apply
+        # Step 8: Apply
         self.logger.info("Applying deployment...")
         tf_result = self.terraform.apply(plan_file=plan_file, auto_approve=True)
         if not tf_result.success:
@@ -151,7 +231,7 @@ class StackDeployer:
             self.logger.error(tf_result.stderr)
             return EXIT_DEPLOYMENT_ERROR
 
-        # Step 7: Show outputs
+        # Step 9: Show outputs
         self.logger.info("Deployment complete!")
         self._show_outputs()
 

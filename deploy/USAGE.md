@@ -150,12 +150,14 @@ uv run tf_deploy.py deploy [OPTIONS]
 **Workflow:**
 
 1. Generates Terraform configuration from config.json
-2. Runs `terraform init` to initialize providers
-3. Runs `terraform validate` to check syntax
-4. Runs `terraform plan` to preview changes
-5. Prompts for confirmation (unless `--auto-approve`)
-6. Runs `terraform apply` to create resources
-7. Displays outputs
+2. Uploads CloudFormation templates to S3 (if `template_bucket` configured)
+3. Validates S3 bucket region and template accessibility
+4. Runs `terraform init` to initialize providers
+5. Runs `terraform validate` to check syntax
+6. Runs `terraform plan` to preview changes
+7. Prompts for confirmation (unless `--auto-approve`)
+8. Runs `terraform apply` to create resources
+9. Displays outputs
 
 ### validate
 
@@ -237,7 +239,8 @@ The script reads `../test/fixtures/config.json` which contains:
   "environment": "iac",
   "domain": "quilttest.com",
   "email": "dev@quiltdata.io",
-  "template_bucket": "quilt-templates-iac-712023778557",
+  "template_bucket": "aneesh-ai2-us-east-1",
+  "template_prefix": "test/fixtures/stable",
   "detected": {
     "vpcs": [...],
     "subnets": [...],
@@ -255,8 +258,16 @@ The script reads `../test/fixtures/config.json` which contains:
 - `environment` - Environment name (e.g., "iac", "prod", "dev")
 - `domain` - Base domain for deployment
 - `email` - Admin email address
-- `template_bucket` - S3 bucket containing CloudFormation templates (quilt-iam.yaml, quilt-app.yaml)
 - `detected` - Auto-detected AWS resources (VPCs, subnets, certificates, etc.)
+
+**Optional Fields:**
+
+- `template_bucket` - S3 bucket for CloudFormation templates (will be auto-uploaded before deployment)
+  - **Must be in the same region as the deployment**
+  - Script validates bucket region before deployment to prevent CloudFormation errors
+- `template_prefix` - Local path prefix for template files (e.g., "test/fixtures/stable")
+  - Used to locate template files for upload: `{prefix}-iam.yaml`, `{prefix}-app.yaml`, or `{prefix}.yaml`
+  - If not specified, template upload will be skipped
 
 **Resource Selection Logic:**
 
@@ -360,6 +371,43 @@ The script automatically selects appropriate resources:
 **Problem:** Validation tests fail
 
 **Solution:** Run with `--verbose` to see detailed validation results
+
+### S3 Bucket Errors
+
+**Problem:** `S3 bucket 'bucket-name' is in region 'us-west-1' but expected 'us-east-1'`
+
+**Solution:** The S3 bucket must be in the same region as your deployment. Either:
+
+- Update `region` in config.json to match the bucket region, OR
+- Use a different bucket that's in the correct region
+
+---
+
+**Problem:** `Templates not found in bucket 'bucket-name': quilt-iam.yaml, quilt-app.yaml`
+
+**Solution:** Ensure `template_prefix` is correctly configured in config.json. The script will automatically upload templates before deployment.
+
+---
+
+**Problem:** `Access denied to templates in bucket 'bucket-name'`
+
+**Solution:** Add a bucket policy to allow CloudFormation to read the templates:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudformation.amazonaws.com"
+      },
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::bucket-name/*"
+    }
+  ]
+}
+```
 
 ## Examples
 

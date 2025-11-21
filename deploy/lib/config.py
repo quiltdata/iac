@@ -5,6 +5,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+# Template file names
+TEMPLATE_IAM = "quilt-iam.yaml"
+TEMPLATE_APP = "quilt-app.yaml"
+TEMPLATE_MONOLITHIC = "quilt-monolithic.yaml"
+
 
 @dataclass
 class DeploymentConfig:
@@ -33,6 +38,7 @@ class DeploymentConfig:
 
     # Templates
     template_bucket: Optional[str] = None  # S3 bucket for CloudFormation templates
+    template_prefix: Optional[str] = None  # Local path prefix for template files (e.g., "test/fixtures/stable")
     iam_template_url: Optional[str] = None
     app_template_url: Optional[str] = None
 
@@ -96,6 +102,7 @@ class DeploymentConfig:
             admin_email=config["email"],
             pattern=overrides.get("pattern", "external-iam"),
             template_bucket=config.get("template_bucket"),  # Optional custom bucket
+            template_prefix=config.get("template_prefix"),  # Optional template path prefix
             **{
                 k: v
                 for k, v in overrides.items()
@@ -277,7 +284,7 @@ class DeploymentConfig:
             S3 URL for IAM template
         """
         bucket = self.template_bucket or f"quilt-templates-{self.environment}-{self.aws_account_id}"
-        return f"https://{bucket}.s3.{self.aws_region}.amazonaws.com/quilt-iam.yaml"
+        return f"https://{bucket}.s3.{self.aws_region}.amazonaws.com/{TEMPLATE_IAM}"
 
     def _default_app_template_url(self) -> str:
         """Default application template URL.
@@ -286,7 +293,7 @@ class DeploymentConfig:
             S3 URL for application template
         """
         bucket = self.template_bucket or f"quilt-templates-{self.environment}-{self.aws_account_id}"
-        return f"https://{bucket}.s3.{self.aws_region}.amazonaws.com/quilt-app.yaml"
+        return f"https://{bucket}.s3.{self.aws_region}.amazonaws.com/{TEMPLATE_APP}"
 
     def _default_monolithic_template_url(self) -> str:
         """Default monolithic template URL.
@@ -295,4 +302,25 @@ class DeploymentConfig:
             S3 URL for monolithic template
         """
         bucket = self.template_bucket or f"quilt-templates-{self.environment}-{self.aws_account_id}"
-        return f"https://{bucket}.s3.{self.aws_region}.amazonaws.com/quilt-monolithic.yaml"
+        return f"https://{bucket}.s3.{self.aws_region}.amazonaws.com/{TEMPLATE_MONOLITHIC}"
+
+    def get_template_files(self) -> Dict[str, str]:
+        """Get template file paths to upload.
+
+        Returns:
+            Dict mapping local file paths to S3 keys
+        """
+        if not self.template_prefix:
+            raise ValueError("template_prefix must be configured to upload templates")
+
+        prefix = Path(self.template_prefix)
+
+        if self.pattern == "external-iam":
+            return {
+                str(prefix) + "-iam.yaml": TEMPLATE_IAM,
+                str(prefix) + "-app.yaml": TEMPLATE_APP,
+            }
+        else:
+            return {
+                str(prefix) + ".yaml": TEMPLATE_MONOLITHIC,
+            }
