@@ -58,37 +58,15 @@ Metadata:
       - Label:
           default: IAM roles and policies
         Parameters:
-          - AccessCountsRole
-          - AmazonECSTaskExecutionRole
           - ApiRole
           - BucketReadPolicy
           - BucketWritePolicy
-          - DuckDBSelectLambdaRole
-          - EsIngestRole
-          - IcebergLambdaRole
           - ManagedUserRole
-          - ManagedUserRoleBasePolicy
-          - ManifestIndexerRole
-          - MigrationLambdaRole
-          - PackagerRole
-          - PkgEventsRole
-          - PkgPushRole
           - RegistryAssumeRolePolicy
-          - S3CopyLambdaRole
-          - S3HashLambdaRole
           - S3ProxyRole
-          - S3SNSToEventBridgeRole
-          - SearchHandlerRole
           - T4BucketReadRole
-          - T4BucketWriteRole
-          - T4DefaultBucketReadPolicy
-          - TabulatorOpenQueryPolicy
           - TabulatorOpenQueryRole
-          - TabulatorRole
           - TimestampResourceHandlerRole
-          - TrackingCronRole
-          - UserAthenaManagedRolePolicy
-          - UserAthenaNonManagedRolePolicy
       - Label:
           default: GxP qualification
         Parameters:
@@ -189,7 +167,7 @@ Outputs:
       Name: !Sub '${AWS::StackName}-PackagerQueueUrl'
   RegistryRoleARN:
     Description: ARN of execution role used for identity service. Use this to set up a trust relationship.
-    Value: !Ref 'AmazonECSTaskExecutionRole'
+    Value: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
   RegistryHost:
     Description: Hostname of the Quilt server. Create a CNAME record for <RegistryHostName> with value <LoadBalancerDNSName>.
     Value:
@@ -434,16 +412,6 @@ Parameters:
   VoilaAMI:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-  AccessCountsRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the AccessCountsRole
-  AmazonECSTaskExecutionRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the AmazonECSTaskExecutionRole
   ApiRole:
     Type: String
     MinLength: 1
@@ -459,136 +427,36 @@ Parameters:
     MinLength: 1
     AllowedPattern: ^arn:aws:iam::[0-9]{12}:policy\/[a-zA-Z0-9+=,.@_\-\/]+$
     Description: ARN of the BucketWritePolicy
-  DuckDBSelectLambdaRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the DuckDBSelectLambdaRole
-  EsIngestRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the EsIngestRole
-  IcebergLambdaRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the IcebergLambdaRole
   ManagedUserRole:
     Type: String
     MinLength: 1
     AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
     Description: ARN of the ManagedUserRole
-  ManagedUserRoleBasePolicy:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:policy\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the ManagedUserRoleBasePolicy
-  ManifestIndexerRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the ManifestIndexerRole
-  MigrationLambdaRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the MigrationLambdaRole
-  PackagerRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the PackagerRole
-  PkgEventsRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the PkgEventsRole
-  PkgPushRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the PkgPushRole
   RegistryAssumeRolePolicy:
     Type: String
     MinLength: 1
     AllowedPattern: ^arn:aws:iam::[0-9]{12}:policy\/[a-zA-Z0-9+=,.@_\-\/]+$
     Description: ARN of the RegistryAssumeRolePolicy
-  S3CopyLambdaRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the S3CopyLambdaRole
-  S3HashLambdaRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the S3HashLambdaRole
   S3ProxyRole:
     Type: String
     MinLength: 1
     AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
     Description: ARN of the S3ProxyRole
-  S3SNSToEventBridgeRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the S3SNSToEventBridgeRole
-  SearchHandlerRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the SearchHandlerRole
   T4BucketReadRole:
     Type: String
     MinLength: 1
     AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
     Description: ARN of the T4BucketReadRole
-  T4BucketWriteRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the T4BucketWriteRole
-  T4DefaultBucketReadPolicy:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:policy\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the T4DefaultBucketReadPolicy
-  TabulatorOpenQueryPolicy:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:policy\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the TabulatorOpenQueryPolicy
   TabulatorOpenQueryRole:
     Type: String
     MinLength: 1
     AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
     Description: ARN of the TabulatorOpenQueryRole
-  TabulatorRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the TabulatorRole
   TimestampResourceHandlerRole:
     Type: String
     MinLength: 1
     AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
     Description: ARN of the TimestampResourceHandlerRole
-  TrackingCronRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the TrackingCronRole
-  UserAthenaManagedRolePolicy:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:policy\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the UserAthenaManagedRolePolicy
-  UserAthenaNonManagedRolePolicy:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:policy\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the UserAthenaNonManagedRolePolicy
 Resources:
   LogGroup:
     Properties:
@@ -1185,6 +1053,55 @@ Resources:
         maxReceiveCount: 15
       SqsManagedSseEnabled: true
     Type: AWS::SQS::Queue
+  SearchHandlerRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+        - !Ref 'BucketReadPolicy'
+      Policies:
+        - PolicyName: ES
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - es:ESHttpDelete
+                  - es:ESHttpGet
+                  - es:ESHttpHead
+                  - es:ESHttpPost
+                  - es:ESHttpPut
+                Resource:
+                  - ${Arn}/*
+                  - Arn: !Ref 'SearchDomainArn'
+        - PolicyName: sqs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:DeleteMessage
+                  - sqs:ReceiveMessage
+                  - sqs:GetQueueAttributes
+                Resource: !GetAtt 'IndexerQueue.Arn'
+        - PolicyName: WriteManifestQueue
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              Effect: Allow
+              Action: sqs:SendMessage
+              Resource: !GetAtt 'ManifestIndexerQueue.Arn'
+    Type: AWS::IAM::Role
   IndexingPerBucketConfigs:
     Properties:
       Name: !Sub '/quilt/${AWS::StackName}/Indexing/PerBucketConfigs'
@@ -1198,7 +1115,7 @@ Resources:
     Type: AWS::Logs::LogGroup
   SearchHandler:
     Properties:
-      Role: !Ref 'SearchHandlerRole'
+      Role: !GetAtt 'SearchHandlerRole.Arn'
       Timeout: 900
       MemorySize: 512
       ReservedConcurrentExecutions: 80
@@ -1312,6 +1229,60 @@ Resources:
               ArnLike:
                 aws:SourceArn: !GetAtt 'EsIngestRule.Arn'
     Type: AWS::SQS::QueuePolicy
+  EsIngestRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+      Policies:
+        - PolicyName: sqs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:DeleteMessage
+                  - sqs:ReceiveMessage
+                  - sqs:GetQueueAttributes
+                Resource: !GetAtt 'EsIngestQueue.Arn'
+        - PolicyName: ES
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - es:ESHttpDelete
+                  - es:ESHttpGet
+                  - es:ESHttpHead
+                  - es:ESHttpPost
+                  - es:ESHttpPut
+                Resource:
+                  - ${Arn}/*
+                  - Arn: !Ref 'SearchDomainArn'
+        - PolicyName: ReadS3
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:DeleteObject
+                Resource:
+                  - !GetAtt 'EsIngestBucket.Arn'
+                  -   - ${BucketName}/*
+                      - BucketName: !GetAtt 'EsIngestBucket.Arn'
+    Type: AWS::IAM::Role
   EsIngestLambdaLogGroup:
     Properties:
       LogGroupName: !Sub '/quilt/${AWS::StackName}/EsIngestLambda'
@@ -1320,7 +1291,7 @@ Resources:
   EsIngestLambda:
     Properties:
       Handler: t4_lambda_es_ingest.handler
-      Role: !Ref 'EsIngestRole'
+      Role: !GetAtt 'EsIngestRole.Arn'
       Runtime: python3.11
       Timeout: 70
       MemorySize: 160
@@ -1359,6 +1330,57 @@ Resources:
         deadLetterTargetArn: !GetAtt 'ManifestIndexerDeadLetterQueue.Arn'
         maxReceiveCount: 10
     Type: AWS::SQS::Queue
+  ManifestIndexerRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+        - !Ref 'BucketReadPolicy'
+      Policies:
+        - PolicyName: sqs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:DeleteMessage
+                  - sqs:ReceiveMessage
+                  - sqs:GetQueueAttributes
+                Resource: !GetAtt 'ManifestIndexerQueue.Arn'
+        - PolicyName: ES
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - es:ESHttpDelete
+                  - es:ESHttpGet
+                  - es:ESHttpHead
+                  - es:ESHttpPost
+                  - es:ESHttpPut
+                Resource:
+                  - ${Arn}/*
+                  - Arn: !Ref 'SearchDomainArn'
+        - PolicyName: WriteS3
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource:
+                  - ${BucketName}/*
+                  - BucketName: !GetAtt 'EsIngestBucket.Arn'
+    Type: AWS::IAM::Role
   ManifestIndexerLambdaLogGroup:
     Properties:
       LogGroupName: !Sub '/quilt/${AWS::StackName}/ManifestIndexerLambda'
@@ -1367,7 +1389,7 @@ Resources:
   ManifestIndexerLambda:
     Properties:
       Handler: t4_lambda_manifest_indexer.handler
-      Role: !Ref 'ManifestIndexerRole'
+      Role: !GetAtt 'ManifestIndexerRole.Arn'
       Runtime: python3.11
       Timeout: 900
       MemorySize: 1024
@@ -1468,6 +1490,60 @@ Resources:
           SerdeInfo:
             SerializationLibrary: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
     Type: AWS::Glue::Table
+  AccessCountsRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+        - !Ref 'BucketReadPolicy'
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - athena:GetNamedQuery
+                  - athena:StartQueryExecution
+                  - athena:GetQueryExecution
+                  - athena:GetQueryResults
+                  - glue:CreateTable
+                  - glue:BatchCreatePartition
+                  - glue:DeleteTable
+                  - glue:GetDatabase
+                  - glue:GetPartition
+                  - glue:GetPartitions
+                  - glue:GetTable
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketLocation
+                  - s3:ListBucket
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:s3:::${AnalyticsBucket}'
+                  - !Sub 'arn:${AWS::Partition}:s3:::${CloudTrailBucket}'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:s3:::${CloudTrailBucket}/*'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:DeleteObject
+                  - s3:PutObject
+                Resource: !Sub 'arn:${AWS::Partition}:s3:::${AnalyticsBucket}/*'
+    Type: AWS::IAM::Role
   AccessCountsLambdaLogGroup:
     Properties:
       LogGroupName: !Sub '/quilt/${AWS::StackName}/AccessCountsLambda'
@@ -1479,7 +1555,7 @@ Resources:
         S3Bucket: !Sub 'quilt-lambda-${AWS::Region}'
         S3Key: access_counts/207546e5fbae466955781f22cf88101a78193367.zip
       Handler: index.handler
-      Role: !Ref 'AccessCountsRole'
+      Role: !GetAtt 'AccessCountsRole.Arn'
       Runtime: python3.11
       Timeout: 900
       MemorySize: 192
@@ -1598,6 +1674,40 @@ Resources:
         deadLetterTargetArn: !GetAtt 'S3SNSToEventBridgeDeadLetterQueue.Arn'
         maxReceiveCount: 5
     Type: AWS::SQS::Queue
+  S3SNSToEventBridgeRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+      Policies:
+        - PolicyName: sqs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:DeleteMessage
+                  - sqs:ReceiveMessage
+                  - sqs:GetQueueAttributes
+                Resource: !GetAtt 'S3SNSToEventBridgeQueue.Arn'
+        - PolicyName: eventbridge
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              Effect: Allow
+              Action: events:PutEvents
+              Resource: !GetAtt 'EventBus.Arn'
+    Type: AWS::IAM::Role
   S3SNSToEventBridgeLambdaLogGroup:
     Properties:
       LogGroupName: !Sub '/quilt/${AWS::StackName}/S3SNSToEventBridgeLambda'
@@ -1667,7 +1777,7 @@ Resources:
 
               return sqs_batch_response
       Handler: index.handler
-      Role: !Ref 'S3SNSToEventBridgeRole'
+      Role: !GetAtt 'S3SNSToEventBridgeRole.Arn'
       Timeout: 10
       MemorySize: 128
       ReservedConcurrentExecutions: 10
@@ -1704,6 +1814,35 @@ Resources:
         maxReceiveCount: 15
       SqsManagedSseEnabled: true
     Type: AWS::SQS::Queue
+  PkgEventsRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEventBridgeFullAccess'
+        - !Ref 'BucketReadPolicy'
+      Policies:
+        - PolicyName: sqs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:DeleteMessage
+                  - sqs:ReceiveMessage
+                  - sqs:GetQueueAttributes
+                Resource: !GetAtt 'PkgEventsQueue.Arn'
+    Type: AWS::IAM::Role
   PkgEventsLogGroup:
     Properties:
       LogGroupName: !Sub '/quilt/${AWS::StackName}/PkgEvents'
@@ -1716,7 +1855,7 @@ Resources:
         S3Bucket: !Sub 'quilt-lambda-${AWS::Region}'
         S3Key: pkgevents/207546e5fbae466955781f22cf88101a78193367.zip
       Handler: index.handler
-      Role: !Ref 'PkgEventsRole'
+      Role: !GetAtt 'PkgEventsRole.Arn'
       Timeout: 30
       MemorySize: 128
       ReservedConcurrentExecutions: 5
@@ -1767,6 +1906,35 @@ Resources:
               Bool:
                 aws:SecureTransport: 'false'
     Type: AWS::S3::BucketPolicy
+  DuckDBSelectLambdaRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+      Policies:
+        - PolicyName: allow-s3-results
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              Action:
+                - s3:ListBucket
+                - s3:GetObject
+                - s3:PutObject
+              Effect: Allow
+              Resource:
+                - !Sub '${DuckDBSelectLambdaBucket.Arn}'
+                - !Sub '${DuckDBSelectLambdaBucket.Arn}/*'
+    Type: AWS::IAM::Role
   DuckDBSelectLambdaLogGroup:
     Properties:
       LogGroupName: !Sub '/quilt/${AWS::StackName}/DuckDBSelectLambda'
@@ -1775,7 +1943,7 @@ Resources:
   DuckDBSelectLambda:
     Properties:
       Handler: duckdb_select.lambda_handler
-      Role: !Ref 'DuckDBSelectLambdaRole'
+      Role: !GetAtt 'DuckDBSelectLambdaRole.Arn'
       Runtime: python3.12
       Architectures:
         - arm64
@@ -1794,6 +1962,22 @@ Resources:
         Variables:
           RESULTS_BUCKET: !Ref 'DuckDBSelectLambdaBucket'
     Type: AWS::Lambda::Function
+  S3HashLambdaRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+    Type: AWS::IAM::Role
   S3HashLambdaLogGroup:
     Properties:
       LogGroupName: !Sub '/quilt/${AWS::StackName}/S3HashLambda'
@@ -1806,7 +1990,7 @@ Resources:
         S3Bucket: !Sub 'quilt-lambda-${AWS::Region}'
         S3Key: s3hash/c2ff6ba7309fe979c232207eaf9684fa59c278ac.zip
       Handler: t4_lambda_s3hash.lambda_handler
-      Role: !Ref 'S3HashLambdaRole'
+      Role: !GetAtt 'S3HashLambdaRole.Arn'
       Timeout: 900
       MemorySize: 512
       ReservedConcurrentExecutions: 300
@@ -1824,6 +2008,22 @@ Resources:
       LoggingConfig:
         LogGroup: !Ref 'S3HashLambdaLogGroup'
     Type: AWS::Lambda::Function
+  S3CopyLambdaRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+    Type: AWS::IAM::Role
   S3CopyLambdaLogGroup:
     Properties:
       LogGroupName: !Sub '/quilt/${AWS::StackName}/S3CopyLambda'
@@ -1836,7 +2036,7 @@ Resources:
         S3Bucket: !Sub 'quilt-lambda-${AWS::Region}'
         S3Key: s3hash/c2ff6ba7309fe979c232207eaf9684fa59c278ac.zip
       Handler: t4_lambda_s3hash.lambda_handler_copy
-      Role: !Ref 'S3CopyLambdaRole'
+      Role: !GetAtt 'S3CopyLambdaRole.Arn'
       Timeout: 900
       MemorySize: 512
       ReservedConcurrentExecutions: 150
@@ -1854,6 +2054,39 @@ Resources:
       LoggingConfig:
         LogGroup: !Ref 'S3CopyLambdaLogGroup'
     Type: AWS::Lambda::Function
+  PkgPushRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+      Policies:
+        - PolicyName: allow-s3-stored-user-requests
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              Action: s3:GetObjectVersion
+              Effect: Allow
+              Resource: !Sub '${ServiceBucket.Arn}/user-requests/create-package'
+        - PolicyName: invoke-s3-hash-lambda
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              Effect: Allow
+              Action: lambda:InvokeFunction
+              Resource:
+                - !GetAtt 'S3HashLambda.Arn'
+                - !GetAtt 'S3CopyLambda.Arn'
+    Type: AWS::IAM::Role
   PkgPromoteLogGroup:
     Properties:
       LogGroupName: !Sub '/quilt/${AWS::StackName}/PkgPromote'
@@ -1866,7 +2099,7 @@ Resources:
         S3Bucket: !Sub 'quilt-lambda-${AWS::Region}'
         S3Key: pkgpush/9e19d208a4e1899713fcae45ffce34de27b6dfc5.zip
       Handler: t4_lambda_pkgpush.promote_package
-      Role: !Ref 'PkgPushRole'
+      Role: !GetAtt 'PkgPushRole.Arn'
       Timeout: 900
       MemorySize: 1024
       ReservedConcurrentExecutions: 5
@@ -1917,7 +2150,7 @@ Resources:
         S3Bucket: !Sub 'quilt-lambda-${AWS::Region}'
         S3Key: pkgpush/9e19d208a4e1899713fcae45ffce34de27b6dfc5.zip
       Handler: t4_lambda_pkgpush.create_package
-      Role: !Ref 'PkgPushRole'
+      Role: !GetAtt 'PkgPushRole.Arn'
       Timeout: 900
       MemorySize: 1024
       ReservedConcurrentExecutions: 5
@@ -1965,6 +2198,54 @@ Resources:
         deadLetterTargetArn: !GetAtt 'PackagerDeadLetterQueue.Arn'
         maxReceiveCount: 5
     Type: AWS::SQS::Queue
+  PackagerRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+        - !Ref 'BucketReadPolicy'
+        - !Ref 'BucketWritePolicy'
+      Policies:
+        - PolicyName: sqs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:DeleteMessage
+                  - sqs:ReceiveMessage
+                  - sqs:GetQueueAttributes
+                Resource: !GetAtt 'PackagerQueue.Arn'
+        - PolicyName: invoke-s3-hash-lambda
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              Effect: Allow
+              Action: lambda:InvokeFunction
+              Resource:
+                - !GetAtt 'S3HashLambda.Arn'
+                - !GetAtt 'S3CopyLambda.Arn'
+        - PolicyName: allow-s3-service-bucket
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action: s3:GetObject
+                Effect: Allow
+                Resource: !Sub '${ServiceBucket.Arn}/scratch-buckets.json'
+              - Action: s3:PutObject
+                Effect: Allow
+                Resource: !Sub '${ServiceBucket.Arn}/user-requests/checksum-upload-tmp/*'
+    Type: AWS::IAM::Role
   PackagerLambdaLogGroup:
     Properties:
       LogGroupName: !Sub '/quilt/${AWS::StackName}/PackagerLambda'
@@ -1977,7 +2258,7 @@ Resources:
         S3Bucket: !Sub 'quilt-lambda-${AWS::Region}'
         S3Key: pkgpush/9e19d208a4e1899713fcae45ffce34de27b6dfc5.zip
       Handler: t4_lambda_pkgpush.package_prefix_sqs
-      Role: !Ref 'PackagerRole'
+      Role: !GetAtt 'PackagerRole.Arn'
       Timeout: 900
       MemorySize: 3008
       ReservedConcurrentExecutions: 5
@@ -2082,14 +2363,551 @@ Resources:
               output_uri: $.detail.runOutputUri
             InputTemplate: '{"source_prefix": "<output_uri>/"}'
     Type: AWS::Events::Rule
+  AmazonECSTaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+              AWS:
+                - arn:aws:iam::712023778557:user/kevin-staging
+                - arn:aws:iam::712023778557:user/ernest-staging
+                - arn:aws:iam::712023778557:user/nl0-staging
+                - arn:aws:iam::712023778557:user/sergey
+                - arn:aws:iam::712023778557:user/fiskus-staging
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
+        - !Ref 'BucketReadPolicy'
+        - !Ref 'BucketWritePolicy'
+        - !Ref 'RegistryAssumeRolePolicy'
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssmmessages:CreateControlChannel
+                  - ssmmessages:CreateDataChannel
+                  - ssmmessages:OpenControlChannel
+                  - ssmmessages:OpenDataChannel
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - es:ESHttpDelete
+                  - es:ESHttpGet
+                  - es:ESHttpHead
+                  - es:ESHttpPost
+                  - es:ESHttpPut
+                Resource:
+                  - ${Arn}/*
+                  - Arn: !Ref 'SearchDomainArn'
+              - Effect: Allow
+                Action:
+                  - aws-marketplace:MeterUsage
+                  - aws-marketplace:RegisterUsage
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketNotification
+                  - s3:ListBucket
+                  - s3:ListBucketVersions
+                  - s3:PutBucketNotification
+                Resource: '*'
+              - Sid: ManageScratchBuckets
+                Effect: Allow
+                Action:
+                  - s3:CreateBucket
+                  - s3:DeleteBucket
+                  - s3:DeleteObject
+                  - s3:DeleteObjectVersion
+                  - s3:ListBucketVersions
+                  - s3:PutBucketPolicy
+                  - s3:PutBucketVersioning
+                  - s3:PutLifecycleConfiguration
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:s3:::quilt-scratch-*'
+                  - !Sub 'arn:${AWS::Partition}:s3:::quilt-scratch-*/*'
+              - Effect: Allow
+                Action:
+                  - sqs:*
+                Resource:
+                  - !GetAtt 'IndexerQueue.Arn'
+                  - !GetAtt 'PkgEventsQueue.Arn'
+                  - !GetAtt 'S3SNSToEventBridgeQueue.Arn'
+              - Effect: Allow
+                Action:
+                  - sns:CreateTopic
+                  - sns:DeleteTopic
+                  - sns:GetTopicAttributes
+                  - sns:SetTopicAttributes
+                  - sns:GetSubscriptionAttributes
+                  - sns:Subscribe
+                  - sns:Unsubscribe
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - glue:BatchCreatePartition
+                  - glue:BatchDeletePartition
+                  - glue:BatchGetPartition
+                  - glue:GetPartitions
+                  - glue:CreatePartition
+                  - glue:DeletePartition
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/${AthenaDatabase}'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${AthenaDatabase}/${NamedPackagesAthenaTable}'
+              - Effect: Allow
+                Action:
+                  - iam:GetPolicy
+                  - iam:CreatePolicyVersion
+                  - iam:ListPolicyVersions
+                  - iam:DeletePolicyVersion
+                  - iam:SetDefaultPolicyVersion
+                Resource:
+                  - !Ref 'BucketReadPolicy'
+                  - !Ref 'BucketWritePolicy'
+                  - !Ref 'RegistryAssumeRolePolicy'
+              - Effect: Allow
+                Action:
+                  - iam:CreatePolicy
+                  - iam:DeletePolicy
+                  - iam:CreatePolicyVersion
+                  - iam:ListPolicyVersions
+                  - iam:DeletePolicyVersion
+                  - iam:SetDefaultPolicyVersion
+                Resource: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/quilt/${AWS::StackName}/${AWS::Region}/Quilt-*'
+              - Effect: Allow
+                Action:
+                  - lambda:GetFunctionConfiguration
+                  - lambda:UpdateFunctionConfiguration
+                Resource: !GetAtt 'SearchHandler.Arn'
+              - Effect: Allow
+                Action: ssm:PutParameter
+                Resource: !Sub 'arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${IndexingPerBucketConfigs}'
+              - Action: s3:PutObject
+                Effect: Allow
+                Resource: !Sub '${ServiceBucket.Arn}/user-requests/create-package'
+              - Action: s3:PutObject
+                Effect: Allow
+                Resource: !Sub '${ServiceBucket.Arn}/scratch-buckets.json'
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource:
+                  - !GetAtt 'PkgCreate.Arn'
+                  - !GetAtt 'PkgPromote.Arn'
+                  - !GetAtt 'DuckDBSelectLambda.Arn'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:s3:::${AnalyticsBucket}/AccessCounts/*'
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                  - s3:ListBucketVersions
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:s3:::${AnalyticsBucket}'
+                Condition:
+                  StringLike:
+                    s3:prefix:
+                      - AccessCounts/*
+              - Effect: Allow
+                Action:
+                  - synthetics:DescribeCanaries
+                  - synthetics:DescribeCanariesLastRun
+                Resource: '*'
+                Condition:
+                  ForAnyValue:StringEquals:
+                    synthetics:Names:
+                      - stabl-ctlg-bucket-ac
+                      - stabl-ctlg-uri
+                      - stabl-ctlg-pkg-create
+                      - stabl-ctlg-search
+              - Effect: Allow
+                Action:
+                  - synthetics:GetCanaryRuns
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:synthetics:${AWS::Region}:${AWS::AccountId}:canary:stabl-ctlg-bucket-ac'
+                  - !Sub 'arn:${AWS::Partition}:synthetics:${AWS::Region}:${AWS::AccountId}:canary:stabl-ctlg-uri'
+                  - !Sub 'arn:${AWS::Partition}:synthetics:${AWS::Region}:${AWS::AccountId}:canary:stabl-ctlg-pkg-create'
+                  - !Sub 'arn:${AWS::Partition}:synthetics:${AWS::Region}:${AWS::AccountId}:canary:stabl-ctlg-search'
+              - Effect: Allow
+                Action:
+                  - cloudwatch:GetMetricData
+                Resource: '*'
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource: !Sub '${StatusReportsBucket.Arn}/*'
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !Sub '${StatusReportsBucket.Arn}'
+              - Effect: Allow
+                Action: cloudformation:ListStackResources
+                Resource: !Ref 'AWS::StackId'
+              - Effect: Allow
+                Action: firehose:PutRecord
+                Resource: !Sub '${AuditTrailDeliveryStream.Arn}'
+              - Effect: Allow
+                Action:
+                  - cloudformation:DescribeStacks
+                Resource: !Ref 'AWS::StackId'
+              - Sid: ManageTablesInUserAthenaDatabase
+                Effect: Allow
+                Action:
+                  - glue:BatchDeleteTable
+                  - glue:CreateTable
+                  - glue:DeleteTable
+                  - glue:UpdateTable
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/${UserAthenaDatabase}'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${UserAthenaDatabase}/*'
+              - Sid: UserAthenaManageWorkGroups
+                Effect: Allow
+                Action:
+                  - athena:CreateWorkGroup
+                  - athena:DeleteWorkGroup
+                  - athena:UpdateWorkGroup
+                  - s3:GetBucketLocation
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:workgroup/QuiltUserAthena-*'
+                  - !Sub '${UserAthenaResultsBucket.Arn}'
+              - Effect: Allow
+                Action:
+                  - events:DescribeRule
+                  - events:DisableRule
+                  - events:EnableRule
+                Resource:
+                  - !GetAtt 'PackagerROCrateRule.Arn'
+                  - !GetAtt 'PackagerOmicsRule.Arn'
+              - Effect: Allow
+                Action:
+                  - athena:BatchGetNamedQuery
+                  - athena:BatchGetQueryExecution
+                  - athena:GetNamedQuery
+                  - athena:GetQueryExecution
+                  - athena:GetQueryResults
+                  - athena:GetWorkGroup
+                  - athena:StartQueryExecution
+                  - athena:StopQueryExecution
+                  - athena:ListNamedQueries
+                  - athena:ListQueryExecutions
+                Resource: !Sub 'arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:workgroup/${IcebergWorkGroup}'
+              - Effect: Allow
+                Action:
+                  - glue:GetDatabase
+                  - glue:GetDatabases
+                  - glue:GetTable
+                  - glue:GetTables
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/${UserAthenaDatabase}'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${UserAthenaDatabase}/*'
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:AbortMultipartUpload
+                  - s3:ListMultipartUploadParts
+                  - glue:GetDatabase
+                  - glue:GetDatabases
+                  - glue:GetTable
+                  - glue:GetTables
+                  - glue:UpdateTable
+                Resource:
+                  - !Sub '${IcebergBucket.Arn}'
+                  - !Sub '${IcebergBucket.Arn}/package_manifest/*'
+                  - !Sub '${IcebergBucket.Arn}/package_entry/*'
+                  - !Sub '${IcebergBucket.Arn}/package_revision/*'
+                  - !Sub '${IcebergBucket.Arn}/package_tag/*'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/${IcebergDatabase}'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${IcebergDatabase}/package_manifest'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${IcebergDatabase}/package_entry'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${IcebergDatabase}/package_revision'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${IcebergDatabase}/package_tag'
+              - Effect: Allow
+                Action:
+                  - glue:GetDatabase
+                  - glue:GetDatabases
+                  - glue:GetTable
+                  - glue:GetTables
+                  - glue:CreateTable
+                  - glue:UpdateTable
+                  - glue:DeleteTable
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/${IcebergDatabase}'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${IcebergDatabase}/package_manifest'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${IcebergDatabase}/package_entry'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${IcebergDatabase}/package_revision'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${IcebergDatabase}/package_tag'
+    Type: AWS::IAM::Role
+  T4DefaultBucketReadPolicy:
+    Properties:
+      ManagedPolicyName: !Sub 'ReadQuiltPolicy-${AWS::StackName}'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:GetObjectVersion
+            Resource:
+              - !Sub 'arn:${AWS::Partition}:s3:::${AnalyticsBucket}/AccessCounts/*'
+          - Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:ListBucketVersions
+            Resource:
+              - !Sub 'arn:${AWS::Partition}:s3:::${AnalyticsBucket}'
+            Condition:
+              StringLike:
+                s3:prefix:
+                  - AccessCounts/*
+          - Action: s3:GetObject
+            Effect: Allow
+            Resource: !Sub '${ServiceBucket.Arn}/catalog/settings.json'
+          - Effect: Allow
+            Action: s3:GetObject
+            Resource: !Sub '${StatusReportsBucket.Arn}/*'
+          - Effect: Allow
+            Action: s3:ListBucket
+            Resource: !Sub '${StatusReportsBucket.Arn}'
+          -   - QuratorEnabled
+              - Effect: Allow
+                Action: bedrock:InvokeModel
+                Resource: '*'
+              - Effect: Allow
+                Action: bedrock:InvokeModel
+                NotResource: '*'
+          - Effect: Allow
+            Action: lambda:InvokeFunction
+            Resource: !GetAtt 'TabulatorLambda.Arn'
+            Condition:
+              ForAnyValue:StringEquals:
+                aws:CalledVia: athena.amazonaws.com
+          - Effect: Allow
+            Action: athena:GetDataCatalog
+            Resource: !Sub 'arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:datacatalog/${TabulatorDataCatalog}'
+    Type: AWS::IAM::ManagedPolicy
+  UserAthenaNonManagedRolePolicy:
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - athena:BatchGetNamedQuery
+              - athena:BatchGetQueryExecution
+              - athena:GetNamedQuery
+              - athena:GetQueryExecution
+              - athena:GetQueryResults
+              - athena:GetWorkGroup
+              - athena:StartQueryExecution
+              - athena:StopQueryExecution
+              - athena:ListNamedQueries
+              - athena:ListQueryExecutions
+            Resource: !Sub 'arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:workgroup/${UserAthenaNonManagedRoleWorkgroup}'
+          - Effect: Allow
+            Action:
+              - athena:ListWorkGroups
+              - athena:ListDataCatalogs
+              - athena:ListDatabases
+            Resource: '*'
+          - Effect: Allow
+            Action:
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:PutObject
+              - s3:AbortMultipartUpload
+              - s3:ListMultipartUploadParts
+              - glue:GetDatabase
+              - glue:GetDatabases
+              - glue:GetTable
+              - glue:GetTables
+            Resource:
+              - !Sub '${UserAthenaResultsBucket.Arn}'
+              - !Sub '${UserAthenaResultsBucket.Arn}/athena-results/non-managed-roles/*'
+              - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog'
+              - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/${UserAthenaDatabase}'
+              - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${UserAthenaDatabase}/*'
+            Condition:
+              ForAnyValue:StringEquals:
+                aws:CalledVia: athena.amazonaws.com
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:ListBucket
+            Resource:
+              - !Sub '${TabulatorBucket.Arn}'
+              - !Sub '${TabulatorBucket.Arn}/spill/non-managed-roles/*'
+              - !Sub '${TabulatorBucket.Arn}/spill/open-query/*'
+            Condition:
+              ForAnyValue:StringEquals:
+                aws:CalledVia: athena.amazonaws.com
+    Type: AWS::IAM::ManagedPolicy
+  UserAthenaManagedRolePolicy:
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - athena:BatchGetNamedQuery
+              - athena:BatchGetQueryExecution
+              - athena:GetNamedQuery
+              - athena:GetQueryExecution
+              - athena:GetQueryResults
+              - athena:GetWorkGroup
+              - athena:StartQueryExecution
+              - athena:StopQueryExecution
+              - athena:ListNamedQueries
+              - athena:ListQueryExecutions
+            Resource: !Sub 'arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:workgroup/*'
+          - Effect: Allow
+            Action:
+              - athena:ListWorkGroups
+              - athena:ListDataCatalogs
+              - athena:ListDatabases
+            Resource: '*'
+          - Effect: Allow
+            Action:
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:PutObject
+              - s3:AbortMultipartUpload
+              - s3:ListMultipartUploadParts
+              - glue:GetDatabase
+              - glue:GetDatabases
+              - glue:GetTable
+              - glue:GetTables
+            Resource:
+              - !Sub '${UserAthenaResultsBucket.Arn}'
+              - !Sub '${UserAthenaResultsBucket.Arn}/athena-results/*/*'
+              - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog'
+              - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/${UserAthenaDatabase}'
+              - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${UserAthenaDatabase}/*'
+            Condition:
+              ForAnyValue:StringEquals:
+                aws:CalledVia: athena.amazonaws.com
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:ListBucket
+            Resource:
+              - !Sub '${TabulatorBucket.Arn}'
+              - !Sub '${TabulatorBucket.Arn}/spill/*/*'
+              - !Sub '${TabulatorBucket.Arn}/spill/open-query/*'
+            Condition:
+              ForAnyValue:StringEquals:
+                aws:CalledVia: athena.amazonaws.com
+    Type: AWS::IAM::ManagedPolicy
+  T4BucketWriteRole:
+    Properties:
+      RoleName: !Sub 'ReadWriteQuiltV2-${AWS::StackName}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              AWS:
+                - !GetAtt 'AmazonECSTaskExecutionRole.Arn'
+                - arn:aws:iam::712023778557:user/kevin-staging
+                - arn:aws:iam::712023778557:user/ernest-staging
+                - arn:aws:iam::712023778557:user/nl0-staging
+                - arn:aws:iam::712023778557:user/sergey
+                - arn:aws:iam::712023778557:user/fiskus-staging
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - !Ref 'T4DefaultBucketReadPolicy'
+        - !Ref 'BucketReadPolicy'
+        - !Ref 'BucketWritePolicy'
+        - !Ref 'UserAthenaNonManagedRolePolicy'
+      Policies:
+        - PolicyName: catalog-config
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action: s3:PutObject
+                Effect: Allow
+                Resource: !Sub '${ServiceBucket.Arn}/catalog/settings.json'
+              - Action: s3:PutObject
+                Effect: Allow
+                Resource: !Sub '${ServiceBucket.Arn}/user-requests/checksum-upload-tmp/*'
+    Type: AWS::IAM::Role
+  ManagedUserRoleBasePolicy:
+    Properties:
+      Path: !Sub '/quilt/${AWS::StackName}/${AWS::Region}/'
+      Description: Base policy applied for all managed roles.
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:GetObjectVersion
+            Resource:
+              - !Sub 'arn:${AWS::Partition}:s3:::${AnalyticsBucket}/AccessCounts/*'
+          - Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:ListBucketVersions
+            Resource:
+              - !Sub 'arn:${AWS::Partition}:s3:::${AnalyticsBucket}'
+            Condition:
+              StringLike:
+                s3:prefix:
+                  - AccessCounts/*
+          - Action: s3:GetObject
+            Effect: Allow
+            Resource: !Sub '${ServiceBucket.Arn}/catalog/settings.json'
+          - Action: s3:PutObject
+            Effect: Allow
+            Resource: !Sub '${ServiceBucket.Arn}/user-requests/checksum-upload-tmp/*'
+          - Effect: Allow
+            Action: s3:GetObject
+            Resource: !Sub '${StatusReportsBucket.Arn}/*'
+          - Effect: Allow
+            Action: s3:ListBucket
+            Resource: !Sub '${StatusReportsBucket.Arn}'
+          -   - QuratorEnabled
+              - Effect: Allow
+                Action: bedrock:InvokeModel
+                Resource: '*'
+              - Effect: Allow
+                Action: bedrock:InvokeModel
+                NotResource: '*'
+          - Effect: Allow
+            Action: lambda:InvokeFunction
+            Resource: !GetAtt 'TabulatorLambda.Arn'
+            Condition:
+              ForAnyValue:StringEquals:
+                aws:CalledVia: athena.amazonaws.com
+          - Effect: Allow
+            Action: athena:GetDataCatalog
+            Resource: !Sub 'arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:datacatalog/${TabulatorDataCatalog}'
+    Type: AWS::IAM::ManagedPolicy
   RegistryTaskDefinition:
     Properties:
       Family: !Sub '${AWS::StackName}-registry'
       RequiresCompatibilities:
         - FARGATE
       NetworkMode: awsvpc
-      ExecutionRoleArn: !Ref 'AmazonECSTaskExecutionRole'
-      TaskRoleArn: !Ref 'AmazonECSTaskExecutionRole'
+      ExecutionRoleArn: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
+      TaskRoleArn: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
       Cpu: '1024'
       Memory: 2GB
       ContainerDefinitions:
@@ -2137,11 +2955,11 @@ Resources:
             - Name: QUILT_READ_ROLE_ARN
               Value: !Ref 'T4BucketReadRole'
             - Name: QUILT_QPE_ROLE_ARN
-              Value: !Ref 'PackagerRole'
+              Value: !GetAtt 'PackagerRole.Arn'
             - Name: QUILT_SERVER_CONFIG
               Value: prod_config.py
             - Name: QUILT_WRITE_ROLE_ARN
-              Value: !Ref 'T4BucketWriteRole'
+              Value: !GetAtt 'T4BucketWriteRole.Arn'
             - Name: SQLALCHEMY_DATABASE_URI
               Value: !Ref 'DBUrl'
             - Name: QUILT_QPE_RO_CRATE_RULE_ARN
@@ -2398,8 +3216,8 @@ Resources:
       RequiresCompatibilities:
         - FARGATE
       NetworkMode: awsvpc
-      ExecutionRoleArn: !Ref 'AmazonECSTaskExecutionRole'
-      TaskRoleArn: !Ref 'AmazonECSTaskExecutionRole'
+      ExecutionRoleArn: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
+      TaskRoleArn: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
       Cpu: '512'
       Memory: 2GB
       ContainerDefinitions:
@@ -2429,11 +3247,11 @@ Resources:
             - Name: QUILT_READ_ROLE_ARN
               Value: !Ref 'T4BucketReadRole'
             - Name: QUILT_QPE_ROLE_ARN
-              Value: !Ref 'PackagerRole'
+              Value: !GetAtt 'PackagerRole.Arn'
             - Name: QUILT_SERVER_CONFIG
               Value: prod_config.py
             - Name: QUILT_WRITE_ROLE_ARN
-              Value: !Ref 'T4BucketWriteRole'
+              Value: !GetAtt 'T4BucketWriteRole.Arn'
             - Name: SQLALCHEMY_DATABASE_URI
               Value: !Ref 'DBUrl'
             - Name: QUILT_QPE_RO_CRATE_RULE_ARN
@@ -2461,8 +3279,8 @@ Resources:
       RequiresCompatibilities:
         - FARGATE
       NetworkMode: awsvpc
-      ExecutionRoleArn: !Ref 'AmazonECSTaskExecutionRole'
-      TaskRoleArn: !Ref 'AmazonECSTaskExecutionRole'
+      ExecutionRoleArn: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
+      TaskRoleArn: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
       Cpu: '512'
       Memory: 2GB
       ContainerDefinitions:
@@ -2492,11 +3310,11 @@ Resources:
             - Name: QUILT_READ_ROLE_ARN
               Value: !Ref 'T4BucketReadRole'
             - Name: QUILT_QPE_ROLE_ARN
-              Value: !Ref 'PackagerRole'
+              Value: !GetAtt 'PackagerRole.Arn'
             - Name: QUILT_SERVER_CONFIG
               Value: prod_config.py
             - Name: QUILT_WRITE_ROLE_ARN
-              Value: !Ref 'T4BucketWriteRole'
+              Value: !GetAtt 'T4BucketWriteRole.Arn'
             - Name: SQLALCHEMY_DATABASE_URI
               Value: !Ref 'DBUrl'
             - Name: QUILT_QPE_RO_CRATE_RULE_ARN
@@ -2683,7 +3501,7 @@ Resources:
       RequiresCompatibilities:
         - FARGATE
       NetworkMode: awsvpc
-      ExecutionRoleArn: !Ref 'AmazonECSTaskExecutionRole'
+      ExecutionRoleArn: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
       TaskRoleArn: !Ref 'S3ProxyRole'
       Cpu: '256'
       Memory: 1GB
@@ -2724,6 +3542,45 @@ Resources:
         - Name: nginx-var-lib-nginx-tmp
         - Name: nginx-run
     Type: AWS::ECS::TaskDefinition
+  MigrationLambdaRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecs:RunTask
+                Resource:
+                  - !Ref 'RegistryMigrationTaskDefinition'
+                  - !Ref 'TrackingTaskDefinition'
+                Condition:
+                  ArnEquals:
+                    ecs:cluster: !GetAtt 'Cluster.Arn'
+        - PolicyName: passon
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
+    Type: AWS::IAM::Role
   MigrationLambdaFunctionLogGroup:
     Properties:
       LogGroupName: !Sub '/quilt/${AWS::StackName}/MigrationLambdaFunction'
@@ -2732,7 +3589,7 @@ Resources:
   MigrationLambdaFunction:
     Properties:
       Handler: index.handler
-      Role: !Ref 'MigrationLambdaRole'
+      Role: !GetAtt 'MigrationLambdaRole.Arn'
       Code:
         ZipFile: |
           import json
@@ -2943,8 +3800,8 @@ Resources:
       RequiresCompatibilities:
         - FARGATE
       NetworkMode: awsvpc
-      ExecutionRoleArn: !Ref 'AmazonECSTaskExecutionRole'
-      TaskRoleArn: !Ref 'AmazonECSTaskExecutionRole'
+      ExecutionRoleArn: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
+      TaskRoleArn: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
       Cpu: '512'
       Memory: 2GB
       ContainerDefinitions:
@@ -2974,11 +3831,11 @@ Resources:
             - Name: QUILT_READ_ROLE_ARN
               Value: !Ref 'T4BucketReadRole'
             - Name: QUILT_QPE_ROLE_ARN
-              Value: !Ref 'PackagerRole'
+              Value: !GetAtt 'PackagerRole.Arn'
             - Name: QUILT_SERVER_CONFIG
               Value: prod_config.py
             - Name: QUILT_WRITE_ROLE_ARN
-              Value: !Ref 'T4BucketWriteRole'
+              Value: !GetAtt 'T4BucketWriteRole.Arn'
             - Name: SQLALCHEMY_DATABASE_URI
               Value: !Ref 'DBUrl'
             - Name: QUILT_QPE_RO_CRATE_RULE_ARN
@@ -3196,13 +4053,49 @@ Resources:
             - !Ref 'SearchClusterAccessorSecurityGroup'
           subnets: !Ref 'Subnets'
     Type: Custom::LambdaCallout
+  TrackingCronRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - events.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecs:RunTask
+                Resource: !Ref 'TrackingTaskDefinition'
+                Condition:
+                  ArnEquals:
+                    ecs:cluster: !GetAtt 'Cluster.Arn'
+        - PolicyName: passon
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
+    Type: AWS::IAM::Role
   TrackingCron:
     Properties:
       ScheduleExpression: rate(1 day)
       Targets:
         - Id: TrackingCallout
           Arn: !GetAtt 'Cluster.Arn'
-          RoleArn: !Ref 'TrackingCronRole'
+          RoleArn: !GetAtt 'TrackingCronRole.Arn'
           EcsParameters:
             TaskDefinitionArn: !Ref 'TrackingTaskDefinition'
             LaunchType: FARGATE
@@ -3308,8 +4201,8 @@ Resources:
       RequiresCompatibilities:
         - FARGATE
       NetworkMode: awsvpc
-      ExecutionRoleArn: !Ref 'AmazonECSTaskExecutionRole'
-      TaskRoleArn: !Ref 'AmazonECSTaskExecutionRole'
+      ExecutionRoleArn: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
+      TaskRoleArn: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
       Cpu: '256'
       Memory: '0.5GB'
       ContainerDefinitions:
@@ -5185,6 +6078,42 @@ Resources:
             AbortIncompleteMultipartUpload:
               DaysAfterInitiation: 1
     Type: AWS::S3::Bucket
+  TabulatorRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+      Policies:
+        - PolicyName: allow-spill
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              Action: s3:PutObject
+              Effect: Allow
+              Resource: !Sub '${TabulatorBucket.Arn}/spill/*'
+        - PolicyName: allow-cache
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              Action:
+                - s3:GetObject
+                - s3:ListBucket
+                - s3:PutObject
+              Effect: Allow
+              Resource:
+                - !Sub '${TabulatorBucket.Arn}'
+                - !Sub '${TabulatorBucket.Arn}/cache/*'
+    Type: AWS::IAM::Role
   TabulatorSecurityGroup:
     Properties:
       GroupDescription: Access registry internal port for tabulator API
@@ -5210,7 +6139,7 @@ Resources:
     Type: AWS::Logs::LogGroup
   TabulatorLambda:
     Properties:
-      Role: !Ref 'TabulatorRole'
+      Role: !GetAtt 'TabulatorRole.Arn'
       PackageType: Image
       Timeout: 900
       MemorySize: 2048
@@ -5322,6 +6251,62 @@ Resources:
           ExpectedBucketOwner: !Ref 'AWS::AccountId'
           OutputLocation: !Sub 's3://${UserAthenaResultsBucket}/athena-results/non-managed-roles/'
     Type: AWS::Athena::WorkGroup
+  TabulatorOpenQueryPolicy:
+    Properties:
+      Path: !Sub '/quilt/${AWS::StackName}/${AWS::Region}/'
+      Description: Allow querying Tabulator tables in open query mode
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AccessWorkGroup
+            Effect: Allow
+            Action:
+              - athena:BatchGetNamedQuery
+              - athena:BatchGetQueryExecution
+              - athena:GetNamedQuery
+              - athena:GetQueryExecution
+              - athena:GetQueryResults
+              - athena:GetWorkGroup
+              - athena:StartQueryExecution
+              - athena:StopQueryExecution
+              - athena:ListNamedQueries
+              - athena:ListQueryExecutions
+            Resource: !Sub 'arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:workgroup/${TabulatorOpenQueryWorkGroup}'
+          - Sid: ListAthenaResources
+            Effect: Allow
+            Action:
+              - athena:ListWorkGroups
+              - athena:ListDataCatalogs
+              - athena:ListDatabases
+            Resource: '*'
+          - Sid: AccessTabulatorDataCatalog
+            Effect: Allow
+            Action: athena:GetDataCatalog
+            Resource: !Sub 'arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:datacatalog/${TabulatorDataCatalog}'
+          - Sid: AccessTabulatorLambda
+            Effect: Allow
+            Action: lambda:InvokeFunction
+            Resource: !GetAtt 'TabulatorLambda.Arn'
+          - Sid: AccessAthenaResults
+            Effect: Allow
+            Action:
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:PutObject
+              - s3:AbortMultipartUpload
+              - s3:ListMultipartUploadParts
+            Resource:
+              - !Sub '${UserAthenaResultsBucket.Arn}'
+              - !Sub '${UserAthenaResultsBucket.Arn}/athena-results/non-managed-roles/*'
+          - Sid: AccessTabulatorSpill
+            Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:ListBucket
+            Resource:
+              - !Sub '${TabulatorBucket.Arn}'
+              - !Sub '${TabulatorBucket.Arn}/spill/open-query/*'
+    Type: AWS::IAM::ManagedPolicy
   IcebergDatabase:
     Properties:
       CatalogId: !Ref 'AWS::AccountId'
@@ -5409,6 +6394,85 @@ Resources:
               ArnEquals:
                 aws:SourceArn: !GetAtt 'IcebergLambdaRule.Arn'
     Type: AWS::SQS::QueuePolicy
+  IcebergLambdaRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+        - !Ref 'BucketReadPolicy'
+      Policies:
+        - PolicyName: sqs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:DeleteMessage
+                  - sqs:ReceiveMessage
+                  - sqs:GetQueueAttributes
+                Resource: !GetAtt 'IcebergLambdaQueue.Arn'
+        - PolicyName: allow-athena
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - athena:BatchGetNamedQuery
+                  - athena:BatchGetQueryExecution
+                  - athena:GetNamedQuery
+                  - athena:GetQueryExecution
+                  - athena:GetQueryResults
+                  - athena:GetWorkGroup
+                  - athena:StartQueryExecution
+                  - athena:StopQueryExecution
+                  - athena:ListNamedQueries
+                  - athena:ListQueryExecutions
+                Resource: !Sub 'arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:workgroup/${IcebergWorkGroup}'
+              - Effect: Allow
+                Action:
+                  - glue:GetDatabase
+                  - glue:GetDatabases
+                  - glue:GetTable
+                  - glue:GetTables
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/${UserAthenaDatabase}'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${UserAthenaDatabase}/*'
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:AbortMultipartUpload
+                  - s3:ListMultipartUploadParts
+                  - glue:GetDatabase
+                  - glue:GetDatabases
+                  - glue:GetTable
+                  - glue:GetTables
+                  - glue:UpdateTable
+                Resource:
+                  - !Sub '${IcebergBucket.Arn}'
+                  - !Sub '${IcebergBucket.Arn}/package_manifest/*'
+                  - !Sub '${IcebergBucket.Arn}/package_entry/*'
+                  - !Sub '${IcebergBucket.Arn}/package_revision/*'
+                  - !Sub '${IcebergBucket.Arn}/package_tag/*'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/${IcebergDatabase}'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${IcebergDatabase}/package_manifest'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${IcebergDatabase}/package_entry'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${IcebergDatabase}/package_revision'
+                  - !Sub 'arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${IcebergDatabase}/package_tag'
+    Type: AWS::IAM::Role
   IcebergLambdaLogGroup:
     Properties:
       LogGroupName: !Sub '/quilt/${AWS::StackName}/IcebergLambda'
@@ -5421,7 +6485,7 @@ Resources:
         S3Bucket: !Sub 'quilt-lambda-${AWS::Region}'
         S3Key: iceberg/dd4ad471c744773b21cbbe7c6c1d65cbbdc45558.zip
       Handler: t4_lambda_iceberg.handler
-      Role: !Ref 'IcebergLambdaRole'
+      Role: !GetAtt 'IcebergLambdaRole.Arn'
       Timeout: 60
       MemorySize: 128
       ReservedConcurrentExecutions: 3
