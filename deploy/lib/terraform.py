@@ -1,0 +1,229 @@
+"""Terraform orchestration."""
+
+import json
+import logging
+import subprocess
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class TerraformResult:
+    """Result of a Terraform operation."""
+
+    success: bool
+    command: str
+    stdout: str
+    stderr: str
+    return_code: int
+
+    @property
+    def output(self) -> str:
+        """Combined output.
+
+        Returns:
+            Combined stdout and stderr
+        """
+        return self.stdout + self.stderr
+
+
+class TerraformOrchestrator:
+    """Terraform command orchestrator."""
+
+    def __init__(self, working_dir: Path, terraform_bin: str = "terraform") -> None:
+        """Initialize orchestrator.
+
+        Args:
+            working_dir: Working directory for Terraform
+            terraform_bin: Path to terraform binary
+        """
+        self.working_dir = working_dir
+        self.terraform_bin = terraform_bin
+        self.working_dir.mkdir(parents=True, exist_ok=True)
+
+    def init(self, backend_config: Optional[Dict[str, str]] = None) -> TerraformResult:
+        """Run terraform init.
+
+        Args:
+            backend_config: Backend configuration overrides
+
+        Returns:
+            TerraformResult
+        """
+        cmd = [self.terraform_bin, "init", "-upgrade"]
+
+        if backend_config:
+            for key, value in backend_config.items():
+                cmd.extend(["-backend-config", f"{key}={value}"])
+
+        return self._run_command(cmd)
+
+    def validate(self) -> TerraformResult:
+        """Run terraform validate.
+
+        Returns:
+            TerraformResult
+        """
+        return self._run_command([self.terraform_bin, "validate"])
+
+    def plan(
+        self, var_file: Optional[Path] = None, out_file: Optional[Path] = None
+    ) -> TerraformResult:
+        """Run terraform plan.
+
+        Args:
+            var_file: Path to variables file
+            out_file: Path to save plan
+
+        Returns:
+            TerraformResult
+        """
+        cmd = [self.terraform_bin, "plan"]
+
+        if var_file:
+            cmd.extend(["-var-file", str(var_file)])
+
+        if out_file:
+            cmd.extend(["-out", str(out_file)])
+
+        return self._run_command(cmd)
+
+    def apply(
+        self,
+        plan_file: Optional[Path] = None,
+        var_file: Optional[Path] = None,
+        auto_approve: bool = False,
+    ) -> TerraformResult:
+        """Run terraform apply.
+
+        Args:
+            plan_file: Path to plan file
+            var_file: Path to variables file
+            auto_approve: Auto-approve changes
+
+        Returns:
+            TerraformResult
+        """
+        cmd = [self.terraform_bin, "apply"]
+
+        if plan_file:
+            cmd.append(str(plan_file))
+        elif var_file:
+            cmd.extend(["-var-file", str(var_file)])
+
+        if auto_approve:
+            cmd.append("-auto-approve")
+
+        return self._run_command(cmd)
+
+    def destroy(
+        self, var_file: Optional[Path] = None, auto_approve: bool = False
+    ) -> TerraformResult:
+        """Run terraform destroy.
+
+        Args:
+            var_file: Path to variables file
+            auto_approve: Auto-approve destruction
+
+        Returns:
+            TerraformResult
+        """
+        cmd = [self.terraform_bin, "destroy"]
+
+        if var_file:
+            cmd.extend(["-var-file", str(var_file)])
+
+        if auto_approve:
+            cmd.append("-auto-approve")
+
+        return self._run_command(cmd)
+
+    def output(
+        self, name: Optional[str] = None, json_format: bool = True
+    ) -> TerraformResult:
+        """Run terraform output.
+
+        Args:
+            name: Specific output name (if None, all outputs)
+            json_format: Output as JSON
+
+        Returns:
+            TerraformResult
+        """
+        cmd = [self.terraform_bin, "output"]
+
+        if json_format:
+            cmd.append("-json")
+
+        if name:
+            cmd.append(name)
+
+        return self._run_command(cmd)
+
+    def get_outputs(self) -> Dict[str, Any]:
+        """Get all outputs as dict.
+
+        Returns:
+            Dict of outputs (empty dict if error)
+        """
+        result = self.output(json_format=True)
+        if not result.success:
+            return {}
+
+        try:
+            outputs = json.loads(result.stdout)
+            return {k: v.get("value") for k, v in outputs.items()}
+        except json.JSONDecodeError:
+            logger.error("Failed to parse terraform output JSON")
+            return {}
+
+    def _run_command(self, cmd: List[str]) -> TerraformResult:
+        """Run terraform command.
+
+        Args:
+            cmd: Command and arguments
+
+        Returns:
+            TerraformResult
+        """
+        logger.info(f"Running: {' '.join(cmd)}")
+
+        try:
+            result = subprocess.run(
+                cmd,
+                cwd=self.working_dir,
+                capture_output=True,
+                text=True,
+                timeout=3600,  # 1 hour timeout
+            )
+
+            return TerraformResult(
+                success=result.returncode == 0,
+                command=" ".join(cmd),
+                stdout=result.stdout,
+                stderr=result.stderr,
+                return_code=result.returncode,
+            )
+
+        except subprocess.TimeoutExpired:
+            logger.error("Terraform command timed out")
+            return TerraformResult(
+                success=False,
+                command=" ".join(cmd),
+                stdout="",
+                stderr="Command timed out after 1 hour",
+                return_code=124,
+            )
+
+        except Exception as e:
+            logger.error(f"Failed to run terraform command: {e}")
+            return TerraformResult(
+                success=False,
+                command=" ".join(cmd),
+                stdout="",
+                stderr=str(e),
+                return_code=1,
+            )
