@@ -116,8 +116,9 @@ class StackDeployer:
 
         # Step 4: Plan
         self.logger.info("Planning deployment...")
-        plan_file = self.output_dir / "terraform.tfplan"
-        var_file = self.output_dir / "terraform.tfvars.json"
+        # Use filenames relative to working directory since Terraform runs in output_dir
+        plan_file = Path("terraform.tfplan")
+        var_file = Path("terraform.tfvars.json")
 
         tf_result = self.terraform.plan(var_file=var_file, out_file=plan_file)
         if not tf_result.success:
@@ -225,7 +226,8 @@ class StackDeployer:
                 return EXIT_USER_CANCELLED
 
         # Destroy
-        var_file = self.output_dir / "terraform.tfvars.json"
+        # Use filename relative to working directory since Terraform runs in output_dir
+        var_file = Path("terraform.tfvars.json")
         tf_result = self.terraform.destroy(var_file=var_file, auto_approve=True)
 
         if not tf_result.success:
