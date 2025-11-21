@@ -11,9 +11,19 @@ This guide covers how to use the `tf_deploy.py` script to deploy Quilt infrastru
 
 ## Installation
 
+No installation needed! Use `uv run` to automatically manage dependencies:
+
+```bash
+# Run directly from project root
+uv run deploy/tf_deploy.py [command] [options]
+```
+
+Or install dependencies manually if preferred:
+
 ```bash
 cd deploy
 uv sync  # or: pip install -r requirements.txt
+./tf_deploy.py [command] [options]
 ```
 
 ## Quick Start
@@ -24,21 +34,21 @@ This is the recommended approach for the new externalized IAM feature:
 
 ```bash
 # Dry run (plan only, no changes)
-./tf_deploy.py deploy \
-  --config ../test/fixtures/config.json \
+uv run deploy/tf_deploy.py deploy \
+  --config test/fixtures/config.json \
   --pattern external-iam \
   --dry-run \
   --verbose
 
 # Actual deployment
-./tf_deploy.py deploy \
-  --config ../test/fixtures/config.json \
+uv run deploy/tf_deploy.py deploy \
+  --config test/fixtures/config.json \
   --pattern external-iam \
   --verbose
 
 # With auto-approve (no prompts)
-./tf_deploy.py deploy \
-  --config ../test/fixtures/config.json \
+uv run deploy/tf_deploy.py deploy \
+  --config test/fixtures/config.json \
   --pattern external-iam \
   --auto-approve
 ```
@@ -48,8 +58,8 @@ This is the recommended approach for the new externalized IAM feature:
 This maintains backward compatibility with existing deployments:
 
 ```bash
-./tf_deploy.py deploy \
-  --config ../test/fixtures/config.json \
+uv run deploy/tf_deploy.py deploy \
+  --config test/fixtures/config.json \
   --pattern inline-iam
 ```
 
@@ -58,8 +68,8 @@ This maintains backward compatibility with existing deployments:
 After deployment, validate that all resources are correctly configured:
 
 ```bash
-./tf_deploy.py validate \
-  --config ../test/fixtures/config.json \
+uv run deploy/tf_deploy.py validate \
+  --config test/fixtures/config.json \
   --verbose
 ```
 
@@ -68,8 +78,8 @@ After deployment, validate that all resources are correctly configured:
 View the current status of your deployment:
 
 ```bash
-./tf_deploy.py status \
-  --config ../test/fixtures/config.json
+uv run deploy/tf_deploy.py status \
+  --config test/fixtures/config.json
 ```
 
 ### 5. View Outputs
@@ -77,8 +87,8 @@ View the current status of your deployment:
 Display Terraform outputs (URLs, stack IDs, etc.):
 
 ```bash
-./tf_deploy.py outputs \
-  --config ../test/fixtures/config.json
+uv run deploy/tf_deploy.py outputs \
+  --config test/fixtures/config.json
 ```
 
 ### 6. Destroy Stack
@@ -87,12 +97,12 @@ When you're done, tear down the infrastructure:
 
 ```bash
 # With confirmation prompt
-./tf_deploy.py destroy \
-  --config ../test/fixtures/config.json
+uv run deploy/tf_deploy.py destroy \
+  --config test/fixtures/config.json
 
 # Without confirmation (dangerous!)
-./tf_deploy.py destroy \
-  --config ../test/fixtures/config.json \
+uv run deploy/tf_deploy.py destroy \
+  --config test/fixtures/config.json \
   --auto-approve
 ```
 
@@ -103,13 +113,14 @@ When you're done, tear down the infrastructure:
 Generate Terraform configuration files without applying:
 
 ```bash
-./tf_deploy.py create \
-  --config ../test/fixtures/config.json \
+uv run deploy/tf_deploy.py create \
+  --config test/fixtures/config.json \
   --pattern external-iam \
   --output-dir .deploy
 ```
 
 **Output files:**
+
 - `backend.tf` - Terraform backend and provider configuration
 - `main.tf` - Main resource definitions
 - `variables.tf` - Variable definitions
@@ -120,16 +131,18 @@ Generate Terraform configuration files without applying:
 Full deployment workflow: create → init → validate → plan → apply
 
 ```bash
-./tf_deploy.py deploy [OPTIONS]
+uv run deploy/tf_deploy.py deploy [OPTIONS]
 ```
 
 **Options:**
+
 - `--dry-run` - Plan only, don't apply changes
 - `--stack-type {iam,app,both}` - Deploy specific stack type
 - `--auto-approve` - Skip confirmation prompts
 - `--verbose` - Enable detailed logging
 
 **Workflow:**
+
 1. Generates Terraform configuration from config.json
 2. Runs `terraform init` to initialize providers
 3. Runs `terraform validate` to check syntax
@@ -143,18 +156,20 @@ Full deployment workflow: create → init → validate → plan → apply
 Validate deployed CloudFormation stacks:
 
 ```bash
-./tf_deploy.py validate [OPTIONS]
+uv run deploy/tf_deploy.py validate [OPTIONS]
 ```
 
 **Validation tests:**
 
 For **IAM stack** (external-iam pattern):
+
 - Stack exists and status is CREATE_COMPLETE or UPDATE_COMPLETE
 - Expected resource counts (24 IAM roles, 8 managed policies)
 - All outputs are valid IAM ARNs
 - IAM resources exist in AWS
 
 For **Application stack**:
+
 - Stack exists and status is successful
 - All resources created
 - IAM parameters injected correctly (external-iam pattern)
@@ -165,7 +180,7 @@ For **Application stack**:
 Tear down infrastructure:
 
 ```bash
-./tf_deploy.py destroy [OPTIONS]
+uv run deploy/tf_deploy.py destroy [OPTIONS]
 ```
 
 **Warning:** This is destructive and cannot be undone!
@@ -175,10 +190,11 @@ Tear down infrastructure:
 Display deployment information:
 
 ```bash
-./tf_deploy.py status [OPTIONS]
+uv run deploy/tf_deploy.py status [OPTIONS]
 ```
 
 **Output:**
+
 - Deployment name and pattern
 - IAM stack name and ID (if external-iam)
 - Application stack name and ID
@@ -189,7 +205,7 @@ Display deployment information:
 Show Terraform outputs:
 
 ```bash
-./tf_deploy.py outputs [OPTIONS]
+uv run deploy/tf_deploy.py outputs [OPTIONS]
 ```
 
 ## Common Options
@@ -250,32 +266,38 @@ The script automatically selects appropriate resources:
 ### External IAM Pattern
 
 **What it does:**
+
 1. Creates separate IAM CloudFormation stack with all roles/policies
 2. Creates application CloudFormation stack with IAM parameters
 3. Passes IAM ARNs from first stack to second stack as parameters
 
 **Benefits:**
+
 - IAM resources separated from application
 - Can update application without touching IAM
 - Better security boundary
 - Supports IAM policy updates without redeployment
 
 **Stacks created:**
+
 - `{name}-iam` - IAM roles and policies
 - `{name}` - Application resources
 
 ### Inline IAM Pattern
 
 **What it does:**
+
 1. Creates single monolithic CloudFormation stack
 2. IAM roles/policies defined inline within template
 
 **Benefits:**
+
 - Backward compatible with existing deployments
 - Simpler stack management
 - Single stack to manage
 
 **Stacks created:**
+
 - `{name}` - All resources including IAM
 
 ## Troubleshooting
@@ -328,36 +350,36 @@ The script automatically selects appropriate resources:
 
 ```bash
 # 1. Review what will be created
-./tf_deploy.py deploy \
-  --config ../test/fixtures/config.json \
+uv run deploy/tf_deploy.py deploy \
+  --config test/fixtures/config.json \
   --pattern external-iam \
   --dry-run \
   --verbose
 
 # 2. Deploy infrastructure
-./tf_deploy.py deploy \
-  --config ../test/fixtures/config.json \
+uv run deploy/tf_deploy.py deploy \
+  --config test/fixtures/config.json \
   --pattern external-iam
 
 # 3. Validate deployment
-./tf_deploy.py validate \
-  --config ../test/fixtures/config.json \
+uv run deploy/tf_deploy.py validate \
+  --config test/fixtures/config.json \
   --verbose
 
 # 4. Check status
-./tf_deploy.py status \
-  --config ../test/fixtures/config.json
+uv run deploy/tf_deploy.py status \
+  --config test/fixtures/config.json
 
 # 5. View outputs
-./tf_deploy.py outputs \
-  --config ../test/fixtures/config.json
+uv run deploy/tf_deploy.py outputs \
+  --config test/fixtures/config.json
 ```
 
 ### Custom Deployment Name
 
 ```bash
-./tf_deploy.py deploy \
-  --config ../test/fixtures/config.json \
+uv run deploy/tf_deploy.py deploy \
+  --config test/fixtures/config.json \
   --pattern external-iam \
   --name my-custom-deployment
 ```
@@ -366,7 +388,7 @@ The script automatically selects appropriate resources:
 
 ```bash
 # Non-interactive deployment for CI/CD
-./tf_deploy.py deploy \
+uv run deploy/tf_deploy.py deploy \
   --config config.json \
   --pattern external-iam \
   --auto-approve \
