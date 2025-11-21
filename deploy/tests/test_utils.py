@@ -1,9 +1,5 @@
 """Tests for utility functions."""
 
-from pathlib import Path
-
-import pytest
-
 from lib.utils import format_dict, render_template, safe_get
 
 

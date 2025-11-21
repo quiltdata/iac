@@ -1,9 +1,5 @@
 """Tests for Terraform orchestrator."""
 
-from pathlib import Path
-
-import pytest
-
 from lib.terraform import TerraformOrchestrator, TerraformResult
 
 
