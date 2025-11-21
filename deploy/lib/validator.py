@@ -406,7 +406,7 @@ class StackValidator:
         try:
             # Check if bucket exists and is accessible
             try:
-                response = self.s3_client.head_bucket(Bucket=bucket_name)
+                self.s3_client.head_bucket(Bucket=bucket_name)
             except self.s3_client.exceptions.NoSuchBucket:
                 return ValidationResult(
                     passed=False,
