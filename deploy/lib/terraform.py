@@ -192,28 +192,41 @@ class TerraformOrchestrator:
         logger.info(f"Running: {' '.join(cmd)}")
 
         try:
-            result = subprocess.run(
+            # Use Popen to stream output in real-time while capturing it
+            process = subprocess.Popen(
                 cmd,
                 cwd=self.working_dir,
-                capture_output=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,  # Merge stderr into stdout
                 text=True,
-                timeout=3600,  # 1 hour timeout
+                bufsize=1,  # Line buffered
             )
 
+            stdout_lines = []
+            if process.stdout:
+                for line in process.stdout:
+                    print(line, end="")  # Stream to console in real-time
+                    stdout_lines.append(line)
+
+            return_code = process.wait(timeout=3600)  # 1 hour timeout
+            stdout = "".join(stdout_lines)
+
             return TerraformResult(
-                success=result.returncode == 0,
+                success=return_code == 0,
                 command=" ".join(cmd),
-                stdout=result.stdout,
-                stderr=result.stderr,
-                return_code=result.returncode,
+                stdout=stdout,
+                stderr="",  # Already merged into stdout
+                return_code=return_code,
             )
 
         except subprocess.TimeoutExpired:
             logger.error("Terraform command timed out")
+            if process:
+                process.kill()
             return TerraformResult(
                 success=False,
                 command=" ".join(cmd),
-                stdout="",
+                stdout="".join(stdout_lines) if 'stdout_lines' in locals() else "",
                 stderr="Command timed out after 1 hour",
                 return_code=124,
             )
