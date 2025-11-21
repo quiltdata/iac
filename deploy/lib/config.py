@@ -1,6 +1,7 @@
 """Configuration management for deployment script."""
 
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -46,6 +47,13 @@ class DeploymentConfig:
     db_instance_class: str = "db.t3.micro"
     search_instance_type: str = "t3.small.elasticsearch"
     search_volume_size: int = 10
+
+    # Optional authentication config
+    google_client_id: Optional[str] = None
+    google_client_secret: Optional[str] = None
+    okta_base_url: Optional[str] = None
+    okta_client_id: Optional[str] = None
+    okta_client_secret: Optional[str] = None
 
     @classmethod
     def from_config_file(cls, config_path: Path, **overrides: Any) -> "DeploymentConfig":
@@ -103,10 +111,16 @@ class DeploymentConfig:
             pattern=overrides.get("pattern", "external-iam"),
             template_bucket=config.get("template_bucket"),  # Optional custom bucket
             template_prefix=config.get("template_prefix"),  # Optional template path prefix
+            # Optional authentication (from overrides or environment)
+            google_client_id=overrides.get("google_client_id") or os.getenv("GOOGLE_CLIENT_ID"),
+            google_client_secret=overrides.get("google_client_secret") or os.getenv("GOOGLE_CLIENT_SECRET"),
+            okta_base_url=overrides.get("okta_base_url") or os.getenv("OKTA_BASE_URL"),
+            okta_client_id=overrides.get("okta_client_id") or os.getenv("OKTA_CLIENT_ID"),
+            okta_client_secret=overrides.get("okta_client_secret") or os.getenv("OKTA_CLIENT_SECRET"),
             **{
                 k: v
                 for k, v in overrides.items()
-                if k not in ["name", "pattern"]
+                if k not in ["name", "pattern", "google_client_id", "google_client_secret", "okta_base_url", "okta_client_id", "okta_client_secret"]
             },
         )
 
@@ -236,6 +250,140 @@ class DeploymentConfig:
                     return zone
 
         raise ValueError(f"No Route53 zone found for domain {domain}")
+
+    def get_required_cfn_parameters(self) -> Dict[str, str]:
+        """Get required CloudFormation parameters.
+
+        These are the minimal parameters needed for CloudFormation,
+        assuming Terraform creates the infrastructure.
+
+        Returns:
+            Dictionary of required CloudFormation parameters
+        """
+        return {
+            "AdminEmail": self.admin_email,
+            "CertificateArnELB": self.certificate_arn,
+            "QuiltWebHost": self.quilt_web_host,
+            "PasswordAuth": "Enabled",  # Always enable for initial setup
+        }
+
+    def get_optional_cfn_parameters(self) -> Dict[str, str]:
+        """Get optional CloudFormation parameters that were configured.
+
+        Only returns parameters that were explicitly set.
+
+        Returns:
+            Dictionary of optional CloudFormation parameters
+        """
+        params = {}
+
+        # Google OAuth (only if configured)
+        if self.google_client_secret:
+            params.update({
+                "GoogleAuth": "Enabled",
+                "GoogleClientId": self.google_client_id or "",
+                "GoogleClientSecret": self.google_client_secret,
+            })
+
+        # Okta OAuth (only if configured)
+        if self.okta_client_secret:
+            params.update({
+                "OktaAuth": "Enabled",
+                "OktaBaseUrl": self.okta_base_url or "",
+                "OktaClientId": self.okta_client_id or "",
+                "OktaClientSecret": self.okta_client_secret,
+            })
+
+        return params
+
+    def get_terraform_infrastructure_config(self) -> Dict[str, Any]:
+        """Get Terraform infrastructure configuration.
+
+        This configures the Terraform module to create:
+        - VPC (or use existing)
+        - RDS database
+        - ElasticSearch domain
+        - Security groups
+
+        Returns:
+            Dictionary of Terraform infrastructure configuration
+        """
+        config = {
+            "name": self.deployment_name,
+            "template_file": self.get_template_file_path(),
+
+            # Network configuration
+            "create_new_vpc": False,  # Use existing VPC from config
+            "vpc_id": self.vpc_id,
+            "intra_subnets": self._get_intra_subnets(),    # For DB & ES
+            "private_subnets": self._get_private_subnets(), # For app
+            "public_subnets": self.subnet_ids,              # For ALB
+            "user_security_group": self.security_group_ids[0] if self.security_group_ids else "",
+
+            # Database configuration
+            "db_instance_class": self.db_instance_class,
+            "db_multi_az": False,  # Single-AZ for testing
+            "db_deletion_protection": False,  # Allow deletion for testing
+
+            # ElasticSearch configuration
+            "search_instance_type": self.search_instance_type,
+            "search_instance_count": 1,  # Single node for testing
+            "search_volume_size": self.search_volume_size,
+            "search_dedicated_master_enabled": False,
+            "search_zone_awareness_enabled": False,
+
+            # CloudFormation parameters (required + optional)
+            "parameters": {
+                **self.get_required_cfn_parameters(),
+                **self.get_optional_cfn_parameters(),
+            }
+        }
+
+        # Add external IAM configuration if applicable
+        if self.pattern == "external-iam":
+            config["iam_template_url"] = self.iam_template_url or self._default_iam_template_url()
+            config["template_url"] = self.app_template_url or self._default_app_template_url()
+
+        return config
+
+    def _get_intra_subnets(self) -> List[str]:
+        """Get isolated subnets for DB and ElasticSearch.
+
+        These should be subnets with no internet access.
+        If not available, use private subnets.
+
+        Returns:
+            List of isolated subnet IDs
+        """
+        # For now, use the same as private subnets
+        # TODO: Filter from config.json based on classification
+        return self.subnet_ids[:2]
+
+    def _get_private_subnets(self) -> List[str]:
+        """Get private subnets for application.
+
+        These should have NAT gateway access.
+
+        Returns:
+            List of private subnet IDs
+        """
+        return self.subnet_ids[:2]
+
+    def get_template_file_path(self) -> str:
+        """Get path to CloudFormation template file.
+
+        For testing, use local template file.
+        For production, use S3 URL.
+
+        Returns:
+            Path to CloudFormation template file
+        """
+        if self.pattern == "external-iam":
+            # Use app-only template
+            return str(Path(__file__).parent.parent.parent / "templates" / TEMPLATE_APP)
+        else:
+            # Use monolithic template
+            return str(Path(__file__).parent.parent.parent / "templates" / TEMPLATE_MONOLITHIC)
 
     def to_terraform_vars(self) -> Dict[str, Any]:
         """Convert to Terraform variables.
