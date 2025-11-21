@@ -15,7 +15,7 @@ No installation needed! Use `uv run` to automatically manage dependencies:
 
 ```bash
 # Run directly from project root
-uv run deploy/tf_deploy.py [command] [options]
+uv run --directory deploy tf_deploy.py [command] [options]
 ```
 
 Or install dependencies manually if preferred:
@@ -34,20 +34,20 @@ This is the recommended approach for the new externalized IAM feature:
 
 ```bash
 # Dry run (plan only, no changes)
-uv run deploy/tf_deploy.py deploy \
+uv run --directory deploy tf_deploy.py deploy \
   --config test/fixtures/config.json \
   --pattern external-iam \
   --dry-run \
   --verbose
 
 # Actual deployment
-uv run deploy/tf_deploy.py deploy \
+uv run --directory deploy tf_deploy.py deploy \
   --config test/fixtures/config.json \
   --pattern external-iam \
   --verbose
 
 # With auto-approve (no prompts)
-uv run deploy/tf_deploy.py deploy \
+uv run --directory deploy tf_deploy.py deploy \
   --config test/fixtures/config.json \
   --pattern external-iam \
   --auto-approve
@@ -58,7 +58,7 @@ uv run deploy/tf_deploy.py deploy \
 This maintains backward compatibility with existing deployments:
 
 ```bash
-uv run deploy/tf_deploy.py deploy \
+uv run --directory deploy tf_deploy.py deploy \
   --config test/fixtures/config.json \
   --pattern inline-iam
 ```
@@ -68,7 +68,7 @@ uv run deploy/tf_deploy.py deploy \
 After deployment, validate that all resources are correctly configured:
 
 ```bash
-uv run deploy/tf_deploy.py validate \
+uv run --directory deploy tf_deploy.py validate \
   --config test/fixtures/config.json \
   --verbose
 ```
@@ -78,7 +78,7 @@ uv run deploy/tf_deploy.py validate \
 View the current status of your deployment:
 
 ```bash
-uv run deploy/tf_deploy.py status \
+uv run --directory deploy tf_deploy.py status \
   --config test/fixtures/config.json
 ```
 
@@ -87,7 +87,7 @@ uv run deploy/tf_deploy.py status \
 Display Terraform outputs (URLs, stack IDs, etc.):
 
 ```bash
-uv run deploy/tf_deploy.py outputs \
+uv run --directory deploy tf_deploy.py outputs \
   --config test/fixtures/config.json
 ```
 
@@ -97,11 +97,11 @@ When you're done, tear down the infrastructure:
 
 ```bash
 # With confirmation prompt
-uv run deploy/tf_deploy.py destroy \
+uv run --directory deploy tf_deploy.py destroy \
   --config test/fixtures/config.json
 
 # Without confirmation (dangerous!)
-uv run deploy/tf_deploy.py destroy \
+uv run --directory deploy tf_deploy.py destroy \
   --config test/fixtures/config.json \
   --auto-approve
 ```
@@ -113,7 +113,7 @@ uv run deploy/tf_deploy.py destroy \
 Generate Terraform configuration files without applying:
 
 ```bash
-uv run deploy/tf_deploy.py create \
+uv run --directory deploy tf_deploy.py create \
   --config test/fixtures/config.json \
   --pattern external-iam \
   --output-dir .deploy
@@ -131,7 +131,7 @@ uv run deploy/tf_deploy.py create \
 Full deployment workflow: create → init → validate → plan → apply
 
 ```bash
-uv run deploy/tf_deploy.py deploy [OPTIONS]
+uv run --directory deploy tf_deploy.py deploy [OPTIONS]
 ```
 
 **Options:**
@@ -156,7 +156,7 @@ uv run deploy/tf_deploy.py deploy [OPTIONS]
 Validate deployed CloudFormation stacks:
 
 ```bash
-uv run deploy/tf_deploy.py validate [OPTIONS]
+uv run --directory deploy tf_deploy.py validate [OPTIONS]
 ```
 
 **Validation tests:**
@@ -180,7 +180,7 @@ For **Application stack**:
 Tear down infrastructure:
 
 ```bash
-uv run deploy/tf_deploy.py destroy [OPTIONS]
+uv run --directory deploy tf_deploy.py destroy [OPTIONS]
 ```
 
 **Warning:** This is destructive and cannot be undone!
@@ -190,7 +190,7 @@ uv run deploy/tf_deploy.py destroy [OPTIONS]
 Display deployment information:
 
 ```bash
-uv run deploy/tf_deploy.py status [OPTIONS]
+uv run --directory deploy tf_deploy.py status [OPTIONS]
 ```
 
 **Output:**
@@ -205,7 +205,7 @@ uv run deploy/tf_deploy.py status [OPTIONS]
 Show Terraform outputs:
 
 ```bash
-uv run deploy/tf_deploy.py outputs [OPTIONS]
+uv run --directory deploy tf_deploy.py outputs [OPTIONS]
 ```
 
 ## Common Options
@@ -350,35 +350,35 @@ The script automatically selects appropriate resources:
 
 ```bash
 # 1. Review what will be created
-uv run deploy/tf_deploy.py deploy \
+uv run --directory deploy tf_deploy.py deploy \
   --config test/fixtures/config.json \
   --pattern external-iam \
   --dry-run \
   --verbose
 
 # 2. Deploy infrastructure
-uv run deploy/tf_deploy.py deploy \
+uv run --directory deploy tf_deploy.py deploy \
   --config test/fixtures/config.json \
   --pattern external-iam
 
 # 3. Validate deployment
-uv run deploy/tf_deploy.py validate \
+uv run --directory deploy tf_deploy.py validate \
   --config test/fixtures/config.json \
   --verbose
 
 # 4. Check status
-uv run deploy/tf_deploy.py status \
+uv run --directory deploy tf_deploy.py status \
   --config test/fixtures/config.json
 
 # 5. View outputs
-uv run deploy/tf_deploy.py outputs \
+uv run --directory deploy tf_deploy.py outputs \
   --config test/fixtures/config.json
 ```
 
 ### Custom Deployment Name
 
 ```bash
-uv run deploy/tf_deploy.py deploy \
+uv run --directory deploy tf_deploy.py deploy \
   --config test/fixtures/config.json \
   --pattern external-iam \
   --name my-custom-deployment
@@ -388,7 +388,7 @@ uv run deploy/tf_deploy.py deploy \
 
 ```bash
 # Non-interactive deployment for CI/CD
-uv run deploy/tf_deploy.py deploy \
+uv run --directory deploy tf_deploy.py deploy \
   --config config.json \
   --pattern external-iam \
   --auto-approve \
