@@ -62,7 +62,6 @@ Metadata:
           - BucketReadPolicy
           - BucketWritePolicy
           - RegistryAssumeRolePolicy
-          - S3ProxyRole
           - TabulatorOpenQueryRole
           - TimestampResourceHandlerRole
       - Label:
@@ -430,11 +429,6 @@ Parameters:
     MinLength: 1
     AllowedPattern: ^arn:aws:iam::[0-9]{12}:policy\/[a-zA-Z0-9+=,.@_\-\/]+$
     Description: ARN of the RegistryAssumeRolePolicy
-  S3ProxyRole:
-    Type: String
-    MinLength: 1
-    AllowedPattern: ^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$
-    Description: ARN of the S3ProxyRole
   TabulatorOpenQueryRole:
     Type: String
     MinLength: 1
@@ -3538,6 +3532,25 @@ Resources:
             - !Sub 'flask db upgrade && ./scripts/create_roles.py -n ReadQuiltBucket -a ${T4BucketReadRole.Arn} && ./scripts/create_roles.py -n ReadWriteQuiltBucket -a ${T4BucketWriteRole.Arn} --default && ./scripts/create_admin.py -e -r ReadWriteQuiltBucket && ./scripts/update_bucket_resources.py && ./scripts/update_sns_kms.py && ./scripts/setup_role_athena_resources.py && ./scripts/setup_canaries.py ''${CanaryBucketAllowed}'' ''${CanaryBucketRestricted}'''
       Family: !Sub '${AWS::StackName}-registry-migration'
     Type: AWS::ECS::TaskDefinition
+  S3ProxyRole:
+    Properties:
+      Path: !Sub '/quilt/${AWS::StackName}/${AWS::Region}/'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: AllowGetELBCertificate
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: acm:GetCertificate
+                Resource: !Ref 'CertificateArnELB'
+    Type: AWS::IAM::Role
   S3ProxyTaskDefinition:
     Properties:
       Family: !Sub '${AWS::StackName}-s3-proxy'
@@ -3545,7 +3558,7 @@ Resources:
         - FARGATE
       NetworkMode: awsvpc
       ExecutionRoleArn: !GetAtt 'AmazonECSTaskExecutionRole.Arn'
-      TaskRoleArn: !Ref 'S3ProxyRole'
+      TaskRoleArn: !GetAtt 'S3ProxyRole.Arn'
       Cpu: '256'
       Memory: 1GB
       ContainerDefinitions:

@@ -30,25 +30,6 @@ Resources:
           Action: sts:AssumeRole
           NotResource: '*'
     Type: AWS::IAM::ManagedPolicy
-  S3ProxyRole:
-    Properties:
-      Path: !Sub '/quilt/${AWS::StackName}/${AWS::Region}/'
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: ecs-tasks.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: AllowGetELBCertificate
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: acm:GetCertificate
-                Resource: !Ref 'CertificateArnELB'
-    Type: AWS::IAM::Role
   ApiRole:
     Properties:
       AssumeRolePolicyDocument:
@@ -120,15 +101,6 @@ Outputs:
     Export:
       Name:
         Fn::Sub: ${AWS::StackName}-RegistryAssumeRolePolicyArn
-  S3ProxyRoleArn:
-    Description: ARN of S3ProxyRole
-    Value:
-      Fn::GetAtt:
-        - S3ProxyRole
-        - Arn
-    Export:
-      Name:
-        Fn::Sub: ${AWS::StackName}-S3ProxyRoleArn
   ApiRoleArn:
     Description: ARN of ApiRole
     Value:
