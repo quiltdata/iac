@@ -70,6 +70,8 @@ resource "aws_s3_bucket" "cft_bucket" {
 
   # Nothing valuable in this bucket, so make the cleanup easier.
   force_destroy = true
+
+  tags = local.common_tags
 }
 
 resource "aws_s3_bucket_versioning" "cft_bucket_versioning" {
@@ -89,6 +91,8 @@ resource "aws_s3_object" "cft" {
 resource "aws_cloudformation_stack" "stack" {
   name         = var.name
   template_url = local.template_url
+
+  tags = local.common_tags
   depends_on = [
     aws_s3_object.cft,
     /* Prevent races between module.vpc and module.quilt resources. For example:
