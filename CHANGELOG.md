@@ -18,6 +18,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+- [Changed] Update Postgres to 15.15 ([#94](https://github.com/quiltdata/iac/pull/94))
+
 ### Documentation
 
 - [Added] ElasticSearch configuration guide with sizing recommendations and EBS volume calculations
