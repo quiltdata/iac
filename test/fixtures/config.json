@@ -1,0 +1,1090 @@
+{
+  "version": "1.0",
+  "scanned_at": "2025-11-20T23:04:05.357Z",
+  "account_id": "712023778557",
+  "dommain": "quilttest.com",
+  "environment": "iac",
+  "email": "dev@quiltdata.io",
+  "region": "us-east-1",
+  "template_bucket": "aneesh-ai2-us-east-1",
+  "template_prefix": "../test/fixtures/stable",
+  "detected": {
+    "vpcs": [
+      {
+        "vpc_id": "vpc-09cbec26a9d1656bf",
+        "name": "public-test-vpc",
+        "cidr_blocks": [
+          "10.0.0.0/16"
+        ],
+        "is_default": false
+      },
+      {
+        "vpc_id": "vpc-01145e00dd50c6ec9",
+        "name": "kevin-no-quilt-bucket4",
+        "cidr_blocks": [
+          "10.0.0.0/16"
+        ],
+        "is_default": false
+      },
+      {
+        "vpc_id": "vpc-0c85f8c9f149f7947",
+        "name": "package-engine-vpc",
+        "cidr_blocks": [
+          "10.0.0.0/16"
+        ],
+        "is_default": false
+      },
+      {
+        "vpc_id": "vpc-0d415b4445fff7d02",
+        "name": "package-engine-vpc",
+        "cidr_blocks": [
+          "10.0.0.0/16"
+        ],
+        "is_default": false
+      },
+      {
+        "vpc_id": "vpc-2dda6457",
+        "name": "vpc-2dda6457",
+        "cidr_blocks": [
+          "172.31.0.0/16"
+        ],
+        "is_default": true
+      },
+      {
+        "vpc_id": "vpc-02d8bf24f88b97f3a",
+        "name": "vpc-02d8bf24f88b97f3a",
+        "cidr_blocks": [
+          "10.0.0.0/16"
+        ],
+        "is_default": false
+      },
+      {
+        "vpc_id": "vpc-090086a304c2b8334",
+        "name": "test-sergey-vpc",
+        "cidr_blocks": [
+          "10.0.0.0/16"
+        ],
+        "is_default": false
+      },
+      {
+        "vpc_id": "vpc-00b5a8177e9fbaed2",
+        "name": "package-engine-vpc",
+        "cidr_blocks": [
+          "10.0.0.0/16"
+        ],
+        "is_default": false
+      },
+      {
+        "vpc_id": "vpc-005292a73cbf17baf",
+        "name": "vpc-005292a73cbf17baf",
+        "cidr_blocks": [
+          "10.0.0.0/16"
+        ],
+        "is_default": false
+      },
+      {
+        "vpc_id": "vpc-09635023ed0c40c39",
+        "name": "vpc-09635023ed0c40c39",
+        "cidr_blocks": [
+          "172.16.0.0/16"
+        ],
+        "is_default": false
+      },
+      {
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "name": "quilt-staging",
+        "cidr_blocks": [
+          "10.0.0.0/16"
+        ],
+        "is_default": false
+      },
+      {
+        "vpc_id": "vpc-09f02c611c3d46757",
+        "name": "batchvpc",
+        "cidr_blocks": [
+          "10.0.0.0/16"
+        ],
+        "is_default": false
+      },
+      {
+        "vpc_id": "vpc-018dc3f71a1a7fdb1",
+        "name": "vpc-018dc3f71a1a7fdb1",
+        "cidr_blocks": [
+          "10.0.0.0/16"
+        ],
+        "is_default": false
+      },
+      {
+        "vpc_id": "vpc-07a6e143950d74443",
+        "name": "quilt-kevin-dev",
+        "cidr_blocks": [
+          "10.0.0.0/16"
+        ],
+        "is_default": false
+      }
+    ],
+    "subnets": [
+      {
+        "subnet_id": "subnet-071552f55b1f4c18c",
+        "name": "subnet-071552f55b1f4c18c",
+        "vpc_id": "vpc-018dc3f71a1a7fdb1",
+        "cidr_block": "10.0.0.0/24",
+        "availability_zone": "us-east-1a",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-0adf7ecf805bb586c",
+        "name": "subnet-0adf7ecf805bb586c",
+        "vpc_id": "vpc-005292a73cbf17baf",
+        "cidr_block": "10.0.0.0/24",
+        "availability_zone": "us-east-1a",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-0ebde4b708493a549",
+        "name": "subnet-0ebde4b708493a549",
+        "vpc_id": "vpc-0d415b4445fff7d02",
+        "cidr_block": "10.0.0.0/24",
+        "availability_zone": "us-east-1a",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-09f9d4153356905f4",
+        "name": "subnet-09f9d4153356905f4",
+        "vpc_id": "vpc-00b5a8177e9fbaed2",
+        "cidr_block": "10.0.0.0/24",
+        "availability_zone": "us-east-1a",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-0c4d8951561fb21ea",
+        "name": "quilt-staging-private-us-east-1b",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "cidr_block": "10.0.128.0/18",
+        "availability_zone": "us-east-1b",
+        "classification": "private"
+      },
+      {
+        "subnet_id": "subnet-f1a1cead",
+        "name": "subnet-f1a1cead",
+        "vpc_id": "vpc-2dda6457",
+        "cidr_block": "172.31.32.0/20",
+        "availability_zone": "us-east-1b",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-0a797e93bb980a03c",
+        "name": "subnet-0a797e93bb980a03c",
+        "vpc_id": "vpc-018dc3f71a1a7fdb1",
+        "cidr_block": "10.0.1.0/24",
+        "availability_zone": "us-east-1b",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-0a2fe6785a42043fc",
+        "name": "public-test-subnet-public1-us-east-1a",
+        "vpc_id": "vpc-09cbec26a9d1656bf",
+        "cidr_block": "10.0.0.0/20",
+        "availability_zone": "us-east-1a",
+        "classification": "public"
+      },
+      {
+        "subnet_id": "subnet-03df0ef69e4e184f1",
+        "name": "subnet-03df0ef69e4e184f1",
+        "vpc_id": "vpc-00b5a8177e9fbaed2",
+        "cidr_block": "10.0.1.0/24",
+        "availability_zone": "us-east-1b",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-064da20b652afab2b",
+        "name": "subnet-064da20b652afab2b",
+        "vpc_id": "vpc-09635023ed0c40c39",
+        "cidr_block": "172.16.1.0/24",
+        "availability_zone": "us-east-1a",
+        "classification": "public"
+      },
+      {
+        "subnet_id": "subnet-30e0c43f",
+        "name": "subnet-30e0c43f",
+        "vpc_id": "vpc-2dda6457",
+        "cidr_block": "172.31.64.0/20",
+        "availability_zone": "us-east-1f",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-a9e2d0e3",
+        "name": "subnet-a9e2d0e3",
+        "vpc_id": "vpc-2dda6457",
+        "cidr_block": "172.31.16.0/20",
+        "availability_zone": "us-east-1a",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-7a3f8944",
+        "name": "subnet-7a3f8944",
+        "vpc_id": "vpc-2dda6457",
+        "cidr_block": "172.31.48.0/20",
+        "availability_zone": "us-east-1e",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-0e5edea8f1785e300",
+        "name": "quilt-staging-public-us-east-1b",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "cidr_block": "10.0.192.0/19",
+        "availability_zone": "us-east-1b",
+        "classification": "public"
+      },
+      {
+        "subnet_id": "subnet-03a9b16400f4d3ef0",
+        "name": "subnet-03a9b16400f4d3ef0",
+        "vpc_id": "vpc-09635023ed0c40c39",
+        "cidr_block": "172.16.0.0/24",
+        "availability_zone": "us-east-1b",
+        "classification": "public"
+      },
+      {
+        "subnet_id": "subnet-06254623d2db942b2",
+        "name": "package-engine-vpc-subnet-1",
+        "vpc_id": "vpc-0c85f8c9f149f7947",
+        "cidr_block": "10.0.1.0/24",
+        "availability_zone": "us-east-1f",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-5853313f",
+        "name": "subnet-5853313f",
+        "vpc_id": "vpc-2dda6457",
+        "cidr_block": "172.31.0.0/20",
+        "availability_zone": "us-east-1c",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-0f7f41c08942f625e",
+        "name": "subnet-0f7f41c08942f625e",
+        "vpc_id": "vpc-02d8bf24f88b97f3a",
+        "cidr_block": "10.0.1.0/24",
+        "availability_zone": "us-east-1b",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-09d384be5cc82f4a3",
+        "name": "quilt-staging-private-us-east-1a",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "cidr_block": "10.0.0.0/18",
+        "availability_zone": "us-east-1a",
+        "classification": "private"
+      },
+      {
+        "subnet_id": "subnet-0718cf940c8fe25f7",
+        "name": "subnet-0718cf940c8fe25f7",
+        "vpc_id": "vpc-02d8bf24f88b97f3a",
+        "cidr_block": "10.0.0.0/24",
+        "availability_zone": "us-east-1a",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-0feb0beb00f4f7a8c",
+        "name": "quilt-staging-intra-us-east-1b",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "cidr_block": "10.0.224.0/20",
+        "availability_zone": "us-east-1b",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-0f667dc82fa781381",
+        "name": "quilt-staging-public-us-east-1a",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "cidr_block": "10.0.64.0/19",
+        "availability_zone": "us-east-1a",
+        "classification": "public"
+      },
+      {
+        "subnet_id": "subnet-08dce1651fd8143d9",
+        "name": "test-sergey-vpc-subnet-public-2",
+        "vpc_id": "vpc-090086a304c2b8334",
+        "cidr_block": "10.0.253.0/24",
+        "availability_zone": "us-east-1a",
+        "classification": "public"
+      },
+      {
+        "subnet_id": "subnet-0a182ec1bd6b48cec",
+        "name": "subnet-0a182ec1bd6b48cec",
+        "vpc_id": "vpc-0d415b4445fff7d02",
+        "cidr_block": "10.0.1.0/24",
+        "availability_zone": "us-east-1b",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-0a57e2e48bbe2a559",
+        "name": "subnet-0a57e2e48bbe2a559",
+        "vpc_id": "vpc-005292a73cbf17baf",
+        "cidr_block": "10.0.1.0/24",
+        "availability_zone": "us-east-1b",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-074daf910ccdfb333",
+        "name": "package-engine-vpc-subnet-2",
+        "vpc_id": "vpc-0c85f8c9f149f7947",
+        "cidr_block": "10.0.2.0/24",
+        "availability_zone": "us-east-1f",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-5dbfd673",
+        "name": "subnet-5dbfd673",
+        "vpc_id": "vpc-2dda6457",
+        "cidr_block": "172.31.80.0/20",
+        "availability_zone": "us-east-1d",
+        "classification": "isolated"
+      },
+      {
+        "subnet_id": "subnet-0afd3d6eefcd7cec1",
+        "name": "test-sergey-vpc-subnet-public",
+        "vpc_id": "vpc-090086a304c2b8334",
+        "cidr_block": "10.0.254.0/24",
+        "availability_zone": "us-east-1d",
+        "classification": "public"
+      },
+      {
+        "subnet_id": "subnet-0eafcb74ad4785e1f",
+        "name": "quilt-staging-intra-us-east-1a",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "cidr_block": "10.0.96.0/20",
+        "availability_zone": "us-east-1a",
+        "classification": "isolated"
+      }
+    ],
+    "security_groups": [
+      {
+        "security_group_id": "sg-0ee34e219d276b8cb",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-02d8bf24f88b97f3a",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-01eb922f08cb3cb60",
+        "name": "launch-wizard-15",
+        "description": "launch-wizard-15 created 2021-10-28T12:38:13.999+05:00",
+        "vpc_id": "vpc-090086a304c2b8334",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-01f69f1e270a0e97d",
+        "name": "quilt-staging-db-20230618041212500600000008",
+        "description": "For DB resources",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-0980e89bf26bf698e",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-00b5a8177e9fbaed2",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-08e07a300d07b5b54",
+        "name": "package-engine-sg",
+        "description": "Fargate security group",
+        "vpc_id": "vpc-018dc3f71a1a7fdb1",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0324ae6df1540b3a1",
+        "name": "d-90674f32d9_controllers",
+        "description": "AWS created security group for d-90674f32d9 directory controllers",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-05e6edc279e4bf4e8",
+        "name": "launch-wizard-14",
+        "description": "launch-wizard-14 created 2021-09-20T09:50:45.861+03:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-05de970a6109c9f34",
+        "name": "open RDP ports",
+        "description": "Allows RDP port connections",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0cb1d3ac8fdd69d85",
+        "name": "launch-wizard-17",
+        "description": "launch-wizard-17 created 2021-11-26T16:35:50.137+03:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0b84684f",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-0a5e911c4e28c1eaa",
+        "name": "quilt-staging-ElbPrivateAccessorSecurityGroup-ZYPAMI8NDXVL",
+        "description": "For accessing the ELB private listener port",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0ad729898f03e00a5",
+        "name": "launch-wizard-16",
+        "description": "launch-wizard-16 created 2021-11-24T21:33:17.380+03:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0614904d81858b700",
+        "name": "quilt-ssh",
+        "description": "Security group that allows all team members to SSH to instance",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-033fd527bc5bc712d",
+        "name": "launch-wizard-9",
+        "description": "launch-wizard-9 created 2020-09-23T15:20:55.101+05:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0ce8e1b49d933cd58",
+        "name": "allow-all-inbound",
+        "description": "allow-all-inbound",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0c1c2d1b22184e034",
+        "name": "open-ssh",
+        "description": "Allow SSH access from anywhere",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-0ede2f4e1ff585453",
+        "name": "BenchlingWebhookStack-FargateServiceBenchlingWebhookAlbSecurityGroupF65418DD-zuH17JKWf7yu",
+        "description": "Security group for Benchling webhook ALB with IP whitelisting",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-093e26595b4289c81",
+        "name": "launch-wizard-18",
+        "description": "launch-wizard-18 created 2022-01-15T08:57:04.584Z",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-01863a58439252fc0",
+        "name": "allow-ssh",
+        "description": "allow ssh from anywhere",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-0e7292979e659680b",
+        "name": "rust-http",
+        "description": "fargate-test",
+        "vpc_id": "vpc-09cbec26a9d1656bf",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0779c52d1aeae96dc",
+        "name": "d-906747565c_workspacesMembers",
+        "description": "Amazon WorkSpaces Security Group",
+        "vpc_id": "vpc-09635023ed0c40c39",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-08b9c84a16fb85731",
+        "name": "launch-wizard-2",
+        "description": "launch-wizard-2 created 2020-09-22T17:12:47.597+05:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-06998c20cb9329376",
+        "name": "launch-wizard-21",
+        "description": "launch-wizard-21 created 2022-08-04T12:59:35.948Z",
+        "vpc_id": "vpc-090086a304c2b8334",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0a4f5a7d53f659e55",
+        "name": "launch-wizard-13",
+        "description": "launch-wizard-13 created 2021-01-14T13:49:17.210+05:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-048b38d4f3b89c4df",
+        "name": "launch-wizard-3",
+        "description": "launch-wizard-3 created 2020-09-22T18:46:19.369+05:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0f047b4972606fb70",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-09cbec26a9d1656bf",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-09e53de9d1d282962",
+        "name": "kevin--84",
+        "description": "2020-04-27T21:21:51.295Z",
+        "vpc_id": "vpc-01145e00dd50c6ec9",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-06ddfc21a97fd88e8",
+        "name": "quilt-staging-search-20230622060624934800000001",
+        "description": "For search cluster resources",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-005272997a01f399a",
+        "name": "quilt-staging-ElbTargetSecurityGroup-13XO53RZAT5R8",
+        "description": "For ELB target groups",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-01c24c328d7dc4a38",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-09f02c611c3d46757",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-00877ec94429c257d",
+        "name": "quilt-staging-search-accessor-20230619003249866100000001",
+        "description": "For resources that need access to search cluster",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-07c465aa89fbd9817",
+        "name": "bt-exi-2710",
+        "description": "2020-05-31T16:24:55.943Z",
+        "vpc_id": "vpc-07a6e143950d74443",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0b3e6bcf9e2333cc3",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-07a6e143950d74443",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-08e07cb1ccd20f690",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0ff0ec344211cf52d",
+        "name": "launch-wizard-23",
+        "description": "launch-wizard created 2022-08-31T21:25:22.529Z",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-061cb33bfaad4a929",
+        "name": "elb-pri-quilt-staging",
+        "description": "Private access to load balancer from services",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-040cf5cf1838d9096",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-01145e00dd50c6ec9",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-046b8bb0f50a50aa1",
+        "name": "launch-wizard-8",
+        "description": "launch-wizard-8 created 2020-09-23T07:55:36.232+05:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-09b0443207d9a91d4",
+        "name": "mcp-server-sg",
+        "description": "Security group for mcp-server-sg testing",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-021a3cb4e0768b396",
+        "name": "quilt-staging-TabulatorSecurityGroup-TdK6ygO0tghP",
+        "description": "Access registry internal port for tabulator API",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-0e0de73b558aff699",
+        "name": "quilt-staging-user-ingress-20231117033337654200000001",
+        "description": "User ingress security group for API Gateway Endpoint, Quilt load balancer",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-079d4f3a4bd62c500",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-090086a304c2b8334",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-065b07c37773d6855",
+        "name": "fargate-sg",
+        "description": "Fargate security group",
+        "vpc_id": "vpc-0d415b4445fff7d02",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-03a6926bdae683088",
+        "name": "quilt-staging-search-ssh",
+        "description": "Allow SSH access to developers",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0fca7b8a2fe84bd48",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-018dc3f71a1a7fdb1",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-019cd37fd59b62105",
+        "name": "quilt-staging-RegistrySecurityGroup-1JVKFJILRWRDT",
+        "description": "For the registry service",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-04c292efa7a3808a9",
+        "name": "asah-test-ssh",
+        "description": "allow ssh",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-066663566d780cc53",
+        "name": "launch-wizard-10",
+        "description": "launch-wizard-10 created 2020-10-19T18:45:27.883+05:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-096ceb20b3ddeafdb",
+        "name": "quilt-staging-db-accessor-20230618041212499700000007",
+        "description": "For resources that need access to DB",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-088ffca2bdba81ee8",
+        "name": "allow_ssh",
+        "description": "Allow SSH inbound traffic",
+        "vpc_id": "vpc-09cbec26a9d1656bf",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0555db65bf619292f",
+        "name": "launch-wizard-1",
+        "description": "launch-wizard-1 created 2020-09-22T17:03:33.144+05:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-053e60d02a7a0b471",
+        "name": "package-engine-sg",
+        "description": "Allow inbound HTTP traffic",
+        "vpc_id": "vpc-0c85f8c9f149f7947",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-06caa12ef6ffdb7d2",
+        "name": "launch-wizard-5",
+        "description": "launch-wizard-5 created 2020-09-22T20:11:03.967+05:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0c8c5e4f8d2b3eb6a",
+        "name": "test-sergey-s3-fgw",
+        "description": "launch-wizard-20 created 2022-08-02T13:00:55.291Z",
+        "vpc_id": "vpc-090086a304c2b8334",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0fb0d02b1ea62d715",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-0d415b4445fff7d02",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0a331dab719742778",
+        "name": "launch-wizard-11",
+        "description": "launch-wizard-11 created 2020-10-19T18:54:32.238+05:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-07ad87edd9a08223f",
+        "name": "launch-wizard-19",
+        "description": "launch-wizard-19 created 2022-02-09T22:06:09.807Z",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0a9ab8757ac0dc90f",
+        "name": "package-engine-sg",
+        "description": "Fargate security group",
+        "vpc_id": "vpc-005292a73cbf17baf",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-04377067d7d83fa57",
+        "name": "BenchlingWebhookStack-FargateServiceFargateSecurityGroup861EBF81-jSBo9WY0OF8y",
+        "description": "Security group for Benchling webhook Fargate tasks",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-0219f692fedec5d49",
+        "name": "launch-wizard-6",
+        "description": "launch-wizard-6 created 2020-09-22T21:06:45.680+05:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0ca9a5baa8a92dce8",
+        "name": "fargate-sg",
+        "description": "Fargate security group",
+        "vpc_id": "vpc-00b5a8177e9fbaed2",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0720a761b991f8ffc",
+        "name": "quilt-staging-OutboundSecurityGroup-GZOY2TBBNEMZ",
+        "description": "Outbound HTTPS traffic to anywhere",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-00a73ffa5ab7a0c94",
+        "name": "quilt-perf-test-m5.4large-100kb-1gb-2node-cluster1-intracluster-ssh",
+        "description": "quilt-perf-test-m5.4large-100kb-1gb-2node-cluster1-intracluster-ssh",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0c8dea1851e06800d",
+        "name": "fargate-sg",
+        "description": "Fargate security group",
+        "vpc_id": "vpc-02d8bf24f88b97f3a",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0377f90a8b8205e38",
+        "name": "d-90674f32d9_workspacesMembers",
+        "description": "Amazon WorkSpaces Security Group",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-012a097ed80bd1de1",
+        "name": "launch-wizard-27",
+        "description": "launch-wizard-27 created 2023-04-27T23:24:33.042Z",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-03e0f61283f9b72b2",
+        "name": "launch-wizard-4",
+        "description": "launch-wizard-4 created 2020-09-22T19:30:58.211+05:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-03221e7686040f769",
+        "name": "d-906747565c_controllers",
+        "description": "AWS created security group for d-906747565c directory controllers",
+        "vpc_id": "vpc-09635023ed0c40c39",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-0e73722c1761bd897",
+        "name": "launch-wizard-7",
+        "description": "launch-wizard-7 created 2020-09-22T22:53:00.481+05:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0d3ab6ba7a1d6e526",
+        "name": "d-9067b221d4_workspacesMembers",
+        "description": "Amazon WorkSpaces Security Group",
+        "vpc_id": "vpc-090086a304c2b8334",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-08978d56cfb01fd8a",
+        "name": "launch-wizard-12",
+        "description": "launch-wizard-12 created 2021-01-14T13:39:33.980+05:00",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0f909ca72d6ac73b0",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-09635023ed0c40c39",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-00f59353844ed0bd9",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-005292a73cbf17baf",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0b935f65d6f3c7679",
+        "name": "quilt-staging-RegistryAccessorSecurityGroup-1MA8FYPEC9E5D",
+        "description": "Accesses the registry service privately (bypassing the ELB)",
+        "vpc_id": "vpc-010008ef3cce35c0c",
+        "in_use": true
+      },
+      {
+        "security_group_id": "sg-0e44996333d0c7c4c",
+        "name": "quilt--8524",
+        "description": "2020-06-01T14:05:17.810Z",
+        "vpc_id": "vpc-07a6e143950d74443",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-03e45ae8de951644c",
+        "name": "default",
+        "description": "default VPC security group",
+        "vpc_id": "vpc-0c85f8c9f149f7947",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-00b737c36145a179f",
+        "name": "launch-wizard-20",
+        "description": "launch-wizard-20 created 2022-08-02T15:20:34.554Z",
+        "vpc_id": "vpc-090086a304c2b8334",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-05f21178caecc6a9f",
+        "name": "launch-wizard-22",
+        "description": "launch-wizard-22 created 2022-08-31T20:45:53.916Z",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      },
+      {
+        "security_group_id": "sg-0631c83e7fbb394e1",
+        "name": "quilt-staging-search-ssh-ernie",
+        "description": "Allow SSH access to developers",
+        "vpc_id": "vpc-2dda6457",
+        "in_use": false
+      }
+    ],
+    "certificates": [
+      {
+        "arn": "arn:aws:acm:us-east-1:712023778557:certificate/2b16c20f-b437-418e-8236-8e38e84aea45",
+        "domain_name": "*.quilttest.com",
+        "sans": [
+          "*.quilttest.com"
+        ],
+        "status": "ISSUED",
+        "expiration_date": "2026-12-08T23:59:59.000Z",
+        "days_until_expiration": 383
+      }
+    ],
+    "route53_zones": [
+      {
+        "zone_id": "Z3APXKSZI7PV1N",
+        "domain_name": "quiltdata-route53.com.",
+        "private": false,
+        "record_count": 34
+      },
+      {
+        "zone_id": "Z050530821I8SLJEKKYY6",
+        "domain_name": "quilttest.com.",
+        "private": false,
+        "record_count": 27
+      },
+      {
+        "zone_id": "Z0076816L02CZ9SD98QD",
+        "domain_name": "quilt-foo.quiltdata.com.",
+        "private": false,
+        "record_count": 2
+      },
+      {
+        "zone_id": "Z05388173P6CK90O98CYM",
+        "domain_name": "quiltdata.internal.",
+        "private": true,
+        "record_count": 5
+      },
+      {
+        "zone_id": "Z00197523DEA9OMTVO93T",
+        "domain_name": "tf-dev-crc.",
+        "private": true,
+        "record_count": 7
+      },
+      {
+        "zone_id": "Z02390273NRQS338PSEA0",
+        "domain_name": "tf-dev-bench.",
+        "private": true,
+        "record_count": 12
+      },
+      {
+        "zone_id": "Z06695642977ZV02P5GTO",
+        "domain_name": "tf-dev-sort.",
+        "private": true,
+        "record_count": 7
+      },
+      {
+        "zone_id": "Z01617142XYDLKY415UD9",
+        "domain_name": "tf-dev-mcp-demo.",
+        "private": true,
+        "record_count": 7
+      },
+      {
+        "zone_id": "Z0273181244GGACLO6EZC",
+        "domain_name": "quilt-staging.",
+        "private": true,
+        "record_count": 7
+      },
+      {
+        "zone_id": "Z07034868OICA8D3J8RM",
+        "domain_name": "tf-stable.",
+        "private": true,
+        "record_count": 7
+      }
+    ],
+    "s3_state_buckets": [
+      {
+        "bucket_name": "quilt-qurator-tf-state",
+        "region": "us-east-1",
+        "versioning_enabled": true,
+        "creation_date": "2024-06-03T12:17:23.000Z"
+      },
+      {
+        "bucket_name": "quilt-staging-tf-state",
+        "region": "us-east-1",
+        "versioning_enabled": true,
+        "creation_date": "2023-06-18T01:19:28.000Z"
+      }
+    ],
+    "cloudformation_stacks": [
+      {
+        "stack_name": "QuiltMcpStack",
+        "status": "UPDATE_COMPLETE",
+        "creation_date": "2025-08-12T15:46:57.584Z",
+        "last_updated": "2025-08-13T22:07:22.343Z",
+        "parameters": {
+          "BootstrapVersion": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      {
+        "stack_name": "omics-quilt",
+        "status": "UPDATE_COMPLETE",
+        "creation_date": "2023-12-07T20:26:31.088Z",
+        "last_updated": "2024-12-18T22:25:51.771Z",
+        "parameters": {
+          "BootstrapVersion": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      {
+        "stack_name": "quilt-staging",
+        "status": "UPDATE_COMPLETE",
+        "creation_date": "2023-06-22T07:03:12.214Z",
+        "last_updated": "2025-11-20T20:34:23.899Z",
+        "parameters": {
+          "OneLoginBaseUrl": "https://quilt-data-dev.onelogin.com/oidc/2",
+          "OneLoginClientSecret": "****",
+          "AzureClientSecret": "****",
+          "ManagedUserRoleExtraPolicies": "arn:aws:iam::712023778557:policy/AthenaQuiltAccess,arn:aws:iam::aws:policy/AmazonAthenaFullAccess,arn:aws:iam::712023778557:policy/QuiltKMSAccess",
+          "VPC": "vpc-010008ef3cce35c0c",
+          "OktaBaseUrl": "https://dev-634318.okta.com/oauth2/default",
+          "DBUrl": "****",
+          "PasswordAuth": "Enabled",
+          "AdminEmail": "aneesh+migration09212020@quiltdata.io",
+          "OktaClientSecret": "****",
+          "QuiltWebHost": "nightly.quilttest.com",
+          "SingleSignOnDomains": "quiltdata.io",
+          "WAFRequestRateLimit": "8400",
+          "OktaClientId": "0oagob988sqpYtenO4x7",
+          "SearchDomainArn": "arn:aws:es:us-east-1:712023778557:domain/quilt-staging",
+          "UserAthenaBytesScannedCutoff": "0",
+          "PublicSubnets": "subnet-0f667dc82fa781381,subnet-0e5edea8f1785e300",
+          "VoilaAMI": "/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id",
+          "AdminPassword": "****",
+          "UserSecurityGroup": "sg-0e0de73b558aff699",
+          "SearchClusterAccessorSecurityGroup": "sg-00877ec94429c257d",
+          "ChunkedChecksums": "Enabled",
+          "GoogleClientId": "618080809077-cjbj6f2r0mnmd71v7bql66phn1qdc9qq.apps.googleusercontent.com",
+          "GoogleClientSecret": "****",
+          "VoilaVersion": "0.2.10",
+          "AzureAuth": "Enabled",
+          "GoogleAuth": "Enabled",
+          "CanaryNotificationsEmail": "dev@quiltdata.io",
+          "OneLoginClientId": "40541e50-8c80-013c-90e8-0a6acc55aa30113642",
+          "WAFGeofenceCountries": "CA,ES,ME,NL,PA,RS,US",
+          "CloudTrailBucket": "quilt-staging-cloudtrail",
+          "DBAccessorSecurityGroup": "sg-096ceb20b3ddeafdb",
+          "OktaAuth": "Enabled",
+          "Qurator": "Enabled",
+          "AzureBaseUrl": "https://login.microsoftonline.com/1166cef2-264c-4152-a5cd-4e1dffd532df/v2.0",
+          "Subnets": "subnet-09d384be5cc82f4a3,subnet-0c4d8951561fb21ea",
+          "AzureClientId": "152ac810-7431-4f4f-940b-a7a22688c84a",
+          "SearchDomainEndpoint": "vpc-quilt-staging-g36hebl7hml3cekeznuy7mwdqe.us-east-1.es.amazonaws.com",
+          "OneLoginAuth": "Enabled",
+          "CertificateArnELB": "arn:aws:acm:us-east-1:712023778557:certificate/2b16c20f-b437-418e-8236-8e38e84aea45"
+        },
+        "vpc_id": "vpc-010008ef3cce35c0c"
+      },
+      {
+        "stack_name": "quilt-t4-staging-service-role",
+        "status": "UPDATE_COMPLETE",
+        "creation_date": "2022-06-21T07:43:49.803Z",
+        "last_updated": "2023-04-26T09:31:45.494Z",
+        "parameters": {}
+      },
+      {
+        "stack_name": "quilt-sam",
+        "status": "DELETE_FAILED",
+        "creation_date": "2020-12-10T21:30:01.096Z",
+        "last_updated": "2020-12-10T21:30:12.291Z",
+        "parameters": {
+          "SourceBucketName": "quilt-s3-eventbridge",
+          "LoggingBucketName": "patterns-s3-eventbridge-ct-logs"
+        }
+      }
+    ]
+  }
+}
