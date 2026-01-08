@@ -18,6 +18,10 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+This version requires Quilt stack version 1.66 or later.
+
+- [Changed] Update Elasticsearch to 7.10 ([#89](https://github.com/quiltdata/iac/pull/89))
+
 ## [1.4.0] - 2025-12-18
 
 - [Changed] Update Postgres to 15.15 ([#94](https://github.com/quiltdata/iac/pull/94))
