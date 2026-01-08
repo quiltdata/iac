@@ -20,7 +20,7 @@ Optional release notice.
 
 This version requires Quilt stack version 1.66 or later.
 
-- [Changed] Elasticsearch updated to 7.10 ([#89](https://github.com/quiltdata/iac/pull/89))
+- [Changed] Update Elasticsearch to 7.10 ([#89](https://github.com/quiltdata/iac/pull/89))
 
 ## [1.4.0] - 2025-12-18
 
