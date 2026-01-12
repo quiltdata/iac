@@ -175,6 +175,7 @@ The `parameters` map configures the Quilt application. Here are all available pa
 ## Configuration Examples by Use Case
 
 ### Development Environment
+
 ```hcl
 # Minimal cost configuration
 db_instance_class               = "db.t3.micro"
@@ -188,6 +189,7 @@ search_volume_size             = 512
 ```
 
 ### Production Environment
+
 ```hcl
 # High availability configuration
 db_instance_class               = "db.t3.medium"
@@ -202,6 +204,7 @@ search_volume_type             = "gp3"
 ```
 
 ### Enterprise Environment
+
 ```hcl
 # High performance configuration
 db_instance_class               = "db.r5.xlarge"
@@ -219,21 +222,25 @@ search_volume_iops             = 18750
 ## Variable Validation Rules
 
 ### Name Validation
+
 - Must be ≤20 characters
 - Lowercase alphanumeric characters and hyphens only
 - Used as prefix for AWS resource names
 
 ### Network Validation
+
 - CIDR blocks must allow ≥256 IP addresses (≤/24)
 - Subnet lists must contain exactly 2 subnet IDs when specified
 - VPC endpoints required for internal deployments with existing VPC
 
 ### ElasticSearch Validation
+
 - `search_volume_iops` must be ≥3000 when specified
 - `search_volume_throughput` must be 125-1000 MiB/s for gp3 volumes
 - Master node count should be odd (3 or 5) for proper quorum
 
 ### Database Validation
+
 - `db_network_type` must be "IPV4" or "DUAL"
 - Multi-AZ recommended for production environments
 - Deletion protection recommended for production databases
@@ -241,6 +248,7 @@ search_volume_iops             = 18750
 ## Common Configuration Patterns
 
 ### Internet-Facing with New VPC
+
 ```hcl
 internal       = false
 create_new_vpc = true
@@ -249,6 +257,7 @@ cidr          = "10.0.0.0/16"
 ```
 
 ### Internal with Existing VPC
+
 ```hcl
 internal            = true
 create_new_vpc      = false
@@ -261,6 +270,7 @@ api_endpoint        = "vpce-existing"
 ```
 
 ### High-Performance ElasticSearch
+
 ```hcl
 search_instance_type    = "m5.4xlarge.elasticsearch"
 search_instance_count   = 4
