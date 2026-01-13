@@ -18,6 +18,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+## [1.5.0] - 2026-01-13
+
 Upgrading to this version is only possible from version 1.1.0 or later.
 
 This version requires Quilt stack version 1.66 or later.
@@ -75,7 +77,8 @@ Ensure your Quilt stack is upgraded to version 1.66 or later *before* upgrading 
 
 - [Added] Add changelog ([#74](https://github.com/quiltdata/iac/pull/74))
 
-[Unreleased]: https://github.com/quiltdata/iac/compare/1.4.0...HEAD
+[Unreleased]: https://github.com/quiltdata/iac/compare/1.5.0...HEAD
+[1.5.0]: https://github.com/quiltdata/iac/releases/tag/1.5.0
 [1.4.0]: https://github.com/quiltdata/iac/releases/tag/1.4.0
 [1.3.0]: https://github.com/quiltdata/iac/releases/tag/1.3.0
 [1.2.0]: https://github.com/quiltdata/iac/releases/tag/1.2.0
