@@ -21,6 +21,7 @@ Optional release notice.
 Upgrading to this version is only possible from version 1.1.0 or later.
 
 This version requires Quilt stack version 1.66 or later.
+Ensure your Quilt stack is upgraded to version 1.66 or later *before* upgrading this module to avoid downtime.
 
 - [Changed] Update Elasticsearch to 7.10 ([#89](https://github.com/quiltdata/iac/pull/89))
 
