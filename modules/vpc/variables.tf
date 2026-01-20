@@ -68,3 +68,9 @@ variable "existing_user_subnets" {
     error_message = "Must contain 2 string ids or be null."
   }
 }
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Tags to apply to VPC, subnets, and security groups"
+}

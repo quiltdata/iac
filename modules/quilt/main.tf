@@ -22,6 +22,8 @@ module "vpc" {
   existing_public_subnets      = var.public_subnets
   existing_user_security_group = var.user_security_group
   existing_user_subnets        = var.user_subnets
+
+  tags = var.tags
 }
 
 module "db" {
@@ -38,6 +40,8 @@ module "db" {
   instance_class      = var.db_instance_class
   multi_az            = var.db_multi_az
   deletion_protection = var.db_deletion_protection
+
+  tags = var.tags
 }
 
 module "search" {
@@ -72,6 +76,8 @@ resource "aws_s3_bucket" "cft_bucket" {
 
   # Nothing valuable in this bucket, so make the cleanup easier.
   force_destroy = true
+
+  tags = var.tags
 }
 
 resource "aws_s3_bucket_versioning" "cft_bucket_versioning" {

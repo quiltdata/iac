@@ -72,6 +72,8 @@ module "vpc" {
   enable_dns_support     = true
   enable_nat_gateway     = true
   one_nat_gateway_per_az = true
+
+  tags = var.tags
 }
 
 // Module name no longer accurate (see description); changing name causes tf apply to fail
@@ -86,6 +88,8 @@ module "api_gateway_security_group" {
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["https-443-tcp", "http-80-tcp"]
+
+  tags = var.tags
 }
 
 module "vpc_endpoints" {
@@ -109,4 +113,6 @@ module "vpc_endpoints" {
       create              = var.internal
     },
   }
+
+  tags = var.tags
 }
