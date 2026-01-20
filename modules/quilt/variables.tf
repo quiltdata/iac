@@ -223,3 +223,9 @@ variable "on_failure" {
   type        = string
   default     = "ROLLBACK"
 }
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Tags to apply to resources (DB, ElasticSearch domain, etc.)"
+}

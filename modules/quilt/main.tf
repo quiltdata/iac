@@ -59,6 +59,8 @@ module "search" {
   volume_type              = var.search_volume_type
   volume_iops              = var.search_volume_iops
   volume_throughput        = var.search_volume_throughput
+
+  tags = var.tags
 }
 
 resource "random_password" "admin_password" {
