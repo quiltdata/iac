@@ -41,3 +41,9 @@ variable "deletion_protection" {
   type     = bool
   nullable = false
 }
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Tags to apply to RDS instance and security groups"
+}

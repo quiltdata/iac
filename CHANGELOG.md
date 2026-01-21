@@ -18,6 +18,13 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+- [Added] Comprehensive tags support for all infrastructure resources ([#100](https://github.com/quiltdata/iac/pull/100))
+  - RDS database instances and security groups
+  - VPC, subnets, NAT gateways, and VPC endpoints
+  - ElasticSearch domain
+  - S3 bucket for CloudFormation templates
+  - Security groups (DB accessor, DB, user ingress)
+
 ## [1.5.0] - 2026-01-13
 
 Upgrading to this version is only possible from version 1.1.0 or later.

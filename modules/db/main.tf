@@ -11,6 +11,8 @@ module "db_accessor_security_group" {
       source_security_group_id = module.db_security_group.security_group_id
     }
   ]
+
+  tags = var.tags
 }
 
 module "db_security_group" {
@@ -26,6 +28,8 @@ module "db_security_group" {
       source_security_group_id = module.db_accessor_security_group.security_group_id
     }
   ]
+
+  tags = var.tags
 }
 
 module "db" {
@@ -62,4 +66,6 @@ module "db" {
 
   backup_retention_period = 7
   deletion_protection     = var.deletion_protection
+
+  tags = var.tags
 }

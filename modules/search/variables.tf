@@ -71,3 +71,9 @@ variable "volume_type" {
   type     = string
   nullable = false
 }
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Tags to apply to the ElasticSearch domain"
+}
