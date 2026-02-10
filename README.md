@@ -3,12 +3,15 @@
 Deploy and maintain Quilt stacks with Terraform using this comprehensive Infrastructure as Code (IaC) repository.
 
 > **📚 Complete Documentation**: This README covers common configuration scenarios and deployment workflows. For a complete reference of all Terraform variables with types, defaults, and validation rules, see [VARIABLES.md](VARIABLES.md). For comprehensive deployment examples covering multiple scenarios, see [EXAMPLES.md](EXAMPLES.md). For operational procedures and maintenance guides, see [OPERATIONS.md](OPERATIONS.md).
+>
+> **🔧 Development & Testing**: For developers and contributors, we provide a comprehensive [Makefile](Makefile) that manages all testing, validation, and deployment workflows. Run `make help` to see all available commands. For AI agents (Claude Code, Copilot, etc.), see [AGENTS.md](AGENTS.md) for optimized workflows and conventions.
 
 ## Table of Contents
 
 - [Cloud Team Operations Guide](#cloud-team-operations-guide)
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
+- [Development Quick Start](#development-quick-start)
 - [Rightsize Your Search Domain](#rightsize-your-search-domain)
 - [Database Configuration](#database-configuration)
 - [Network Configuration](#network-configuration)
@@ -755,6 +758,74 @@ terraform init
 terraform plan -out=tfplan
 terraform apply tfplan
 ```
+
+## Development Quick Start
+
+For developers and contributors working on this infrastructure repository:
+
+### 1. Set Up Development Environment
+
+```bash
+# Clone the repository
+git clone https://github.com/quiltdata/iac.git
+cd iac
+
+# Set up Python development environment
+make setup
+
+# Verify everything is installed
+make verify
+```
+
+### 2. Run Tests
+
+```bash
+# Quick unit tests (< 1 minute, no AWS required)
+make test
+
+# All local tests (< 5 minutes, no AWS required)
+make test-all
+
+# Check code quality
+make lint
+
+# Format code
+make format
+```
+
+### 3. Common Development Commands
+
+```bash
+# Show all available commands
+make help
+
+# Run tests with coverage
+make test-coverage
+
+# Validate CloudFormation templates
+make test-templates
+
+# Validate Terraform modules
+make test-tf
+
+# Watch mode (run tests on file changes)
+make watch
+```
+
+### 4. Before Committing
+
+```bash
+# Run full test suite
+make test-all
+
+# Fix formatting issues
+make format
+
+# Verify everything passes
+make verify
+```
+
+For complete documentation on all available Make targets, see [MAKEFILE.md](MAKEFILE.md).
 
 | Argument           | `internal = true` (private ALB for VPN)       | `internal = false` (internet-facing ALB) |
 |--------------------|-----------------------------------------------|------------------------------------------|

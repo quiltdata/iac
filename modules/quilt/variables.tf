@@ -223,3 +223,41 @@ variable "on_failure" {
   type        = string
   default     = "ROLLBACK"
 }
+
+# New Variables for External IAM Pattern
+
+variable "iam_template_url" {
+  type        = string
+  nullable    = true
+  default     = null
+  description = "S3 HTTPS URL of IAM CloudFormation template. If null (default), use inline IAM pattern for backward compatibility. If set, use external IAM pattern with IAM module."
+  validation {
+    condition     = var.iam_template_url == null || can(regex("^https://[a-z0-9.-]+\\.s3[.-][a-z0-9.-]*\\.amazonaws\\.com/.+\\.(yaml|yml|json)$", var.iam_template_url))
+    error_message = "Must be null or a valid S3 HTTPS URL pointing to a YAML or JSON CloudFormation template."
+  }
+}
+
+variable "iam_stack_name" {
+  type        = string
+  nullable    = true
+  default     = null
+  description = "Override IAM stack name. If not provided and iam_template_url is set, defaults to: {name}-iam"
+  validation {
+    condition     = var.iam_stack_name == null || (length(var.iam_stack_name) <= 128 && can(regex("^[a-zA-Z][a-zA-Z0-9-]*$", var.iam_stack_name)))
+    error_message = "Stack name must start with a letter and contain only alphanumeric characters and hyphens. Max length: 128 characters."
+  }
+}
+
+variable "iam_parameters" {
+  type        = map(string)
+  nullable    = false
+  default     = {}
+  description = "CloudFormation parameters to pass to IAM stack (only used when iam_template_url is set)"
+}
+
+variable "iam_tags" {
+  type        = map(string)
+  nullable    = false
+  default     = {}
+  description = "Additional tags for IAM stack (only used when iam_template_url is set). Merged with global tags."
+}

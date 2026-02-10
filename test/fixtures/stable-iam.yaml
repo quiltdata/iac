@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: IAM roles and policies for Quilt Data infrastructure
+Resources:
+  BucketReadPolicy:
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: s3:*
+            NotResource: '*'
+    Type: AWS::IAM::ManagedPolicy
+  BucketWritePolicy:
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: s3:*
+            NotResource: '*'
+    Type: AWS::IAM::ManagedPolicy
+  RegistryAssumeRolePolicy:
+    Properties:
+      Path: !Sub '/quilt/${AWS::StackName}/${AWS::Region}/'
+      Description: Allow registry assume custom user roles
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          Effect: Allow
+          Action: sts:AssumeRole
+          NotResource: '*'
+    Type: AWS::IAM::ManagedPolicy
+  ApiRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+    Type: AWS::IAM::Role
+  TimestampResourceHandlerRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+    Type: AWS::IAM::Role
+Outputs:
+  BucketReadPolicyArn:
+    Description: ARN of BucketReadPolicy
+    Value:
+      Ref: BucketReadPolicy
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-BucketReadPolicyArn
+  BucketWritePolicyArn:
+    Description: ARN of BucketWritePolicy
+    Value:
+      Ref: BucketWritePolicy
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-BucketWritePolicyArn
+  RegistryAssumeRolePolicyArn:
+    Description: ARN of RegistryAssumeRolePolicy
+    Value:
+      Ref: RegistryAssumeRolePolicy
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-RegistryAssumeRolePolicyArn
+  ApiRoleArn:
+    Description: ARN of ApiRole
+    Value:
+      Fn::GetAtt:
+        - ApiRole
+        - Arn
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-ApiRoleArn
+  TimestampResourceHandlerRoleArn:
+    Description: ARN of TimestampResourceHandlerRole
+    Value:
+      Fn::GetAtt:
+        - TimestampResourceHandlerRole
+        - Arn
+    Export:
+      Name:
+        Fn::Sub: ${AWS::StackName}-TimestampResourceHandlerRoleArn

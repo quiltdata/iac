@@ -1,0 +1,13 @@
+# ==============================================================================
+
+# REQUIRED USER VALUES
+
+# ==============================================================================
+
+# Quilt Configuration
+
+QUILT_ENV=iac
+QUILT_CATALOG=iac-test.quilttest.com
+QUILT_USER_BUCKET=quilt-ernest-staging
+QUILT_TEMPLATE=test/stable.yaml
+QUILT_EMAIL=<dev@quiltdata.io>
