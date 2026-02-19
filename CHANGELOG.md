@@ -18,6 +18,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+## [1.6.0] - 2026-02-19
+
 - [Changed] Default ES instance types to Graviton2 (`m6g.xlarge` / `m6g.large`) for better price/performance
 
 ## [1.5.0] - 2026-01-13
