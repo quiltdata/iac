@@ -88,7 +88,7 @@ module "quilt" {
   search_dedicated_master_enabled = false
   search_zone_awareness_enabled   = false
   search_instance_count          = 1
-  search_instance_type           = "m5.large.elasticsearch"
+  search_instance_type           = "m6g.large.elasticsearch"
   search_volume_size             = 512
 
   parameters = {
@@ -178,7 +178,7 @@ module "quilt" {
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
   search_instance_count          = 2
-  search_instance_type           = "m5.xlarge.elasticsearch"
+  search_instance_type           = "m6g.xlarge.elasticsearch"
   search_volume_size             = 2048
   search_volume_type             = "gp3"
 
@@ -223,7 +223,7 @@ module "quilt" {
   search_dedicated_master_enabled = false
   search_zone_awareness_enabled   = false
   search_instance_count          = 1
-  search_instance_type           = "m5.large.elasticsearch"
+  search_instance_type           = "m6g.large.elasticsearch"
   search_volume_size             = 512
   search_volume_type             = "gp2"
 }
@@ -240,7 +240,7 @@ module "quilt" {
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
   search_instance_count          = 2
-  search_instance_type           = "m5.xlarge.elasticsearch"
+  search_instance_type           = "m6g.xlarge.elasticsearch"
   search_volume_size             = 1024
   search_volume_type             = "gp2"
 }
@@ -257,7 +257,7 @@ module "quilt" {
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
   search_instance_count          = 2
-  search_instance_type           = "m5.xlarge.elasticsearch"
+  search_instance_type           = "m6g.xlarge.elasticsearch"
   search_volume_size             = 2048  # 2TB
   search_volume_type             = "gp3"
 }
@@ -274,7 +274,7 @@ module "quilt" {
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
   search_instance_count          = 2
-  search_instance_type           = "m5.2xlarge.elasticsearch"
+  search_instance_type           = "m6g.2xlarge.elasticsearch"
   search_volume_size             = 3072  # 3TB
   search_volume_type             = "gp3"
   search_volume_iops             = 16000
@@ -292,7 +292,7 @@ module "quilt" {
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
   search_instance_count          = 2
-  search_instance_type           = "m5.4xlarge.elasticsearch"
+  search_instance_type           = "m6g.4xlarge.elasticsearch"
   search_volume_size             = 6144  # 6TB
   search_volume_type             = "gp3"
   search_volume_iops             = 18750
@@ -677,7 +677,7 @@ module "quilt" {
   # 4 nodes for extreme scale: Use for datasets >5TB or high query volume
   # Most production deployments use 2 nodes (the default). Scale up as needed.
   search_instance_count          = 4
-  search_instance_type           = "m5.2xlarge.elasticsearch"
+  search_instance_type           = "m6g.2xlarge.elasticsearch"
   search_volume_size             = 4096
   search_volume_type             = "gp3"
   search_volume_iops             = 16000
@@ -776,7 +776,7 @@ module "quilt" {
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
   search_instance_count          = 6
-  search_instance_type           = "m5.4xlarge.elasticsearch"
+  search_instance_type           = "m6g.4xlarge.elasticsearch"
   search_volume_size             = 8192
   search_volume_type             = "gp3"
   search_volume_iops             = 20000
@@ -855,7 +855,7 @@ locals {
       db_instance_class  = "db.t3.micro"
       db_multi_az        = false
       search_instance_count = 1
-      search_instance_type = "m5.large.elasticsearch"
+      search_instance_type = "m6g.large.elasticsearch"
       search_volume_size = 512
       cert_arn          = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-DEV-CERT-ID"
       web_host          = "dev-data.YOUR-COMPANY.com"
@@ -866,7 +866,7 @@ locals {
       db_instance_class  = "db.t3.small"
       db_multi_az        = true
       search_instance_count = 2
-      search_instance_type = "m5.xlarge.elasticsearch"
+      search_instance_type = "m6g.xlarge.elasticsearch"
       search_volume_size = 1024
       cert_arn          = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-STAGING-CERT-ID"
       web_host          = "staging-data.YOUR-COMPANY.com"
@@ -877,7 +877,7 @@ locals {
       db_instance_class  = "db.t3.large"
       db_multi_az        = true
       search_instance_count = 4
-      search_instance_type = "m5.2xlarge.elasticsearch"
+      search_instance_type = "m6g.2xlarge.elasticsearch"
       search_volume_size = 4096
       cert_arn          = "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-PROD-CERT-ID"
       web_host          = "data.YOUR-COMPANY.com"
@@ -945,7 +945,7 @@ module "quilt_dev" {
   db_deletion_protection = false
 
   search_instance_count = 1
-  search_instance_type  = "m5.large.elasticsearch"
+  search_instance_type  = "m6g.large.elasticsearch"
   search_volume_size    = 512
 }
 
@@ -967,7 +967,7 @@ module "quilt_prod" {
   # Large production: 4 data nodes for high availability and performance
   # Default is 2. Use 4 for datasets >5TB or high query volume (e.g., 45M docs, 11.5TB).
   search_instance_count = 4
-  search_instance_type  = "m5.2xlarge.elasticsearch"
+  search_instance_type  = "m6g.2xlarge.elasticsearch"
   search_volume_size    = 4096
   search_volume_type    = "gp3"
   search_volume_iops    = 16000
