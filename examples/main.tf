@@ -110,7 +110,7 @@ module "quilt" {
   # search_instance_count          = 1
   # search_instance_type           = "m6g.large.elasticsearch"
   # search_volume_size             = 512
-
+  
   # Medium (Default Production - 100GB-1TB data)
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
@@ -118,7 +118,7 @@ module "quilt" {
   search_instance_type           = "m6g.xlarge.elasticsearch"
   search_volume_size             = 1024
   search_volume_type             = "gp2"
-
+  
   # Large (High Volume - 1TB-5TB data)
   # search_dedicated_master_enabled = true
   # search_zone_awareness_enabled   = true
@@ -126,7 +126,7 @@ module "quilt" {
   # search_instance_type           = "m6g.xlarge.elasticsearch"
   # search_volume_size             = 2048
   # search_volume_type             = "gp3"
-
+  
   # X-Large (Enterprise - 5TB-15TB data)
   # search_dedicated_master_enabled = true
   # search_zone_awareness_enabled   = true
