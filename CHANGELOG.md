@@ -18,10 +18,11 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
-If you rely on the default `search_instance_type` / `search_dedicated_master_type`, upgrading will change your cluster from m5 to m6g (Graviton2) instances on the next `terraform apply`.
-This requires version 1.5.0 or later (ES 7.10). Pin the instance types explicitly to avoid unintended changes, or plan for a maintenance window.
+If you rely on the default `search_instance_type` / `search_dedicated_master_type`:
+- Upgrading from a version prior to 1.5.0 will fail on `terraform apply`. Upgrade to 1.5.0 first.
+- If you have reserved m5 instances, pin the instance types explicitly to keep using them.
 
-- [Changed] Default ES instance types to Graviton2 (`m6g.xlarge` / `m6g.large`) for better price/performance ([#101](https://github.com/quiltdata/iac/pull/101))
+- [Changed] Use Graviton2 (`m6g.xlarge` / `m6g.large`) as default ES instance types for better price/performance ([#101](https://github.com/quiltdata/iac/pull/101))
 
 ## [1.5.0] - 2026-01-13
 
