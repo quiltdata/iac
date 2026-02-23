@@ -18,11 +18,6 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
-## [1.6.0] - 2026-02-19
-
-If you rely on the default `search_instance_type` / `search_dedicated_master_type`, upgrading will change your cluster from m5 to m6g (Graviton2) instances on the next `terraform apply`.
-This requires version 1.5.0 or later (ES 7.10). Pin the instance types explicitly to avoid unintended changes, or plan for a maintenance window.
-
 - [Changed] Default ES instance types to Graviton2 (`m6g.xlarge` / `m6g.large`) for better price/performance ([#101](https://github.com/quiltdata/iac/pull/101))
 
 ## [1.5.0] - 2026-01-13
@@ -84,8 +79,7 @@ Ensure your Quilt stack is upgraded to version 1.66 or later *before* upgrading 
 
 - [Added] Add changelog ([#74](https://github.com/quiltdata/iac/pull/74))
 
-[Unreleased]: https://github.com/quiltdata/iac/compare/1.6.0...HEAD
-[1.6.0]: https://github.com/quiltdata/iac/compare/1.5.0...1.6.0
+[Unreleased]: https://github.com/quiltdata/iac/compare/1.5.0...HEAD
 [1.5.0]: https://github.com/quiltdata/iac/releases/tag/1.5.0
 [1.4.0]: https://github.com/quiltdata/iac/releases/tag/1.4.0
 [1.3.0]: https://github.com/quiltdata/iac/releases/tag/1.3.0
