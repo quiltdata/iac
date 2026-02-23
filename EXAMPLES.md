@@ -310,7 +310,7 @@ module "quilt" {
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
   search_instance_count          = 4
-  search_instance_type           = "m5.12xlarge.elasticsearch"
+  search_instance_type           = "m6g.12xlarge.elasticsearch"
   search_volume_size             = 18432  # 18TB per node
   search_volume_type             = "gp3"
   search_volume_iops             = 40000
