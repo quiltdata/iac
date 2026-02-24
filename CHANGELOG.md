@@ -18,6 +18,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+## [1.6.0] - 2026-02-24
+
 If you rely on the default `search_instance_type` / `search_dedicated_master_type`:
 - Upgrading from a version prior to 1.5.0 will fail on `terraform apply`. Upgrade to 1.5.0 first.
 - If you have reserved m5 instances, pin the instance types explicitly to keep using them.
@@ -83,7 +85,8 @@ Ensure your Quilt stack is upgraded to version 1.66 or later *before* upgrading 
 
 - [Added] Add changelog ([#74](https://github.com/quiltdata/iac/pull/74))
 
-[Unreleased]: https://github.com/quiltdata/iac/compare/1.5.0...HEAD
+[Unreleased]: https://github.com/quiltdata/iac/compare/1.6.0...HEAD
+[1.6.0]: https://github.com/quiltdata/iac/releases/tag/1.6.0
 [1.5.0]: https://github.com/quiltdata/iac/releases/tag/1.5.0
 [1.4.0]: https://github.com/quiltdata/iac/releases/tag/1.4.0
 [1.3.0]: https://github.com/quiltdata/iac/releases/tag/1.3.0
