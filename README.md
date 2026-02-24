@@ -562,12 +562,12 @@ Quilt provides Terraform-compatible CloudFormation templates via email:
 
 **Minimum Requirements:**
 - **Database**: db.t3.small (2 vCPU, 2GB RAM) for development
-- **ElasticSearch**: 1x m5.large.elasticsearch (2 vCPU, 8GB RAM, 512GB storage) for development
+- **ElasticSearch**: 1x m6g.large.elasticsearch (2 vCPU, 8GB RAM, 512GB storage) for development
 - **Application**: ECS Fargate tasks (0.5 vCPU, 1GB RAM per task)
 
 **Production Recommendations:**
 - **Database**: db.t3.medium or larger (2+ vCPU, 4+ GB RAM) with Multi-AZ
-- **ElasticSearch**: 2x m5.xlarge.elasticsearch (4 vCPU, 16GB RAM, 1TB+ storage) with zone awareness
+- **ElasticSearch**: 2x m6g.xlarge.elasticsearch (4 vCPU, 16GB RAM, 1TB+ storage) with zone awareness
 - **Application**: Multiple ECS Fargate tasks across availability zones
 
 **Storage Considerations:**
@@ -815,7 +815,7 @@ Below are known-good search sizes that you can set on the `quilt` module.
 search_dedicated_master_enabled = false
 search_zone_awareness_enabled = false
 search_instance_count = 1
-search_instance_type = "m5.large.elasticsearch"
+search_instance_type = "m6g.large.elasticsearch"
 search_volume_size = 512
 ```
 
@@ -824,7 +824,7 @@ search_volume_size = 512
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled = true
 search_instance_count = 2
-search_instance_type = "m5.xlarge.elasticsearch"
+search_instance_type = "m6g.xlarge.elasticsearch"
 search_volume_size = 1024
 ```
 
@@ -833,7 +833,7 @@ search_volume_size = 1024
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled = true
 search_instance_count = 2
-search_instance_type = "m5.xlarge.elasticsearch"
+search_instance_type = "m6g.xlarge.elasticsearch"
 search_volume_size = 2*1024
 search_volume_type = "gp3"
 ```
@@ -843,7 +843,7 @@ search_volume_type = "gp3"
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled = true
 search_instance_count = 2
-search_instance_type = "m5.2xlarge.elasticsearch"
+search_instance_type = "m6g.2xlarge.elasticsearch"
 search_volume_size = 3*1024
 search_volume_type = "gp3"
 search_volume_iops = 16000
@@ -854,7 +854,7 @@ search_volume_iops = 16000
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled = true
 search_instance_count = 2
-search_instance_type = "m5.4xlarge.elasticsearch"
+search_instance_type = "m6g.4xlarge.elasticsearch"
 search_volume_size = 6*1024
 search_volume_type = "gp3"
 search_volume_iops = 18750
@@ -865,7 +865,7 @@ search_volume_iops = 18750
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled = true
 search_instance_count = 2
-search_instance_type = "m5.12xlarge.elasticsearch"
+search_instance_type = "m6g.12xlarge.elasticsearch"
 search_volume_size = 18*1024
 search_volume_type = "gp3"
 search_volume_iops = 40000
@@ -877,7 +877,7 @@ search_volume_throughput = 1187
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled = true
 search_instance_count = 4
-search_instance_type = "m5.12xlarge.elasticsearch"
+search_instance_type = "m6g.12xlarge.elasticsearch"
 search_volume_size = 18*1024
 search_volume_type = "gp3"
 search_volume_iops = 40000

@@ -108,14 +108,14 @@ module "quilt" {
   # search_dedicated_master_enabled = false
   # search_zone_awareness_enabled   = false
   # search_instance_count          = 1
-  # search_instance_type           = "m5.large.elasticsearch"
+  # search_instance_type           = "m6g.large.elasticsearch"
   # search_volume_size             = 512
   
   # Medium (Default Production - 100GB-1TB data)
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
   search_instance_count          = 2
-  search_instance_type           = "m5.xlarge.elasticsearch"
+  search_instance_type           = "m6g.xlarge.elasticsearch"
   search_volume_size             = 1024
   search_volume_type             = "gp2"
   
@@ -123,7 +123,7 @@ module "quilt" {
   # search_dedicated_master_enabled = true
   # search_zone_awareness_enabled   = true
   # search_instance_count          = 2
-  # search_instance_type           = "m5.xlarge.elasticsearch"
+  # search_instance_type           = "m6g.xlarge.elasticsearch"
   # search_volume_size             = 2048
   # search_volume_type             = "gp3"
   
@@ -131,7 +131,7 @@ module "quilt" {
   # search_dedicated_master_enabled = true
   # search_zone_awareness_enabled   = true
   # search_instance_count          = 2
-  # search_instance_type           = "m5.2xlarge.elasticsearch"
+  # search_instance_type           = "m6g.2xlarge.elasticsearch"
   # search_volume_size             = 3072
   # search_volume_type             = "gp3"
   # search_volume_iops             = 16000

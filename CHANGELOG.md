@@ -18,6 +18,12 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+If you rely on the default `search_instance_type` / `search_dedicated_master_type`:
+- Upgrading from a version prior to 1.5.0 will fail on `terraform apply`. Upgrade to 1.5.0 first.
+- If you have reserved m5 instances, pin the instance types explicitly to keep using them.
+
+- [Changed] Use Graviton2 (`m6g.xlarge` / `m6g.large`) as default ES instance types for better price/performance ([#101](https://github.com/quiltdata/iac/pull/101))
+
 ## [1.5.0] - 2026-01-13
 
 Upgrading to this version is only possible from version 1.1.0 or later.

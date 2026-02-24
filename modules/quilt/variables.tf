@@ -80,7 +80,7 @@ variable "search_instance_count" {
 variable "search_instance_type" {
   type        = string
   nullable    = false
-  default     = "m5.xlarge.elasticsearch"
+  default     = "m6g.xlarge.elasticsearch"
   description = "Instance type of data nodes in the ElasticSearch cluster"
 }
 
@@ -101,7 +101,7 @@ variable "search_dedicated_master_count" {
 variable "search_dedicated_master_type" {
   type        = string
   nullable    = false
-  default     = "m5.large.elasticsearch"
+  default     = "m6g.large.elasticsearch"
   description = "Instance type of the dedicated master nodes in the ElasticSearch cluster"
 }
 

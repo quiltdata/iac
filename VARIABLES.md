@@ -42,10 +42,10 @@ This document provides comprehensive documentation for all variables available i
 | Variable | Type | Default | Description | Constraints |
 |----------|------|---------|-------------|-------------|
 | `search_instance_count` | `number` | `2` | Number of data nodes | ≥1 |
-| `search_instance_type` | `string` | `"m5.xlarge.elasticsearch"` | Instance type for data nodes | Valid ES instance types |
+| `search_instance_type` | `string` | `"m6g.xlarge.elasticsearch"` | Instance type for data nodes | Valid ES instance types |
 | `search_dedicated_master_enabled` | `bool` | `true` | Enable dedicated master nodes | - |
 | `search_dedicated_master_count` | `number` | `3` | Number of master nodes | 3 or 5 (odd numbers) |
-| `search_dedicated_master_type` | `string` | `"m5.large.elasticsearch"` | Instance type for master nodes | Valid ES instance types |
+| `search_dedicated_master_type` | `string` | `"m6g.large.elasticsearch"` | Instance type for master nodes | Valid ES instance types |
 | `search_zone_awareness_enabled` | `bool` | `true` | Enable Multi-AZ deployment | - |
 | `search_volume_size` | `number` | `1024` | EBS volume size per data node (GiB) | ≥10 |
 | `search_volume_type` | `string` | `"gp2"` | EBS volume type | `"gp2"`, `"gp3"`, `"io1"` |
@@ -183,7 +183,7 @@ db_deletion_protection         = false
 search_dedicated_master_enabled = false
 search_zone_awareness_enabled  = false
 search_instance_count          = 1
-search_instance_type           = "m5.large.elasticsearch"
+search_instance_type           = "m6g.large.elasticsearch"
 search_volume_size             = 512
 ```
 
@@ -196,7 +196,7 @@ db_deletion_protection         = true
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled  = true
 search_instance_count          = 2
-search_instance_type           = "m5.xlarge.elasticsearch"
+search_instance_type           = "m6g.xlarge.elasticsearch"
 search_volume_size             = 2048
 search_volume_type             = "gp3"
 ```
@@ -210,7 +210,7 @@ db_deletion_protection         = true
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled  = true
 search_instance_count          = 4
-search_instance_type           = "m5.4xlarge.elasticsearch"
+search_instance_type           = "m6g.4xlarge.elasticsearch"
 search_volume_size             = 6144
 search_volume_type             = "gp3"
 search_volume_iops             = 18750
@@ -262,7 +262,7 @@ api_endpoint        = "vpce-existing"
 
 ### High-Performance ElasticSearch
 ```hcl
-search_instance_type    = "m5.4xlarge.elasticsearch"
+search_instance_type    = "m6g.4xlarge.elasticsearch"
 search_instance_count   = 4
 search_volume_type      = "gp3"
 search_volume_size      = 6144
