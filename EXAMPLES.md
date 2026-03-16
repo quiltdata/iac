@@ -320,12 +320,12 @@ module "quilt" {
 
 ## Authentication Examples
 
-> **Note:** These examples use the Terraform IAC module, which supports per-provider parameters
-> (`GoogleAuth`, `AzureAuth`, etc.) and multiple simultaneous providers. If your stack was deployed
-> via the CloudFormation Console or AWS Marketplace, see the
+> **Note:** These examples use per-provider parameters (`GoogleAuth`, `AzureAuth`, etc.), which
+> apply to stacks built with `multi_sso: true`. If your stack has a `SingleSignOnProvider` dropdown
+> in its CloudFormation parameters, it was built with `multi_sso: false` and uses a different set of
+> parameters — see the
 > [SSO configuration in the technical reference](https://docs.quiltdata.com/technical-reference#enabling-sso)
-> — those deployments use `SingleSignOnProvider`, `SingleSignOnClientId`, `SingleSignOnClientSecret`,
-> and `SingleSignOnBaseUrl` instead.
+> instead. The deployment method (Terraform, Console, CLI) does not determine which format applies.
 
 ### Google OAuth Integration
 

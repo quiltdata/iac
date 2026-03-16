@@ -77,9 +77,11 @@ The `parameters` map configures the Quilt application. Here are all available pa
 
 ### Authentication Parameters
 
-> **Note:** These parameters apply to Terraform IAC module deployments (`multi_sso: true`).
-> CloudFormation Console and AWS Marketplace deployments use a different set:
+> **Note:** These parameters apply to stacks built with `multi_sso: true` (per-provider format).
+> Stacks built with `multi_sso: false` use a different set:
 > `SingleSignOnProvider`, `SingleSignOnClientId`, `SingleSignOnClientSecret`, and `SingleSignOnBaseUrl`.
+> To determine which format your stack uses, check your stack's CloudFormation parameters for a
+> `SingleSignOnProvider` dropdown — if present, use those parameters instead.
 > See the [SSO configuration in the technical reference](https://docs.quiltdata.com/technical-reference#enabling-sso).
 
 | Parameter | Description | Values | Default |
