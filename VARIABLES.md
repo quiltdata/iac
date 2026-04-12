@@ -53,6 +53,12 @@ This document provides comprehensive documentation for all variables available i
 | `search_volume_throughput` | `number` | `null` | EBS throughput (MiB/s, for some gp3 volumes) | 125-1000 |
 | `search_auto_tune_desired_state` | `string` | `"DISABLED"` | ElasticSearch Auto-Tune state | `"ENABLED"`, `"DISABLED"` |
 
+### Lake Formation Variables
+
+| Variable            | Type   | Default | Description                                                                                                                                                                                                                               |
+|---------------------|--------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `enable_lf_grants`  | `bool` | `false` | Enable per-role Lake Formation TableWildcard grants. Requires the CloudFormation execution role to be a Lake Formation administrator. Leave `false` unless LF enforcement is active and the deploying role is on the LF admin list.       |
+
 ### CloudFormation Stack Variables
 
 | Variable | Type | Default | Description |
