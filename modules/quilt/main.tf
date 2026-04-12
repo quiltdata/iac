@@ -101,7 +101,7 @@ resource "aws_cloudformation_stack" "stack" {
   parameters = merge(
     var.parameters,
     {
-      EnableLakeFormationGrants = var.enable_lf_grants ? "Enabled" : "Disabled"
+      EnableLakeFormationGrants = var.enable_lf_grants ? "Enabled" : null
 
       VPC               = module.vpc.vpc_id
       Subnets           = join(",", module.vpc.private_subnets)
