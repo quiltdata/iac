@@ -80,6 +80,7 @@ resource "aws_s3_bucket_versioning" "cft_bucket_versioning" {
 }
 
 resource "aws_s3_object" "cft" {
+  count  = var.template_file != null ? 1 : 0
   bucket = aws_s3_bucket.cft_bucket.id
   key    = local.template_key
   source = var.template_file
@@ -139,5 +140,9 @@ resource "aws_cloudformation_stack" "stack" {
     ignore_changes = [
       on_failure,
     ]
+    precondition {
+      condition     = var.template_file != null
+      error_message = "template_file is required for apply. Pass null only with terraform destroy."
+    }
   }
 }
