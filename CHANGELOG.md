@@ -18,7 +18,7 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
-- [Changed] Allow `terraform destroy` to run without providing `template_file`: pass `null` to skip the `aws_s3_object.cft` resource. Apply still requires a real path (enforced by precondition). ([#105](https://github.com/quiltdata/iac/pull/105))
+- [Added] `template_file` may now be set to `null` for `terraform destroy`; apply still requires a real path. ([#105](https://github.com/quiltdata/iac/pull/105))
 
 ## [1.6.0] - 2026-02-24
 
