@@ -55,10 +55,9 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket       = "YOUR-TERRAFORM-STATE-BUCKET"
-    key          = "quilt/dev/terraform.tfstate"
-    region       = "YOUR-AWS-REGION"
-    use_lockfile = true
+    bucket = "YOUR-TERRAFORM-STATE-BUCKET"
+    key    = "quilt/dev/terraform.tfstate"
+    region = "YOUR-AWS-REGION"
   }
 }
 
@@ -844,7 +843,6 @@ terraform {
     workspace_key_prefix = "quilt"
     key                  = "terraform.tfstate"
     region               = "YOUR-AWS-REGION"
-    use_lockfile         = true
   }
 }
 
