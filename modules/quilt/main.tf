@@ -142,7 +142,7 @@ resource "aws_cloudformation_stack" "stack" {
     ]
     precondition {
       condition     = var.template_file != null
-      error_message = "template_file is required for apply. Pass null only with terraform destroy."
+      error_message = "template_file is required for plan/apply. Pass null only with terraform destroy."
     }
   }
 }

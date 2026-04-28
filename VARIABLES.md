@@ -9,7 +9,7 @@ This document provides comprehensive documentation for all variables available i
 | Variable | Type | Description | Validation |
 |----------|------|-------------|------------|
 | `name` | `string` | Name for VPC, DB, CloudFormation stack, and resource prefix | ≤20 chars, lowercase alphanumeric + hyphens |
-| `template_file` | `string` | Path to local CloudFormation template file | Must be a valid file path |
+| `template_file` | `string` | Path to local CloudFormation template file (pass `null` only with `terraform destroy`) | Required for `plan`/`apply`; pass `null` with `terraform destroy` |
 | `parameters` | `map(any)` | CloudFormation stack parameters | See [CloudFormation Parameters](#cloudformation-parameters) |
 | `internal` | `bool` | Create internal ALB (true) or internet-facing ALB (false) | - |
 
