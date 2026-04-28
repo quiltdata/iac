@@ -18,6 +18,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+- [Added] `template_file` may now be set to `null` for `terraform destroy`; apply still requires a real path. ([#105](https://github.com/quiltdata/iac/pull/105))
+
 ## [1.6.0] - 2026-02-24
 
 If you rely on the default `search_instance_type` / `search_dedicated_master_type`:

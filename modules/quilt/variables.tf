@@ -142,7 +142,7 @@ variable "template_file" {
   type        = string
   nullable    = true
   default     = null
-  description = "Local file to upload to S3 to use as the CloudFormation template"
+  description = "Local file to upload to S3 to use as the CloudFormation template. Pass null only with terraform destroy; apply requires a real path."
 }
 
 variable "parameters" {
