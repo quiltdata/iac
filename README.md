@@ -507,7 +507,7 @@ aws ce get-cost-and-usage \
 > **📖 Additional Documentation**: For comprehensive enterprise installation guidance, refer to the official documentation at [docs.quilt.bio](https://docs.quilt.bio). This Terraform module complements the standard installation process with Infrastructure as Code automation.
 
 ### Required Tools
-- **[Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)** >= 1.5.0
+- **[Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)** >= 1.10.0
 - **AWS CLI** >= 2.0 configured with appropriate permissions
 - **Git** for version control and configuration management
 - **jq** (optional) for JSON processing in automation scripts
@@ -708,9 +708,10 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket = "YOUR-TERRAFORM-STATE-BUCKET"
-    key    = "quilt/terraform.tfstate"
-    region = "YOUR-AWS-REGION"
+    bucket       = "YOUR-TERRAFORM-STATE-BUCKET"
+    key          = "quilt/terraform.tfstate"
+    region       = "YOUR-AWS-REGION"
+    use_lockfile = true
   }
 }
 
