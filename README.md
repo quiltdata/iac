@@ -33,12 +33,12 @@ This section provides step-by-step instructions specifically for cloud teams to 
 brew install terraform
 
 # Linux
-wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
-unzip terraform_1.6.0_linux_amd64.zip
+wget https://releases.hashicorp.com/terraform/1.14.9/terraform_1.14.9_linux_amd64.zip
+unzip terraform_1.14.9_linux_amd64.zip
 sudo mv terraform /usr/local/bin/
 
 # Verify installation
-terraform --version  # Should show >= 1.5.0
+terraform --version  # Should show >= 1.10.0
 ```
 
 **Step 1.2: Configure AWS CLI**
@@ -64,14 +64,6 @@ aws s3 mb s3://YOUR-COMPANY-terraform-state --region YOUR-AWS-REGION
 aws s3api put-bucket-versioning \
   --bucket YOUR-COMPANY-terraform-state \
   --versioning-configuration Status=Enabled
-
-# Optional: Create DynamoDB table for state locking
-aws dynamodb create-table \
-  --table-name terraform-locks \
-  --attribute-definitions AttributeName=LockID,AttributeType=S \
-  --key-schema AttributeName=LockID,KeyType=HASH \
-  --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
-  --region YOUR-AWS-REGION
 ```
 
 #### 2. SSL Certificate Setup (10 minutes)
@@ -515,7 +507,7 @@ aws ce get-cost-and-usage \
 > **📖 Additional Documentation**: For comprehensive enterprise installation guidance, refer to the official documentation at [docs.quilt.bio](https://docs.quilt.bio). This Terraform module complements the standard installation process with Infrastructure as Code automation.
 
 ### Required Tools
-- **[Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)** >= 1.5.0
+- **[Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)** >= 1.10.0
 - **AWS CLI** >= 2.0 configured with appropriate permissions
 - **Git** for version control and configuration management
 - **jq** (optional) for JSON processing in automation scripts

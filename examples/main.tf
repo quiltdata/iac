@@ -38,11 +38,10 @@ terraform {
     key            = "quilt/terraform.tfstate"
     region         = "YOUR-AWS-REGION"
     encrypt        = true
-    # Optional: DynamoDB table for state locking
-    # dynamodb_table = "terraform-locks"
+    use_lockfile   = true
   }
-  
-  required_version = ">= 1.5.0"
+
+  required_version = ">= 1.10.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"

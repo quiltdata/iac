@@ -42,7 +42,7 @@ This document provides comprehensive operational procedures for cloud teams mana
 
 **Team Requirements**
 
-- [ ] Terraform >= 1.5.0 installed
+- [ ] Terraform >= 1.10.0 installed
 - [ ] AWS CLI configured
 - [ ] Git repository for configuration
 - [ ] Access to monitoring systems
