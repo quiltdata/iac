@@ -33,12 +33,12 @@ This section provides step-by-step instructions specifically for cloud teams to 
 brew install terraform
 
 # Linux
-wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
-unzip terraform_1.6.0_linux_amd64.zip
+wget https://releases.hashicorp.com/terraform/1.14.9/terraform_1.14.9_linux_amd64.zip
+unzip terraform_1.14.9_linux_amd64.zip
 sudo mv terraform /usr/local/bin/
 
 # Verify installation
-terraform --version  # Should show >= 1.5.0
+terraform --version  # Should show >= 1.10.0
 ```
 
 **Step 1.2: Configure AWS CLI**
