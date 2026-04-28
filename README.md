@@ -64,14 +64,6 @@ aws s3 mb s3://YOUR-COMPANY-terraform-state --region YOUR-AWS-REGION
 aws s3api put-bucket-versioning \
   --bucket YOUR-COMPANY-terraform-state \
   --versioning-configuration Status=Enabled
-
-# Optional: Create DynamoDB table for state locking
-aws dynamodb create-table \
-  --table-name terraform-locks \
-  --attribute-definitions AttributeName=LockID,AttributeType=S \
-  --key-schema AttributeName=LockID,KeyType=HASH \
-  --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
-  --region YOUR-AWS-REGION
 ```
 
 #### 2. SSL Certificate Setup (10 minutes)
