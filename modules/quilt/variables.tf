@@ -138,6 +138,13 @@ variable "search_volume_type" {
   description = "Type of EBS volumes attached to data nodes in the ElasticSearch cluster"
 }
 
+variable "enable_lf_grants" {
+  type        = bool
+  nullable    = false
+  default     = false
+  description = "Enable per-role Lake Formation TableWildcard grants. Requires the CloudFormation execution role to be a Lake Formation administrator. Leave false unless LF enforcement is active and the deploying role is on the LF admin list."
+}
+
 variable "template_file" {
   type        = string
   nullable    = true
