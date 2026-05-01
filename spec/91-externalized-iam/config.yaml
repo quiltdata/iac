@@ -1,0 +1,67 @@
+# Configuration for IAM Split Converter
+# Defines which resources to extract and transformation patterns
+
+extraction:
+  # IAM roles to extract from source template
+  roles:
+    - SearchHandlerRole
+    - EsIngestRole
+    - ManifestIndexerRole
+    - AccessCountsRole
+    - PkgEventsRole
+    - DuckDBSelectLambdaRole
+    - PkgPushRole
+    - PackagerRole
+    - AmazonECSTaskExecutionRole
+    - ManagedUserRole
+    - MigrationLambdaRole
+    - TrackingCronRole
+    - ApiRole                          # added
+    - TimestampResourceHandlerRole     # added
+    - TabulatorRole
+    - TabulatorOpenQueryRole
+    - IcebergLambdaRole
+    - T4BucketReadRole
+    - T4BucketWriteRole
+    - S3ProxyRole
+    - S3LambdaRole
+    - S3SNSToEventBridgeRole           # added
+    - S3HashLambdaRole                 # added
+    - S3CopyLambdaRole                 # added
+
+  # IAM managed policies to extract
+  policies:
+    - BucketReadPolicy
+    - BucketWritePolicy
+    - RegistryAssumeRolePolicy
+    - ManagedUserRoleBasePolicy
+    - UserAthenaNonManagedRolePolicy   # added
+    - UserAthenaManagedRolePolicy      # added
+    - TabulatorOpenQueryPolicy         # added
+    - T4DefaultBucketReadPolicy        # added
+
+  # Resource-specific policies that should NOT be extracted (stay in app stack)
+  exclude_policies:
+    - EsIngestBucketPolicy
+    - EsIngestQueuePolicy
+    - CloudTrailBucketPolicy
+    - AnalyticsBucketPolicy
+    - UserAthenaResultsBucketPolicy
+    - DuckDBSelectLambdaBucketPolicy
+    - PackagerQueuePolicy
+    - ServiceBucketPolicy
+    - TabulatorBucketPolicy
+    - IcebergBucketPolicy
+    - IcebergLambdaQueuePolicy
+
+parameter_generation:
+  # ARN pattern for IAM role parameters
+  role_pattern: '^arn:aws:iam::[0-9]{12}:role\/[a-zA-Z0-9+=,.@_\-\/]+$'
+
+  # ARN pattern for IAM policy parameters
+  policy_pattern: '^arn:aws:iam::[0-9]{12}:policy\/[a-zA-Z0-9+=,.@_\-\/]+$'
+
+metadata:
+  add_parameter_group: true
+  parameter_group_name: "IAM roles and policies"
+  insert_after_group: "Beta features"
