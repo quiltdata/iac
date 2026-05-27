@@ -18,6 +18,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+## [1.7.0] - 2026-05-27
+
 - [Added] `template_file` may now be set to `null` for `terraform destroy`; apply still requires a real path. ([#105](https://github.com/quiltdata/iac/pull/105))
 - [Changed] Update Postgres to 15.18 ([#108](https://github.com/quiltdata/iac/pull/108))
 
@@ -88,7 +90,8 @@ Ensure your Quilt stack is upgraded to version 1.66 or later *before* upgrading 
 
 - [Added] Add changelog ([#74](https://github.com/quiltdata/iac/pull/74))
 
-[Unreleased]: https://github.com/quiltdata/iac/compare/1.6.0...HEAD
+[Unreleased]: https://github.com/quiltdata/iac/compare/1.7.0...HEAD
+[1.7.0]: https://github.com/quiltdata/iac/releases/tag/1.7.0
 [1.6.0]: https://github.com/quiltdata/iac/releases/tag/1.6.0
 [1.5.0]: https://github.com/quiltdata/iac/releases/tag/1.5.0
 [1.4.0]: https://github.com/quiltdata/iac/releases/tag/1.4.0
