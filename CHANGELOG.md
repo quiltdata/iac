@@ -19,6 +19,7 @@ Optional release notice.
 ## [Unreleased] - YYYY-MM-DD
 
 - [Added] `template_file` may now be set to `null` for `terraform destroy`; apply still requires a real path. ([#105](https://github.com/quiltdata/iac/pull/105))
+- [Changed] Update Postgres to 15.18 ([#108](https://github.com/quiltdata/iac/pull/108))
 
 ## [1.6.0] - 2026-02-24
 
