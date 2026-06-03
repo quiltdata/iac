@@ -1,5 +1,6 @@
 module "db_accessor_security_group" {
-  source = "terraform-aws-modules/security-group/aws"
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "< 6.0.0"
 
   name        = "${var.identifier}-db-accessor"
   description = "For resources that need access to DB"
@@ -14,7 +15,8 @@ module "db_accessor_security_group" {
 }
 
 module "db_security_group" {
-  source = "terraform-aws-modules/security-group/aws"
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "< 6.0.0"
 
   name        = "${var.identifier}-db"
   description = "For DB resources"

@@ -76,7 +76,8 @@ module "vpc" {
 
 // Module name no longer accurate (see description); changing name causes tf apply to fail
 module "api_gateway_security_group" {
-  source = "terraform-aws-modules/security-group/aws"
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "< 6.0.0"
 
   create = local.new_network_valid
 
