@@ -1,5 +1,6 @@
 module "search_accessor_security_group" {
-  source = "terraform-aws-modules/security-group/aws"
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "< 6.0.0"
 
   name        = "${var.domain_name}-search-accessor"
   description = "For resources that need access to search cluster"
@@ -14,7 +15,8 @@ module "search_accessor_security_group" {
 }
 
 module "search_security_group" {
-  source = "terraform-aws-modules/security-group/aws"
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "< 6.0.0"
 
   name        = "${var.domain_name}-search"
   description = "For search cluster resources"
