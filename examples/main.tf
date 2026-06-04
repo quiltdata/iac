@@ -19,12 +19,12 @@ provider "aws" {
   # Replace with your AWS account ID
   allowed_account_ids = ["YOUR-ACCOUNT-ID"]
   # Replace with your preferred AWS region
-  region              = "YOUR-AWS-REGION"
-  
+  region = "YOUR-AWS-REGION"
+
   default_tags {
     tags = {
       Project     = "quilt"
-      Environment = "production"  # or "development", "staging"
+      Environment = "production" # or "development", "staging"
       Owner       = "data-team"
       CostCenter  = "engineering"
     }
@@ -34,11 +34,11 @@ provider "aws" {
 terraform {
   # Configure remote state storage (recommended for production)
   backend "s3" {
-    bucket         = "YOUR-TERRAFORM-STATE-BUCKET"
-    key            = "quilt/terraform.tfstate"
-    region         = "YOUR-AWS-REGION"
-    encrypt        = true
-    use_lockfile   = true
+    bucket       = "YOUR-TERRAFORM-STATE-BUCKET"
+    key          = "quilt/terraform.tfstate"
+    region       = "YOUR-AWS-REGION"
+    encrypt      = true
+    use_lockfile = true
   }
 
   required_version = ">= 1.10.0"
@@ -54,12 +54,12 @@ terraform {
 locals {
   # Stack name (≤20 chars, lowercase alphanumeric + hyphens)
   name = "quilt-prod"
-  
+
   # Path to your CloudFormation YAML template
   # Place a local copy of your CloudFormation YAML Template at build_file_path
   # and check it into git. Contact your account manager for the template.
   build_file_path = "./quilt-template.yml"
-  
+
   # Your Quilt catalog domain name
   quilt_web_host = "data.YOUR-COMPANY.com"
 }
@@ -89,35 +89,35 @@ module "quilt" {
   template_file = local.build_file_path
 
   # Network configuration
-  internal       = false  # Set to true for VPN-only access
-  create_new_vpc = true   # Set to false to use existing VPC
+  internal       = false # Set to true for VPN-only access
+  create_new_vpc = true  # Set to false to use existing VPC
   cidr           = "10.0.0.0/16"
 
   # Database configuration
-  db_instance_class      = "db.t3.small"    # Adjust based on needs
-  db_multi_az            = true             # High availability
-  db_deletion_protection = true             # Prevent accidental deletion
+  db_instance_class      = "db.t3.small" # Adjust based on needs
+  db_multi_az            = true          # High availability
+  db_deletion_protection = true          # Prevent accidental deletion
   # db_network_type = "IPV4"                # Uncomment for IPv4-only VPCs
   # db_snapshot_identifier = "snap-12345"   # Uncomment to restore from snapshot
 
   # ElasticSearch configuration
   # Choose a sizing configuration based on your data volume:
-  
+
   # Small (Development/Testing - <100GB data)
   # search_dedicated_master_enabled = false
   # search_zone_awareness_enabled   = false
   # search_instance_count          = 1
   # search_instance_type           = "m6g.large.elasticsearch"
   # search_volume_size             = 512
-  
+
   # Medium (Default Production - 100GB-1TB data)
   search_dedicated_master_enabled = true
   search_zone_awareness_enabled   = true
-  search_instance_count          = 2
-  search_instance_type           = "m6g.xlarge.elasticsearch"
-  search_volume_size             = 1024
-  search_volume_type             = "gp2"
-  
+  search_instance_count           = 2
+  search_instance_type            = "m6g.xlarge.elasticsearch"
+  search_volume_size              = 1024
+  search_volume_type              = "gp2"
+
   # Large (High Volume - 1TB-5TB data)
   # search_dedicated_master_enabled = true
   # search_zone_awareness_enabled   = true
@@ -125,7 +125,7 @@ module "quilt" {
   # search_instance_type           = "m6g.xlarge.elasticsearch"
   # search_volume_size             = 2048
   # search_volume_type             = "gp3"
-  
+
   # X-Large (Enterprise - 5TB-15TB data)
   # search_dedicated_master_enabled = true
   # search_zone_awareness_enabled   = true
@@ -155,40 +155,40 @@ module "quilt" {
     QuiltWebHost      = local.quilt_web_host
 
     # Authentication configuration
-    PasswordAuth = "Enabled"  # Always enable for initial setup
-    
+    PasswordAuth = "Enabled" # Always enable for initial setup
+
     # Google OAuth (optional)
-    GoogleAuth         = "Disabled"  # Change to "Enabled" to use Google OAuth
-    GoogleClientId     = ""          # Your Google OAuth client ID
+    GoogleAuth         = "Disabled" # Change to "Enabled" to use Google OAuth
+    GoogleClientId     = ""         # Your Google OAuth client ID
     GoogleClientSecret = var.google_client_secret
-    
+
     # Okta SAML/OAuth (optional)
-    OktaAuth         = "Disabled"    # Change to "Enabled" to use Okta
-    OktaBaseUrl      = ""            # https://YOUR-COMPANY.okta.com/oauth2/default
-    OktaClientId     = ""            # Your Okta client ID
+    OktaAuth         = "Disabled" # Change to "Enabled" to use Okta
+    OktaBaseUrl      = ""         # https://YOUR-COMPANY.okta.com/oauth2/default
+    OktaClientId     = ""         # Your Okta client ID
     OktaClientSecret = var.okta_client_secret
-    
+
     # OneLogin OAuth (optional)
-    OneLoginAuth         = "Disabled"  # Change to "Enabled" to use OneLogin
-    OneLoginBaseUrl      = ""          # https://YOUR-COMPANY.onelogin.com/oidc/2
-    OneLoginClientId     = ""          # Your OneLogin client ID
-    OneLoginClientSecret = ""          # Your OneLogin client secret
-    
+    OneLoginAuth         = "Disabled" # Change to "Enabled" to use OneLogin
+    OneLoginBaseUrl      = ""         # https://YOUR-COMPANY.onelogin.com/oidc/2
+    OneLoginClientId     = ""         # Your OneLogin client ID
+    OneLoginClientSecret = ""         # Your OneLogin client secret
+
     # Azure AD OAuth (optional)
-    AzureAuth         = "Disabled"     # Change to "Enabled" to use Azure AD
-    AzureBaseUrl      = ""             # https://login.microsoftonline.com/tenant-id/v2.0
-    AzureClientId     = ""             # Your Azure AD client ID
-    AzureClientSecret = ""             # Your Azure AD client secret
-    
+    AzureAuth         = "Disabled" # Change to "Enabled" to use Azure AD
+    AzureBaseUrl      = ""         # https://login.microsoftonline.com/tenant-id/v2.0
+    AzureClientId     = ""         # Your Azure AD client ID
+    AzureClientSecret = ""         # Your Azure AD client secret
+
     # SSO domain restriction (optional)
-    SingleSignOnDomains = ""           # Comma-separated list: "YOUR-COMPANY.com,subsidiary.com"
+    SingleSignOnDomains = "" # Comma-separated list: "YOUR-COMPANY.com,subsidiary.com"
 
     # Optional features
-    Qurator              = "Enabled"   # Enable Quilt's data quality features
-    ChunkedChecksums     = "Enabled"   # Enable chunked checksums for large files
-    CloudTrailBucket     = ""          # S3 bucket for CloudTrail logs
-    CanaryNotificationsEmail = ""      # Email for monitoring alerts
-    
+    Qurator                  = "Enabled" # Enable Quilt's data quality features
+    ChunkedChecksums         = "Enabled" # Enable chunked checksums for large files
+    CloudTrailBucket         = ""        # S3 bucket for CloudTrail logs
+    CanaryNotificationsEmail = ""        # Email for monitoring alerts
+
     # Advanced configuration (optional)
     # ManagedUserRoleExtraPolicies = "arn:aws:iam::YOUR-ACCOUNT-ID:policy/CustomPolicy"
     # S3BucketPolicyExcludeArnsFromDeny = "arn:aws:iam::YOUR-ACCOUNT-ID:user/service-account"
@@ -203,7 +203,7 @@ module "cnames" {
 
   lb_dns_name    = module.quilt.stack.outputs.LoadBalancerDNSName
   quilt_web_host = local.quilt_web_host
-  zone_id        = "YOUR-ROUTE53-ZONE-ID"  # Your Route53 hosted zone ID
+  zone_id        = "YOUR-ROUTE53-ZONE-ID" # Your Route53 hosted zone ID
 }
 
 # Outputs
