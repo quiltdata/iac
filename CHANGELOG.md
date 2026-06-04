@@ -18,6 +18,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+## [1.7.1] - 2026-06-04
+
 - [Fixed] Pin every registry module with `~>` so an upstream major can't silently break `terraform plan`/`apply` — resolves the `security-group` v6.0.0 break and constrains the rest (`security-group`/`rds` → `~> 5.0`, `vpc` → `~> 6.0`) ([#110](https://github.com/quiltdata/iac/pull/110), [#112](https://github.com/quiltdata/iac/pull/112))
 
 ## [1.7.0] - 2026-05-28
@@ -92,7 +94,8 @@ Ensure your Quilt stack is upgraded to version 1.66 or later *before* upgrading 
 
 - [Added] Add changelog ([#74](https://github.com/quiltdata/iac/pull/74))
 
-[Unreleased]: https://github.com/quiltdata/iac/compare/1.7.0...HEAD
+[Unreleased]: https://github.com/quiltdata/iac/compare/1.7.1...HEAD
+[1.7.1]: https://github.com/quiltdata/iac/releases/tag/1.7.1
 [1.7.0]: https://github.com/quiltdata/iac/releases/tag/1.7.0
 [1.6.0]: https://github.com/quiltdata/iac/releases/tag/1.6.0
 [1.5.0]: https://github.com/quiltdata/iac/releases/tag/1.5.0
