@@ -38,6 +38,7 @@ locals {
 
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
+  version = "~> 6.0"
 
   create_vpc = local.new_network_valid
 
@@ -77,7 +78,7 @@ module "vpc" {
 // Module name no longer accurate (see description); changing name causes tf apply to fail
 module "api_gateway_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "< 6.0.0"
+  version = "~> 5.0"
 
   create = local.new_network_valid
 
@@ -91,6 +92,7 @@ module "api_gateway_security_group" {
 
 module "vpc_endpoints" {
   source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
+  version = "~> 6.0"
 
   create = local.new_network_valid
 
