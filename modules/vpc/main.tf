@@ -37,7 +37,7 @@ locals {
 }
 
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+  source  = "terraform-aws-modules/vpc/aws"
   version = "~> 6.0"
 
   create_vpc = local.new_network_valid
@@ -91,7 +91,7 @@ module "api_gateway_security_group" {
 }
 
 module "vpc_endpoints" {
-  source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
+  source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
   version = "~> 6.0"
 
   create = local.new_network_valid

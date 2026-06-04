@@ -63,7 +63,7 @@ variable "volume_size" {
 }
 
 variable "volume_throughput" {
-  type = number
+  type        = number
   description = "EBS throughput (for some gp3 volumes)"
 }
 
