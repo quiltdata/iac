@@ -18,8 +18,7 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
-- [Fixed] Restore `terraform plan`/`apply` after the `security-group` module's v6.0.0 release dropped arguments these modules use ([#110](https://github.com/quiltdata/iac/pull/110))
-- [Fixed] Pin the previously unpinned `vpc` module and standardize all registry pins on `~>` (`security-group`/`rds` → `~> 5.0`, `vpc` → `~> 6.0`), preventing a future major release from silently breaking plans ([#112](https://github.com/quiltdata/iac/pull/112))
+- [Fixed] Pin every registry module with `~>` so an upstream major can't silently break `terraform plan`/`apply` — resolves the `security-group` v6.0.0 break and constrains the rest (`security-group`/`rds` → `~> 5.0`, `vpc` → `~> 6.0`) ([#110](https://github.com/quiltdata/iac/pull/110), [#112](https://github.com/quiltdata/iac/pull/112))
 
 ## [1.7.0] - 2026-05-28
 
