@@ -18,6 +18,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+- [Fixed] Pin `security-group` module to `< 6.0.0`; upstream v6.0.0 dropped arguments these modules pass, breaking `terraform plan`/`apply` ([#110](https://github.com/quiltdata/iac/pull/110))
+
 ## [1.7.0] - 2026-05-28
 
 - [Added] `template_file` may now be set to `null` for `terraform destroy`; apply still requires a real path. ([#105](https://github.com/quiltdata/iac/pull/105))
