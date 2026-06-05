@@ -26,7 +26,11 @@ variable "internal" {
 variable "transit_gateway_id" {
   type        = string
   default     = null
-  description = "Transit Gateway ID for private subnet egress. If set, NAT gateways and IPv6 egress-only gateways are disabled."
+  description = "Transit Gateway ID for private subnet egress. Only supported when create_new_vpc == true. If set, NAT gateways and IPv6 egress-only gateways are disabled."
+  validation {
+    condition     = var.transit_gateway_id == null || can(regex("^tgw-[0-9a-f]+$", var.transit_gateway_id))
+    error_message = "transit_gateway_id must be null or a valid Transit Gateway ID (e.g. tgw-0123456789abcdef0)."
+  }
 }
 
 variable "existing_vpc_id" {
