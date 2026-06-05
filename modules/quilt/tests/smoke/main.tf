@@ -14,6 +14,11 @@ terraform {
   required_providers {
     aws = {
       source = "hashicorp/aws"
+      # Match what the modules under test transitively require: the
+      # terraform-aws-modules/vpc ~> 6.0 module needs aws >= 6.28. Pinning keeps
+      # CI deterministic and off a future major. (Note: examples/main.tf and
+      # modules/cnames still pin ~> 5.0, which is incompatible with that floor.)
+      version = "~> 6.0"
     }
   }
 }

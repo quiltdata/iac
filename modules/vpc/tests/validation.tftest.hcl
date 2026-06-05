@@ -68,6 +68,11 @@ run "new_vpc_internal_alb" {
   }
 
   assert {
+    condition     = strcontains(output.configuration_error, "create a new VPC")
+    error_message = "New-VPC config must be checked against the new-network requirements"
+  }
+
+  assert {
     condition     = !strcontains(output.configuration_error, "❌")
     error_message = "A valid new-VPC config (internal = true) must satisfy every requirement"
   }
