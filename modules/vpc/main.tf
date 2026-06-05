@@ -82,6 +82,7 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "egress" {
   subnet_ids         = module.vpc.intra_subnets
   transit_gateway_id = var.transit_gateway_id
   vpc_id             = module.vpc.vpc_id
+  ipv6_support       = "enable"
 
   tags = {
     Name = "${var.name}-egress"
