@@ -1,0 +1,8 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Test fixture for terraform test smoke runs. Stands in for the real Quilt
+  CloudFormation template so plan-time references (template_file / filemd5)
+  resolve. Not a deployable Quilt stack.
+Resources:
+  Placeholder:
+    Type: AWS::CloudFormation::WaitConditionHandle
