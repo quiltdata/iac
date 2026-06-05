@@ -30,6 +30,21 @@ run "new_vpc_plans" {
   }
 }
 
+run "new_vpc_internal_plans" {
+  command = plan
+  variables {
+    create_new_vpc = true
+    internal       = true
+  }
+  # internal = true exercises the most conditional wiring in quilt/main.tf:
+  # the PublicSubnets/UserSubnets null-coalescing and the internal-gated api
+  # endpoint.
+  assert {
+    condition     = output.stack_name == "quilt-test"
+    error_message = "The CloudFormation stack must be named after var.name"
+  }
+}
+
 run "existing_vpc_plans" {
   command = plan
   variables {

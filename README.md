@@ -917,6 +917,18 @@ terraform fmt
 terraform validate
 ```
 
+## Test
+
+Module tests are plan-only and mock the AWS provider, so they need no AWS
+credentials and create no infrastructure. Requires Terraform >= 1.7 (for
+`mock_provider`). Run from a module or test-wrapper directory, e.g.
+`modules/vpc` or `modules/quilt/tests/smoke`:
+
+```
+terraform init -backend=false
+terraform test
+```
+
 ## Plan
 ```
 terraform plan -out tfplan

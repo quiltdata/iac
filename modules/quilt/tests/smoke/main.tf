@@ -57,6 +57,8 @@ variable "user_security_group" {
   default = null
 }
 
+# New inputs added to the quilt module must be threaded through here, or the
+# smoke coverage silently narrows (the new input is never exercised).
 module "quilt" {
   source = "../../"
 
@@ -73,6 +75,10 @@ module "quilt" {
   user_security_group = var.user_security_group
 }
 
+# Re-expose ONLY the non-sensitive stack name. Do not output module.quilt.stack
+# (it embeds the DB URL + admin password) or any *_password value — a sensitive
+# root output makes `terraform test` fail, which is the whole reason this
+# wrapper exists.
 output "stack_name" {
   value = module.quilt.stack.name
 }
