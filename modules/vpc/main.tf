@@ -71,8 +71,41 @@ module "vpc" {
 
   enable_dns_hostnames   = true
   enable_dns_support     = true
-  enable_nat_gateway     = true
-  one_nat_gateway_per_az = true
+  enable_nat_gateway     = var.transit_gateway_id == null
+  one_nat_gateway_per_az = var.transit_gateway_id == null
+  create_egress_only_igw = var.transit_gateway_id == null
+}
+
+resource "aws_ec2_transit_gateway_vpc_attachment" "egress" {
+  count = local.new_network_valid && var.transit_gateway_id != null ? 1 : 0
+
+  subnet_ids         = module.vpc.intra_subnets
+  transit_gateway_id = var.transit_gateway_id
+  vpc_id             = module.vpc.vpc_id
+
+  tags = {
+    Name = "${var.name}-egress"
+  }
+}
+
+resource "aws_route" "private_tgw_ipv4_egress" {
+  count = local.new_network_valid && var.transit_gateway_id != null ? length(module.vpc.private_route_table_ids) : 0
+
+  route_table_id         = module.vpc.private_route_table_ids[count.index]
+  destination_cidr_block = "0.0.0.0/0"
+  transit_gateway_id     = var.transit_gateway_id
+
+  depends_on = [aws_ec2_transit_gateway_vpc_attachment.egress]
+}
+
+resource "aws_route" "private_tgw_ipv6_egress" {
+  count = local.new_network_valid && var.transit_gateway_id != null ? length(module.vpc.private_route_table_ids) : 0
+
+  route_table_id              = module.vpc.private_route_table_ids[count.index]
+  destination_ipv6_cidr_block = "::/0"
+  transit_gateway_id          = var.transit_gateway_id
+
+  depends_on = [aws_ec2_transit_gateway_vpc_attachment.egress]
 }
 
 // Module name no longer accurate (see description); changing name causes tf apply to fail

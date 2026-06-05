@@ -23,6 +23,12 @@ variable "internal" {
   nullable = false
 }
 
+variable "transit_gateway_id" {
+  type        = string
+  default     = null
+  description = "Transit Gateway ID for private subnet egress. If set, NAT gateways and IPv6 egress-only gateways are disabled."
+}
+
 variable "existing_vpc_id" {
   type = string
 }

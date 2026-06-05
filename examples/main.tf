@@ -143,6 +143,7 @@ module "quilt" {
   # user_security_group = "sg-YOUR-SECURITY-GROUP"                           # For ALB access
   # user_subnets        = ["subnet-YOUR-USER-1", "subnet-YOUR-USER-2"]  # For ALB (if internal = true)
   # api_endpoint        = "vpce-YOUR-VPC-ENDPOINT"                         # VPC endpoint (if internal = true)
+  # transit_gateway_id  = "tgw-YOUR-TRANSIT-GATEWAY-ID"                    # For TGW egress when create_new_vpc = true
 
   # CloudFormation notifications (optional)
   # stack_notification_arns = ["arn:aws:sns:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:quilt-notifications"]

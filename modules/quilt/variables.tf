@@ -29,6 +29,12 @@ variable "internal" {
   description = "If true create an inward ELBv2, else create an internet-facing ELBv2."
 }
 
+variable "transit_gateway_id" {
+  type        = string
+  default     = null
+  description = "Transit Gateway ID for private subnet egress when creating a new VPC. If set, NAT gateways and IPv6 egress-only gateways are disabled."
+}
+
 variable "db_snapshot_identifier" {
   type        = string
   nullable    = true
