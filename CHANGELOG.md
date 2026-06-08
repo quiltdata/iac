@@ -18,7 +18,7 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
-- [Fixed] Relax `modules/cnames` AWS provider constraint from `~> 5.0` to `>= 5.79, < 7.0` so it resolves alongside the `vpc` module's `aws >= 6.28` requirement — using `quilt` + `cnames` in one root previously failed `terraform init` ([#117](https://github.com/quiltdata/iac/pull/117))
+- [Fixed] Bump `modules/cnames` AWS provider constraint from `~> 5.0` to `~> 6.0` so it resolves alongside the `vpc` module's `aws >= 6.28` requirement — using `quilt` + `cnames` in one root previously failed `terraform init` ([#117](https://github.com/quiltdata/iac/pull/117))
 
 ## [1.7.1] - 2026-06-04
 
