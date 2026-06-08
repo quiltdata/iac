@@ -67,14 +67,20 @@ variable "user_subnets" {
   default = null
 }
 
+variable "transit_gateway_id" {
+  type    = string
+  default = null
+}
+
 # New inputs added to the quilt module must be threaded through here, or the
 # smoke coverage silently narrows (the new input is never exercised).
 module "quilt" {
   source = "../../"
 
-  name          = "quilt-test"
-  parameters    = {}
-  template_file = "${path.module}/fixtures/quilt.yaml"
+  name               = "quilt-test"
+  parameters         = {}
+  template_file      = "${path.module}/fixtures/quilt.yaml"
+  transit_gateway_id = var.transit_gateway_id
 
   create_new_vpc      = var.create_new_vpc
   internal            = var.internal
