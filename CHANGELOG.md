@@ -18,6 +18,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+- [Fixed] Bump `modules/cnames` AWS provider constraint from `~> 5.0` to `~> 6.0` so it resolves alongside the `vpc` module's `aws >= 6.28` requirement — using `quilt` + `cnames` in one root previously failed `terraform init` ([#117](https://github.com/quiltdata/iac/pull/117))
+
 ## [1.7.1] - 2026-06-04
 
 - [Fixed] Pin every registry module with `~>` so an upstream major can't silently break `terraform plan`/`apply` — resolves the `security-group` v6.0.0 break and constrains the rest (`security-group`/`rds` → `~> 5.0`, `vpc` → `~> 6.0`) ([#110](https://github.com/quiltdata/iac/pull/110), [#112](https://github.com/quiltdata/iac/pull/112))
