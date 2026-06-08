@@ -18,6 +18,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+## [1.7.2] - 2026-06-08
+
 - [Fixed] Bump `modules/cnames` AWS provider constraint from `~> 5.0` to `~> 6.0` so it resolves alongside the `vpc` module's `aws >= 6.28` requirement — using `quilt` + `cnames` in one root previously failed `terraform init` ([#117](https://github.com/quiltdata/iac/pull/117))
 
 ## [1.7.1] - 2026-06-04
@@ -96,7 +98,8 @@ Ensure your Quilt stack is upgraded to version 1.66 or later *before* upgrading 
 
 - [Added] Add changelog ([#74](https://github.com/quiltdata/iac/pull/74))
 
-[Unreleased]: https://github.com/quiltdata/iac/compare/1.7.1...HEAD
+[Unreleased]: https://github.com/quiltdata/iac/compare/1.7.2...HEAD
+[1.7.2]: https://github.com/quiltdata/iac/releases/tag/1.7.2
 [1.7.1]: https://github.com/quiltdata/iac/releases/tag/1.7.1
 [1.7.0]: https://github.com/quiltdata/iac/releases/tag/1.7.0
 [1.6.0]: https://github.com/quiltdata/iac/releases/tag/1.6.0
