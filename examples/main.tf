@@ -42,12 +42,6 @@ terraform {
   }
 
   required_version = ">= 1.10.0"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
 }
 
 # Local variables for configuration
@@ -83,7 +77,7 @@ variable "okta_client_secret" {
 # Main Quilt module
 module "quilt" {
   # Pin to the latest stable version from https://github.com/quiltdata/iac/tags
-  source = "github.com/quiltdata/iac//modules/quilt?ref=1.3.0"
+  source = "github.com/quiltdata/iac//modules/quilt?ref=1.7.2"
 
   name          = local.name
   template_file = local.build_file_path
@@ -199,7 +193,7 @@ module "quilt" {
 
 # DNS configuration (optional but recommended)
 module "cnames" {
-  source = "github.com/quiltdata/iac//modules/cnames?ref=1.3.0"
+  source = "github.com/quiltdata/iac//modules/cnames?ref=1.7.2"
 
   lb_dns_name    = module.quilt.stack.outputs.LoadBalancerDNSName
   quilt_web_host = local.quilt_web_host
