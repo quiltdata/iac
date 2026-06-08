@@ -83,7 +83,7 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "egress" {
   subnet_ids         = module.vpc.intra_subnets
   transit_gateway_id = var.transit_gateway_id
   vpc_id             = module.vpc.vpc_id
-  ipv6_support       = "enable"
+  ipv6_support       = var.transit_gateway_ipv6_egress ? "enable" : "disable"
 
   tags = {
     Name = "${var.name}-egress"
@@ -101,7 +101,7 @@ resource "aws_route" "private_tgw_ipv4_egress" {
 }
 
 resource "aws_route" "private_tgw_ipv6_egress" {
-  count = local.new_network_valid && var.transit_gateway_id != null ? length(module.vpc.private_route_table_ids) : 0
+  count = local.new_network_valid && var.transit_gateway_id != null && var.transit_gateway_ipv6_egress ? length(module.vpc.private_route_table_ids) : 0
 
   route_table_id              = module.vpc.private_route_table_ids[count.index]
   destination_ipv6_cidr_block = "::/0"

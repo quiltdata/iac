@@ -33,6 +33,12 @@ variable "transit_gateway_id" {
   }
 }
 
+variable "transit_gateway_ipv6_egress" {
+  type        = bool
+  default     = false
+  description = "When transit_gateway_id is set, also route the private subnets' IPv6 default route (::/0) through the Transit Gateway. Leave false unless the Transit Gateway is configured for IPv6 egress; otherwise IPv6 traffic would be black-holed (with no route, IPv4 still falls back cleanly). No effect when transit_gateway_id is null."
+}
+
 variable "existing_vpc_id" {
   type = string
 }

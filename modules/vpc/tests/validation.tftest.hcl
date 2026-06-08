@@ -208,8 +208,8 @@ run "new_vpc_with_transit_gateway" {
     error_message = "A new VPC with transit_gateway_id must satisfy every requirement"
   }
 
-  # The TGW attachment and both default egress routes must be planned, pointed
-  # at the supplied gateway.
+  # The TGW attachment and the IPv4 default egress route must be planned,
+  # pointed at the supplied gateway.
   assert {
     condition     = length(aws_ec2_transit_gateway_vpc_attachment.egress) == 1
     error_message = "Exactly one TGW VPC attachment must be created"
@@ -221,8 +221,51 @@ run "new_vpc_with_transit_gateway" {
   }
 
   assert {
-    condition     = length(aws_route.private_tgw_ipv4_egress) > 0 && length(aws_route.private_tgw_ipv6_egress) > 0
-    error_message = "IPv4 and IPv6 default egress routes to the TGW must be planned"
+    condition     = length(aws_route.private_tgw_ipv4_egress) > 0
+    error_message = "IPv4 default egress routes to the TGW must be planned"
+  }
+
+  # IPv6 egress via the TGW is opt-in (transit_gateway_ipv6_egress, default
+  # false). With it off, no ::/0 route is created and the attachment does not
+  # advertise IPv6 support, so IPv6 traffic is not black-holed at the TGW.
+  assert {
+    condition     = length(aws_route.private_tgw_ipv6_egress) == 0
+    error_message = "No IPv6 egress route should be planned when transit_gateway_ipv6_egress is false"
+  }
+
+  assert {
+    condition     = aws_ec2_transit_gateway_vpc_attachment.egress[0].ipv6_support == "disable"
+    error_message = "The TGW attachment must not advertise IPv6 support when transit_gateway_ipv6_egress is false"
+  }
+}
+
+run "new_vpc_with_transit_gateway_ipv6_egress" {
+  command = plan
+
+  variables {
+    create_new_vpc               = true
+    internal                     = false
+    transit_gateway_id           = "tgw-00000000000000000"
+    transit_gateway_ipv6_egress  = true
+    existing_vpc_id              = null
+    existing_api_endpoint        = null
+    existing_intra_subnets       = null
+    existing_private_subnets     = null
+    existing_public_subnets      = null
+    existing_user_security_group = null
+    existing_user_subnets        = null
+  }
+
+  # Opting in routes the IPv6 default route through the TGW and enables IPv6
+  # support on the attachment.
+  assert {
+    condition     = length(aws_route.private_tgw_ipv6_egress) > 0
+    error_message = "IPv6 egress routes to the TGW must be planned when transit_gateway_ipv6_egress is true"
+  }
+
+  assert {
+    condition     = aws_ec2_transit_gateway_vpc_attachment.egress[0].ipv6_support == "enable"
+    error_message = "The TGW attachment must advertise IPv6 support when transit_gateway_ipv6_egress is true"
   }
 }
 
