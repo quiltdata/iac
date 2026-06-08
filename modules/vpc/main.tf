@@ -17,6 +17,7 @@ locals {
     "user_security_group (required)" : var.existing_user_security_group != null,
     "user_subnets (required if var.internal == true and var.create_new_vpc == false, else must be null)" : (var.internal && !var.create_new_vpc) == (var.existing_user_subnets != null)
     "api_endpoint (required if var.internal == true, else must be null)" : var.internal == (var.existing_api_endpoint != null),
+    "transit_gateway_id == null (TGW egress requires create_new_vpc == true)" : var.transit_gateway_id == null,
   }
   new_network_requires = {
     "create_new_vpc == true" : var.create_new_vpc == true,
@@ -27,7 +28,6 @@ locals {
     "user_security_group == null" : var.existing_user_security_group == null,
     "user_subnets == null" : var.existing_user_subnets == null,
     "api_endpoint == null" : var.existing_api_endpoint == null,
-    "transit_gateway_id == null (TGW egress requires create_new_vpc == true)" : var.transit_gateway_id == null,
   }
   existing_network_valid = alltrue(values(local.existing_network_requires))
   new_network_valid      = alltrue(values(local.new_network_requires))
