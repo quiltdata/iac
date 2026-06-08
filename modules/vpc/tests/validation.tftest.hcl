@@ -127,8 +127,18 @@ run "existing_vpc_internal_alb" {
   }
 
   assert {
+    condition     = strcontains(output.configuration_error, "use an existing VPC")
+    error_message = "Existing-VPC config must be checked against the existing-network requirements"
+  }
+
+  assert {
     condition     = !strcontains(output.configuration_error, "❌")
     error_message = "A valid existing-VPC config (internal = true) must satisfy every requirement"
+  }
+
+  assert {
+    condition     = output.vpc_id == "vpc-00000000000000000"
+    error_message = "Existing-VPC mode must surface the supplied existing_vpc_id"
   }
 }
 

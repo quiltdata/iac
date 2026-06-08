@@ -37,6 +37,11 @@ variable "vpc_id" {
   default = null
 }
 
+variable "api_endpoint" {
+  type    = string
+  default = null
+}
+
 variable "intra_subnets" {
   type    = list(string)
   default = null
@@ -57,6 +62,11 @@ variable "user_security_group" {
   default = null
 }
 
+variable "user_subnets" {
+  type    = list(string)
+  default = null
+}
+
 # New inputs added to the quilt module must be threaded through here, or the
 # smoke coverage silently narrows (the new input is never exercised).
 module "quilt" {
@@ -69,10 +79,12 @@ module "quilt" {
   create_new_vpc      = var.create_new_vpc
   internal            = var.internal
   vpc_id              = var.vpc_id
+  api_endpoint        = var.api_endpoint
   intra_subnets       = var.intra_subnets
   private_subnets     = var.private_subnets
   public_subnets      = var.public_subnets
   user_security_group = var.user_security_group
+  user_subnets        = var.user_subnets
 }
 
 # Re-expose ONLY the non-sensitive stack name. Do not output module.quilt.stack
