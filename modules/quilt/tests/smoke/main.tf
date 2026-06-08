@@ -86,12 +86,9 @@ module "quilt" {
   user_subnets        = var.user_subnets
 }
 
-# Compose `cnames` in the same root as `quilt` so CI resolves their combined
-# AWS provider constraints at init. This is the regression guard for the
-# quilt (vpc → aws >= 6.28) vs cnames conflict: a future incompatible pin on
-# either module fails `terraform init` here. Inputs are literal dummies — the
-# guard is provider resolution + plan wiring, not value flow from the (mocked)
-# quilt outputs.
+# Compose `cnames` with `quilt` so CI's init resolves both modules' AWS
+# provider constraints together — a future incompatible pin fails init here.
+# Inputs are literal dummies; this guards resolution, not value flow.
 module "cnames" {
   source = "../../../cnames"
 
