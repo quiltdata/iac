@@ -4,6 +4,8 @@
 # Plan-only with the AWS provider mocked: no credentials, no infrastructure.
 # Exercises the full wiring (vpc + db + search + the CloudFormation stack), so
 # a change that breaks the public boundary or the vpc pass-through fails in CI.
+# The wrapper also composes the `cnames` module (see main.tf), so an AWS
+# provider constraint that can't resolve across quilt + cnames fails at init.
 #
 # Assertions reference known inputs (the stack name), not mocked computed
 # attributes, whose generated values are intentionally arbitrary.

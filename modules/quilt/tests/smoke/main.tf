@@ -16,8 +16,7 @@ terraform {
       source = "hashicorp/aws"
       # Match what the modules under test transitively require: the
       # terraform-aws-modules/vpc ~> 6.0 module needs aws >= 6.28. Pinning keeps
-      # CI deterministic and off a future major. (Note: examples/main.tf and
-      # modules/cnames still pin ~> 5.0, which is incompatible with that floor.)
+      # CI deterministic and off a future major.
       version = "~> 6.0"
     }
   }
@@ -85,6 +84,20 @@ module "quilt" {
   public_subnets      = var.public_subnets
   user_security_group = var.user_security_group
   user_subnets        = var.user_subnets
+}
+
+# Compose `cnames` in the same root as `quilt` so CI resolves their combined
+# AWS provider constraints at init. This is the regression guard for the
+# quilt (vpc → aws >= 6.28) vs cnames conflict: a future incompatible pin on
+# either module fails `terraform init` here. Inputs are literal dummies — the
+# guard is provider resolution + plan wiring, not value flow from the (mocked)
+# quilt outputs.
+module "cnames" {
+  source = "../../../cnames"
+
+  zone_id        = "Z00000000000000000000"
+  quilt_web_host = "quilt-test.example.com"
+  lb_dns_name    = "test-lb.example.com"
 }
 
 # Re-expose ONLY the non-sensitive stack name. Do not output module.quilt.stack
