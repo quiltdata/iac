@@ -799,7 +799,7 @@ create in the same Terraform configuration) — the toggle is the separate
 **You must provide the egress path.** Quilt owns only the VPC→TGW leg. Before
 apply, your TGW must:
 
-- be reachable from the deployment account — share it via AWS RAM and accept
+- be reachable from the deployment account — share it via [AWS Resource Access Manager](https://aws.amazon.com/ram/) and accept
   the VPC attachment (or enable auto-accept) if the TGW lives in another
   account;
 - have route tables that forward the VPC's egress out to the internet (e.g. via
@@ -814,7 +814,7 @@ accordingly if more than one Quilt stack shares a TGW (the default is
 **IPv6** egress through the TGW is opt-in (`transit_gateway_ipv6_egress`,
 default `false`). The VPC is dual-stack, so set this `true` **only if your TGW
 actually carries IPv6 egress**: pointing `::/0` at a TGW that can't route IPv6
-black-holes those packets, and clients without Happy Eyeballs (e.g. Python's
+black-holes those packets, and clients without [Happy Eyeballs](https://en.wikipedia.org/wiki/Happy_Eyeballs) IPv6+IPv4 dual stack support (e.g. Python's
 `requests`/`urllib3`) then stall on the connection timeout before falling back
 to IPv4. Left `false`, the new VPC has no IPv6 default route, so an IPv6
 attempt fails immediately (`ENETUNREACH`) and the client uses IPv4 with no
