@@ -1,6 +1,5 @@
 {
   "private": true,
-  "description": "Dev tooling for this repo; not published. Run `npm ci` then `npx markdownlint-cli2` to lint Markdown like CI does.",
   "devDependencies": {
     "markdownlint-cli2": "0.22.1"
   }
