@@ -771,6 +771,56 @@ resource "aws_vpc_endpoint" "api_gateway_endpoint" {
 }
 ```
 
+### Transit Gateway egress
+
+By default a new Quilt VPC reaches the internet through Quilt-created NAT
+gateways. If you operate a Transit Gateway (TGW) as your egress boundary, set
+`enable_transit_gateway = true` (only with `create_new_vpc = true`). Quilt still
+creates the VPC, subnets, and endpoints, but instead disables the NAT gateways
+and the IPv6 egress-only IGW, attaches the VPC to your TGW (in the intra
+subnets), and points each private route table's default route at the TGW. The
+S3 gateway endpoint is unchanged, so bulk S3 traffic stays on the endpoint and
+does **not** traverse the TGW — only genuinely external egress does.
+
+```hcl
+module "quilt" {
+  # ...
+  create_new_vpc         = true
+  enable_transit_gateway = true
+  transit_gateway_id     = "tgw-0123456789abcdef0" # an existing TGW, or one created in this same config
+  # transit_gateway_ipv6_egress = true             # only if your TGW carries IPv6 egress
+}
+```
+
+`transit_gateway_id` may be a value known only after apply (e.g. a TGW you
+create in the same Terraform configuration) — the toggle is the separate
+`enable_transit_gateway` bool, so this does not break planning.
+
+**You must provide the egress path.** Quilt owns only the VPC→TGW leg. Before
+apply, your TGW must:
+
+- be reachable from the deployment account — share it via AWS RAM and accept
+  the VPC attachment (or enable auto-accept) if the TGW lives in another
+  account;
+- have route tables that forward the VPC's egress out to the internet (e.g. via
+  a central egress VPC / NAT) **and** route return traffic back to the VPC's
+  CIDR.
+
+**CIDR uniqueness:** a TGW cannot route between overlapping CIDRs, so any VPCs
+attached to the same TGW must have non-overlapping ranges. Set `cidr`
+accordingly if more than one Quilt stack shares a TGW (the default is
+`10.0.0.0/16`).
+
+**IPv6** egress through the TGW is opt-in (`transit_gateway_ipv6_egress`,
+default `false`). Enable it only if your TGW actually carries IPv6 egress;
+otherwise leave it off — IPv6 then has no default route and falls back to IPv4,
+rather than being black-holed at a TGW that can't route it.
+
+**Reversibility:** removing `enable_transit_gateway` (or setting it `false`)
+restores the NAT gateways and IPv6 egress-only IGW. Toggling it on or off for an
+already-deployed VPC recreates/destroys NAT gateways and their Elastic IPs and
+briefly interrupts egress, so do it in a maintenance window.
+
 ### Profile
 You may wish to set a specific AWS profile before executing `terraform`
 commands.

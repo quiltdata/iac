@@ -26,6 +26,9 @@ This document provides comprehensive documentation for all variables available i
 | `user_subnets` | `list(string)` | `null` | ALB subnet IDs (exactly 2 required for internal ALB with existing VPC) |
 | `user_security_group` | `string` | `null` | Security group ID for ALB access (required for existing VPC) |
 | `api_endpoint` | `string` | `null` | VPC endpoint ID for API Gateway (required for internal ALB with existing VPC) |
+| `enable_transit_gateway` | `bool` | `false` | Route private-subnet egress through a Transit Gateway instead of NAT gateways (`create_new_vpc = true` only). Disables NAT + the IPv6 egress-only IGW; requires `transit_gateway_id`. See [Transit Gateway egress](README.md#transit-gateway-egress). |
+| `transit_gateway_id` | `string` | `null` | Transit Gateway to attach to (required when `enable_transit_gateway = true`). May be a value known only after apply (e.g. a TGW created in the same configuration). |
+| `transit_gateway_ipv6_egress` | `bool` | `false` | Also route IPv6 (`::/0`) egress through the TGW. Leave off unless the TGW carries IPv6 egress, otherwise IPv6 traffic would be black-holed. |
 
 ### Database Configuration Variables
 
