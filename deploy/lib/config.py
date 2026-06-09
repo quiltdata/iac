@@ -1,0 +1,473 @@
+"""Configuration management for deployment script."""
+
+import json
+import os
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+# Template file names
+TEMPLATE_IAM = "quilt-iam.yaml"
+TEMPLATE_APP = "quilt-app.yaml"
+TEMPLATE_MONOLITHIC = "quilt-monolithic.yaml"
+
+
+@dataclass
+class DeploymentConfig:
+    """Deployment configuration."""
+
+    # Identity
+    deployment_name: str
+    aws_region: str
+    aws_account_id: str
+    environment: str
+
+    # Network
+    vpc_id: str
+    subnet_ids: List[str]
+    security_group_ids: List[str]
+
+    # DNS/TLS
+    certificate_arn: str
+    route53_zone_id: str
+    domain_name: str
+    quilt_web_host: str
+
+    # Configuration
+    admin_email: str
+    pattern: str  # "external-iam" or "inline-iam"
+
+    # Templates
+    template_bucket: Optional[str] = None  # S3 bucket for CloudFormation templates
+    template_prefix: Optional[str] = (
+        None  # Local path prefix for template files (e.g., "test/fixtures/stable")
+    )
+    iam_template_url: Optional[str] = None
+    app_template_url: Optional[str] = None
+
+    # Options
+    db_instance_class: str = "db.t3.micro"
+    search_instance_type: str = "t3.small.elasticsearch"
+    search_volume_size: int = 10
+
+    # Optional authentication config
+    google_client_id: Optional[str] = None
+    google_client_secret: Optional[str] = None
+    okta_base_url: Optional[str] = None
+    okta_client_id: Optional[str] = None
+    okta_client_secret: Optional[str] = None
+
+    @classmethod
+    def from_config_file(cls, config_path: Path, **overrides: Any) -> "DeploymentConfig":
+        """Load configuration from config.json.
+
+        Args:
+            config_path: Path to config.json
+            **overrides: Override configuration values
+
+        Returns:
+            DeploymentConfig instance
+
+        Raises:
+            FileNotFoundError: If config file not found
+            ValueError: If required configuration is missing or invalid
+        """
+        with open(config_path) as f:
+            config = json.load(f)
+
+        # Extract and validate required fields
+        deployment_name = overrides.get("name", f"quilt-{config['environment']}")
+
+        # Select appropriate VPC (prefer quilt-staging)
+        vpc = cls._select_vpc(config["detected"]["vpcs"])
+
+        # Select public subnets in that VPC
+        subnets = cls._select_subnets(config["detected"]["subnets"], vpc["vpc_id"])
+
+        # Select security groups in that VPC
+        security_groups = cls._select_security_groups(
+            config["detected"]["security_groups"], vpc["vpc_id"]
+        )
+
+        # Select certificate matching domain
+        # Note: config.json has typo "dommain" instead of "domain"
+        domain = config.get("domain") or config.get("dommain", "quilttest.com")
+        certificate = cls._select_certificate(config["detected"]["certificates"], domain)
+
+        # Select Route53 zone matching domain
+        zone = cls._select_route53_zone(config["detected"]["route53_zones"], domain)
+
+        return cls(
+            deployment_name=deployment_name,
+            aws_region=config["region"],
+            aws_account_id=config["account_id"],
+            environment=config["environment"],
+            vpc_id=vpc["vpc_id"],
+            subnet_ids=[s["subnet_id"] for s in subnets],
+            security_group_ids=[sg["security_group_id"] for sg in security_groups],
+            certificate_arn=certificate["arn"],
+            route53_zone_id=zone["zone_id"],
+            domain_name=domain,
+            quilt_web_host=f"{deployment_name}.{domain}",
+            admin_email=config["email"],
+            pattern=overrides.get("pattern", "external-iam"),
+            template_bucket=config.get("template_bucket"),  # Optional custom bucket
+            template_prefix=config.get("template_prefix"),  # Optional template path prefix
+            # Optional authentication (from overrides or environment)
+            google_client_id=overrides.get("google_client_id") or os.getenv("GOOGLE_CLIENT_ID"),
+            google_client_secret=overrides.get("google_client_secret")
+            or os.getenv("GOOGLE_CLIENT_SECRET"),
+            okta_base_url=overrides.get("okta_base_url") or os.getenv("OKTA_BASE_URL"),
+            okta_client_id=overrides.get("okta_client_id") or os.getenv("OKTA_CLIENT_ID"),
+            okta_client_secret=overrides.get("okta_client_secret")
+            or os.getenv("OKTA_CLIENT_SECRET"),
+            **{
+                k: v
+                for k, v in overrides.items()
+                if k
+                not in [
+                    "name",
+                    "pattern",
+                    "google_client_id",
+                    "google_client_secret",
+                    "okta_base_url",
+                    "okta_client_id",
+                    "okta_client_secret",
+                ]
+            },
+        )
+
+    @staticmethod
+    def _select_vpc(vpcs: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Select VPC (prefer quilt-staging, then first non-default).
+
+        Args:
+            vpcs: List of VPC definitions
+
+        Returns:
+            Selected VPC
+
+        Raises:
+            ValueError: If no suitable VPC found
+        """
+        # Prefer quilt-staging VPC
+        for vpc in vpcs:
+            if vpc["name"] == "quilt-staging":
+                return vpc
+
+        # Fall back to first non-default VPC
+        for vpc in vpcs:
+            if not vpc["is_default"]:
+                return vpc
+
+        raise ValueError("No suitable VPC found")
+
+    @staticmethod
+    def _select_subnets(subnets: List[Dict[str, Any]], vpc_id: str) -> List[Dict[str, Any]]:
+        """Select public subnets in the VPC (need at least 2).
+
+        Args:
+            subnets: List of subnet definitions
+            vpc_id: VPC ID to filter by
+
+        Returns:
+            List of selected subnets
+
+        Raises:
+            ValueError: If fewer than 2 public subnets found
+        """
+        public_subnets = [
+            s for s in subnets if s["vpc_id"] == vpc_id and s["classification"] == "public"
+        ]
+
+        if len(public_subnets) < 2:
+            raise ValueError(f"Need at least 2 public subnets, found {len(public_subnets)}")
+
+        return public_subnets[:2]  # Return first 2
+
+    @staticmethod
+    def _select_security_groups(
+        security_groups: List[Dict[str, Any]], vpc_id: str
+    ) -> List[Dict[str, Any]]:
+        """Select security groups in the VPC.
+
+        Args:
+            security_groups: List of security group definitions
+            vpc_id: VPC ID to filter by
+
+        Returns:
+            List of selected security groups
+
+        Raises:
+            ValueError: If no suitable security groups found
+        """
+        sgs = [sg for sg in security_groups if sg["vpc_id"] == vpc_id and sg.get("in_use", False)]
+
+        if not sgs:
+            raise ValueError(f"No suitable security groups found in VPC {vpc_id}")
+
+        return sgs[:3]  # Return up to 3
+
+    @staticmethod
+    def _select_certificate(certificates: List[Dict[str, Any]], domain: str) -> Dict[str, Any]:
+        """Select certificate matching domain.
+
+        Args:
+            certificates: List of certificate definitions
+            domain: Domain name to match
+
+        Returns:
+            Selected certificate
+
+        Raises:
+            ValueError: If no valid certificate found
+        """
+        for cert in certificates:
+            if cert["domain_name"] == f"*.{domain}":
+                if cert["status"] == "ISSUED":
+                    return cert
+
+        raise ValueError(f"No valid certificate found for domain {domain}")
+
+    @staticmethod
+    def _select_route53_zone(zones: List[Dict[str, Any]], domain: str) -> Dict[str, Any]:
+        """Select Route53 zone matching domain.
+
+        Args:
+            zones: List of Route53 zone definitions
+            domain: Domain name to match
+
+        Returns:
+            Selected zone
+
+        Raises:
+            ValueError: If no Route53 zone found
+        """
+        for zone in zones:
+            if zone["domain_name"] == f"{domain}.":
+                if not zone["private"]:
+                    return zone
+
+        raise ValueError(f"No Route53 zone found for domain {domain}")
+
+    def get_required_cfn_parameters(self) -> Dict[str, str]:
+        """Get required CloudFormation parameters.
+
+        These are the minimal parameters needed for CloudFormation,
+        assuming Terraform creates the infrastructure.
+
+        Returns:
+            Dictionary of required CloudFormation parameters
+        """
+        return {
+            "AdminEmail": self.admin_email,
+            "CertificateArnELB": self.certificate_arn,
+            "QuiltWebHost": self.quilt_web_host,
+            "PasswordAuth": "Enabled",  # Always enable for initial setup
+        }
+
+    def get_optional_cfn_parameters(self) -> Dict[str, str]:
+        """Get optional CloudFormation parameters that were configured.
+
+        Only returns parameters that were explicitly set.
+
+        Returns:
+            Dictionary of optional CloudFormation parameters
+        """
+        params = {}
+
+        # Google OAuth (only if configured)
+        if self.google_client_secret:
+            params.update(
+                {
+                    "GoogleAuth": "Enabled",
+                    "GoogleClientId": self.google_client_id or "",
+                    "GoogleClientSecret": self.google_client_secret,
+                }
+            )
+
+        # Okta OAuth (only if configured)
+        if self.okta_client_secret:
+            params.update(
+                {
+                    "OktaAuth": "Enabled",
+                    "OktaBaseUrl": self.okta_base_url or "",
+                    "OktaClientId": self.okta_client_id or "",
+                    "OktaClientSecret": self.okta_client_secret,
+                }
+            )
+
+        return params
+
+    def get_terraform_infrastructure_config(self) -> Dict[str, Any]:
+        """Get Terraform infrastructure configuration.
+
+        This configures the Terraform module to create:
+        - VPC (or use existing)
+        - RDS database
+        - ElasticSearch domain
+        - Security groups
+
+        Returns:
+            Dictionary of Terraform infrastructure configuration
+        """
+        config = {
+            "name": self.deployment_name,
+            "template_file": self.get_template_file_path(),
+            # Network configuration
+            "create_new_vpc": False,  # Use existing VPC from config
+            "vpc_id": self.vpc_id,
+            "intra_subnets": self._get_intra_subnets(),  # For DB & ES
+            "private_subnets": self._get_private_subnets(),  # For app
+            "public_subnets": self.subnet_ids,  # For ALB
+            "user_security_group": self.security_group_ids[0] if self.security_group_ids else "",
+            # Database configuration
+            "db_instance_class": self.db_instance_class,
+            "db_multi_az": False,  # Single-AZ for testing
+            "db_deletion_protection": False,  # Allow deletion for testing
+            # ElasticSearch configuration
+            "search_instance_type": self.search_instance_type,
+            "search_instance_count": 1,  # Single node for testing
+            "search_volume_size": self.search_volume_size,
+            "search_dedicated_master_enabled": False,
+            "search_zone_awareness_enabled": False,
+            # CloudFormation parameters (required + optional)
+            "parameters": {
+                **self.get_required_cfn_parameters(),
+                **self.get_optional_cfn_parameters(),
+            },
+        }
+
+        # Add external IAM configuration if applicable
+        if self.pattern == "external-iam":
+            config["iam_template_url"] = self.iam_template_url or self._default_iam_template_url()
+            config["template_url"] = self.app_template_url or self._default_app_template_url()
+
+        return config
+
+    def _get_intra_subnets(self) -> List[str]:
+        """Get isolated subnets for DB and ElasticSearch.
+
+        These should be subnets with no internet access.
+        If not available, use private subnets.
+
+        Returns:
+            List of isolated subnet IDs
+        """
+        # For now, use the same as private subnets
+        # TODO: Filter from config.json based on classification
+        return self.subnet_ids[:2]
+
+    def _get_private_subnets(self) -> List[str]:
+        """Get private subnets for application.
+
+        These should have NAT gateway access.
+
+        Returns:
+            List of private subnet IDs
+        """
+        return self.subnet_ids[:2]
+
+    def get_template_file_path(self) -> str:
+        """Get path to CloudFormation template file.
+
+        For testing, use local template file.
+        For production, use S3 URL.
+
+        Returns:
+            Path to CloudFormation template file
+        """
+        if self.pattern == "external-iam":
+            # Use app-only template
+            return str(Path(__file__).parent.parent.parent / "templates" / TEMPLATE_APP)
+        else:
+            # Use monolithic template
+            return str(Path(__file__).parent.parent.parent / "templates" / TEMPLATE_MONOLITHIC)
+
+    def to_terraform_vars(self) -> Dict[str, Any]:
+        """Convert to Terraform variables.
+
+        Returns:
+            Dictionary of Terraform variables
+
+        Raises:
+            ValueError: If required template URLs are missing
+        """
+        vars_dict = {
+            "name": self.deployment_name,
+            "aws_region": self.aws_region,
+            "aws_account_id": self.aws_account_id,
+            "vpc_id": self.vpc_id,
+            "subnet_ids": self.subnet_ids,
+            "certificate_arn": self.certificate_arn,
+            "route53_zone_id": self.route53_zone_id,
+            "quilt_web_host": self.quilt_web_host,
+            "admin_email": self.admin_email,
+            "db_instance_class": self.db_instance_class,
+            "search_instance_type": self.search_instance_type,
+            "search_volume_size": self.search_volume_size,
+        }
+
+        # Add pattern-specific vars
+        if self.pattern == "external-iam":
+            if not self.iam_template_url:
+                # Use default IAM template URL
+                vars_dict["iam_template_url"] = self._default_iam_template_url()
+            else:
+                vars_dict["iam_template_url"] = self.iam_template_url
+
+            vars_dict["template_url"] = self.app_template_url or self._default_app_template_url()
+        else:
+            vars_dict["template_url"] = self._default_monolithic_template_url()
+
+        return vars_dict
+
+    def _default_iam_template_url(self) -> str:
+        """Default IAM template URL.
+
+        Returns:
+            S3 URL for IAM template
+        """
+        bucket = self.template_bucket or f"quilt-templates-{self.environment}-{self.aws_account_id}"
+        return f"https://{bucket}.s3.{self.aws_region}.amazonaws.com/{TEMPLATE_IAM}"
+
+    def _default_app_template_url(self) -> str:
+        """Default application template URL.
+
+        Returns:
+            S3 URL for application template
+        """
+        bucket = self.template_bucket or f"quilt-templates-{self.environment}-{self.aws_account_id}"
+        return f"https://{bucket}.s3.{self.aws_region}.amazonaws.com/{TEMPLATE_APP}"
+
+    def _default_monolithic_template_url(self) -> str:
+        """Default monolithic template URL.
+
+        Returns:
+            S3 URL for monolithic template
+        """
+        bucket = self.template_bucket or f"quilt-templates-{self.environment}-{self.aws_account_id}"
+        return f"https://{bucket}.s3.{self.aws_region}.amazonaws.com/{TEMPLATE_MONOLITHIC}"
+
+    def get_template_files(self) -> Dict[str, str]:
+        """Get template file paths to upload.
+
+        Returns:
+            Dict mapping local file paths to S3 keys
+        """
+        if not self.template_prefix:
+            raise ValueError("template_prefix must be configured to upload templates")
+
+        prefix = Path(self.template_prefix)
+
+        if self.pattern == "external-iam":
+            # Upload stable-iam.yaml as quilt-iam.yaml and stable-app.yaml as quilt-app.yaml
+            return {
+                str(prefix) + "-iam.yaml": "quilt-iam.yaml",
+                str(prefix) + "-app.yaml": "quilt-app.yaml",
+            }
+        else:
+            # Upload stable.yaml as quilt.yaml (or keep as quilt-monolithic.yaml)
+            return {
+                str(prefix) + ".yaml": "quilt.yaml",
+            }
