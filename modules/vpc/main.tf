@@ -17,7 +17,7 @@ locals {
     "user_security_group (required)" : var.existing_user_security_group != null,
     "user_subnets (required if var.internal == true and var.create_new_vpc == false, else must be null)" : (var.internal && !var.create_new_vpc) == (var.existing_user_subnets != null)
     "api_endpoint (required if var.internal == true, else must be null)" : var.internal == (var.existing_api_endpoint != null),
-    "transit_gateway_id == null (TGW egress requires create_new_vpc == true)" : var.transit_gateway_id == null,
+    "enable_transit_gateway == false (TGW egress requires create_new_vpc == true)" : var.enable_transit_gateway == false,
   }
   new_network_requires = {
     "create_new_vpc == true" : var.create_new_vpc == true,
@@ -72,13 +72,16 @@ module "vpc" {
 
   enable_dns_hostnames   = true
   enable_dns_support     = true
-  enable_nat_gateway     = var.transit_gateway_id == null
-  one_nat_gateway_per_az = var.transit_gateway_id == null
-  create_egress_only_igw = var.transit_gateway_id == null
+  enable_nat_gateway     = !var.enable_transit_gateway
+  one_nat_gateway_per_az = !var.enable_transit_gateway
+  create_egress_only_igw = !var.enable_transit_gateway
 }
 
 resource "aws_ec2_transit_gateway_vpc_attachment" "egress" {
-  count = local.new_network_valid && var.transit_gateway_id != null ? 1 : 0
+  # Gate on the bool, not on transit_gateway_id != null: count must be known at
+  # plan time, and transit_gateway_id may be a computed value (e.g. a TGW
+  # created in the same configuration).
+  count = local.new_network_valid && var.enable_transit_gateway ? 1 : 0
 
   subnet_ids         = module.vpc.intra_subnets
   transit_gateway_id = var.transit_gateway_id
@@ -88,10 +91,17 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "egress" {
   tags = {
     Name = "${var.name}-egress"
   }
+
+  lifecycle {
+    precondition {
+      condition     = var.transit_gateway_id != null
+      error_message = "transit_gateway_id is required when enable_transit_gateway is true."
+    }
+  }
 }
 
 resource "aws_route" "private_tgw_ipv4_egress" {
-  count = local.new_network_valid && var.transit_gateway_id != null ? length(module.vpc.private_route_table_ids) : 0
+  count = local.new_network_valid && var.enable_transit_gateway ? length(module.vpc.private_route_table_ids) : 0
 
   route_table_id         = module.vpc.private_route_table_ids[count.index]
   destination_cidr_block = "0.0.0.0/0"
@@ -101,7 +111,7 @@ resource "aws_route" "private_tgw_ipv4_egress" {
 }
 
 resource "aws_route" "private_tgw_ipv6_egress" {
-  count = local.new_network_valid && var.transit_gateway_id != null && var.transit_gateway_ipv6_egress ? length(module.vpc.private_route_table_ids) : 0
+  count = local.new_network_valid && var.enable_transit_gateway && var.transit_gateway_ipv6_egress ? length(module.vpc.private_route_table_ids) : 0
 
   route_table_id              = module.vpc.private_route_table_ids[count.index]
   destination_ipv6_cidr_block = "::/0"

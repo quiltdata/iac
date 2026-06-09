@@ -191,6 +191,7 @@ run "new_vpc_with_transit_gateway" {
   variables {
     create_new_vpc               = true
     internal                     = false
+    enable_transit_gateway       = true
     transit_gateway_id           = "tgw-00000000000000000"
     existing_vpc_id              = null
     existing_api_endpoint        = null
@@ -201,7 +202,7 @@ run "new_vpc_with_transit_gateway" {
     existing_user_subnets        = null
   }
 
-  # A new VPC with a transit_gateway_id is the supported TGW egress mode and
+  # A new VPC with enable_transit_gateway is the supported TGW egress mode and
   # must plan cleanly.
   assert {
     condition     = !strcontains(output.configuration_error, "❌")
@@ -245,6 +246,7 @@ run "new_vpc_with_transit_gateway_ipv6_egress" {
   variables {
     create_new_vpc               = true
     internal                     = false
+    enable_transit_gateway       = true
     transit_gateway_id           = "tgw-00000000000000000"
     transit_gateway_ipv6_egress  = true
     existing_vpc_id              = null
@@ -275,6 +277,7 @@ run "existing_vpc_with_transit_gateway_is_rejected" {
   variables {
     create_new_vpc               = false
     internal                     = false
+    enable_transit_gateway       = true
     transit_gateway_id           = "tgw-00000000000000000"
     existing_vpc_id              = "vpc-00000000000000000"
     existing_api_endpoint        = null
@@ -285,7 +288,8 @@ run "existing_vpc_with_transit_gateway_is_rejected" {
     existing_user_subnets        = null
   }
 
-  # transit_gateway_id is only supported with create_new_vpc = true; combining
-  # it with an existing VPC must fail fast rather than silently ignore the id.
+  # enable_transit_gateway is only supported with create_new_vpc = true;
+  # combining it with an existing VPC must fail fast rather than silently
+  # ignore the request.
   expect_failures = [output.configuration_error]
 }

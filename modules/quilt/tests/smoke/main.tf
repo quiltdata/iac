@@ -66,6 +66,11 @@ variable "user_subnets" {
   default = null
 }
 
+variable "enable_transit_gateway" {
+  type    = bool
+  default = false
+}
+
 variable "transit_gateway_id" {
   type    = string
   default = null
@@ -84,6 +89,7 @@ module "quilt" {
   name                        = "quilt-test"
   parameters                  = {}
   template_file               = "${path.module}/fixtures/quilt.yaml"
+  enable_transit_gateway      = var.enable_transit_gateway
   transit_gateway_id          = var.transit_gateway_id
   transit_gateway_ipv6_egress = var.transit_gateway_ipv6_egress
 

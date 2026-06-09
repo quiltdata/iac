@@ -14,6 +14,7 @@ module "vpc" {
   cidr     = var.cidr
   internal = var.internal
 
+  enable_transit_gateway      = var.enable_transit_gateway
   transit_gateway_id          = var.transit_gateway_id
   transit_gateway_ipv6_egress = var.transit_gateway_ipv6_egress
 

@@ -35,9 +35,10 @@ run "new_vpc_plans" {
 run "new_vpc_transit_gateway_plans" {
   command = plan
   variables {
-    create_new_vpc     = true
-    internal           = false
-    transit_gateway_id = "tgw-00000000000000000"
+    create_new_vpc         = true
+    internal               = false
+    enable_transit_gateway = true
+    transit_gateway_id     = "tgw-00000000000000000"
   }
   # TGW egress mode on a new VPC must plan end-to-end through the public module.
   assert {
@@ -51,6 +52,7 @@ run "new_vpc_transit_gateway_ipv6_plans" {
   variables {
     create_new_vpc              = true
     internal                    = false
+    enable_transit_gateway      = true
     transit_gateway_id          = "tgw-00000000000000000"
     transit_gateway_ipv6_egress = true
   }

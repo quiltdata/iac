@@ -137,7 +137,9 @@ module "quilt" {
   # user_security_group = "sg-YOUR-SECURITY-GROUP"                           # For ALB access
   # user_subnets        = ["subnet-YOUR-USER-1", "subnet-YOUR-USER-2"]  # For ALB (if internal = true)
   # api_endpoint        = "vpce-YOUR-VPC-ENDPOINT"                         # VPC endpoint (if internal = true)
-  # transit_gateway_id  = "tgw-YOUR-TRANSIT-GATEWAY-ID"                    # For TGW egress when create_new_vpc = true
+  # enable_transit_gateway = true                                          # Route private-subnet egress via a TGW instead of NAT (create_new_vpc = true only)
+  # transit_gateway_id     = "tgw-YOUR-TRANSIT-GATEWAY-ID"                  # Required when enable_transit_gateway = true; the TGW must route to the internet and back
+  # transit_gateway_ipv6_egress = true                                     # Only if the TGW carries IPv6 egress (otherwise IPv6 is left on IPv4 fallback)
 
   # CloudFormation notifications (optional)
   # stack_notification_arns = ["arn:aws:sns:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:quilt-notifications"]
