@@ -18,6 +18,9 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+- [Added] CI job that lints top-level Markdown docs with markdownlint-cli2, configured via `.markdownlint-cli2.yaml` ([#PR](https://github.com/quiltdata/iac/pull/PR))
+- [Fixed] Broken table-of-contents and cross-reference links in README and OPERATIONS docs ([#95](https://github.com/quiltdata/iac/issues/95))
+
 ## [1.8.0] - 2026-06-09
 
 - [Added] Transit Gateway egress mode for new VPCs: set `enable_transit_gateway = true` (+ `transit_gateway_id`) to route private-subnet egress through a Transit Gateway instead of NAT gateways; IPv6 egress is opt-in via `transit_gateway_ipv6_egress`. See [Transit Gateway egress](README.md#transit-gateway-egress) ([#115](https://github.com/quiltdata/iac/pull/115))
@@ -38,6 +41,7 @@ Optional release notice.
 ## [1.6.0] - 2026-02-24
 
 If you rely on the default `search_instance_type` / `search_dedicated_master_type`:
+
 - Upgrading from a version prior to 1.5.0 will fail on `terraform apply`. Upgrade to 1.5.0 first.
 - If you have reserved m5 instances, pin the instance types explicitly to keep using them.
 

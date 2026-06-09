@@ -1,0 +1,20 @@
+# markdownlint-cli2 configuration. See https://github.com/DavidAnson/markdownlint
+# for the full rule reference.
+config:
+  # Line length: prose, tables, and long links routinely exceed any fixed width.
+  MD013: false
+  # Bold-as-heading: the docs deliberately use bold text as inline labels.
+  MD036: false
+  # Table pipe spacing: cosmetic; tables render correctly either way.
+  MD060: false
+  # Duplicate headings: the CHANGELOG repeats Added/Changed/Fixed per release,
+  # which is the Keep a Changelog convention. Only flag duplicates under the
+  # same parent heading.
+  MD024:
+    siblings_only: true
+# Lint top-level docs only; spec/ holds working notes and is intentionally
+# excluded. A non-recursive glob naturally skips spec/ and .github/. This
+# matches the default globs of markdownlint-cli2-action, so local runs and CI
+# lint the same files.
+globs:
+  - "*.{md,markdown}"

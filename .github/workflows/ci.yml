@@ -19,6 +19,13 @@ jobs:
           terraform_wrapper: false
       - run: terraform fmt -check -recursive -diff
 
+  markdownlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      # Globs and rules come from .markdownlint-cli2.yaml in the repo root.
+      - uses: DavidAnson/markdownlint-cli2-action@v23
+
   validate:
     runs-on: ubuntu-latest
     strategy:

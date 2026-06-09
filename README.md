@@ -10,13 +10,10 @@ Deploy and maintain Quilt stacks with Terraform using this comprehensive Infrast
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
 - [Rightsize Your Search Domain](#rightsize-your-search-domain)
-- [Database Configuration](#database-configuration)
-- [Network Configuration](#network-configuration)
-- [CloudFormation Parameters](#cloudformation-parameters)
-- [Complete Variable Reference](#complete-variable-reference)
-- [Deployment Examples](#deployment-examples)
-- [Troubleshooting](#troubleshooting)
-- [Terraform Commands Reference](#terraform-commands-reference)
+- [Deploying and Updating Quilt](#deploying-and-updating-quilt)
+- [Terraform Cheat Sheet](#terraform-cheat-sheet)
+- [Known Issues](#known-issues)
+- [References](#references)
 
 ## Cloud Team Operations Guide
 
@@ -27,6 +24,7 @@ This section provides step-by-step instructions specifically for cloud teams to 
 #### 1. Environment Preparation (15 minutes)
 
 **Step 1.1: Install Required Tools**
+
 ```bash
 # Install Terraform (if not already installed)
 # macOS
@@ -42,6 +40,7 @@ terraform --version  # Should show >= 1.10.0
 ```
 
 **Step 1.2: Configure AWS CLI**
+
 ```bash
 # Install AWS CLI (if not already installed)
 # macOS
@@ -56,6 +55,7 @@ aws sts get-caller-identity
 ```
 
 **Step 1.3: Set Up Terraform State Backend**
+
 ```bash
 # Create S3 bucket for Terraform state (one-time setup)
 aws s3 mb s3://YOUR-COMPANY-terraform-state --region YOUR-AWS-REGION
@@ -69,6 +69,7 @@ aws s3api put-bucket-versioning \
 #### 2. SSL Certificate Setup (10 minutes)
 
 **Step 2.1: Request SSL Certificate**
+
 ```bash
 # Request certificate in AWS Certificate Manager
 aws acm request-certificate \
@@ -81,6 +82,7 @@ aws acm request-certificate \
 ```
 
 **Step 2.2: Validate Certificate**
+
 ```bash
 # Get validation records
 aws acm describe-certificate --certificate-arn "arn:aws:acm:YOUR-AWS-REGION:YOUR-ACCOUNT-ID:certificate/YOUR-CERT-ID"
@@ -92,6 +94,7 @@ aws acm describe-certificate --certificate-arn "arn:aws:acm:YOUR-AWS-REGION:YOUR
 #### 3. Project Setup (10 minutes)
 
 **Step 3.1: Create Project Directory**
+
 ```bash
 # Create project directory
 mkdir quilt-production
@@ -102,6 +105,7 @@ git init
 ```
 
 **Step 3.2: Download Template Files**
+
 ```bash
 # Download the example configuration
 curl -o main.tf https://raw.githubusercontent.com/quiltdata/iac/main/examples/main.tf
@@ -132,6 +136,7 @@ Contact your Quilt account manager to obtain the CloudFormation template file an
 #### Step 1: Configure Your Deployment
 
 **Edit main.tf with your specific values:**
+
 ```bash
 # Open main.tf in your preferred editor
 vim main.tf  # or code main.tf, nano main.tf, etc.
@@ -140,6 +145,7 @@ vim main.tf  # or code main.tf, nano main.tf, etc.
 **⚠️ CRITICAL: Replace ALL placeholder values before deployment**
 
 **Required changes:**
+
 1. **AWS Account ID**: Replace `"YOUR-ACCOUNT-ID"` with your AWS account ID
 2. **AWS Region**: Replace `"YOUR-AWS-REGION"` with your preferred AWS region
 3. **S3 Backend**: Replace `"YOUR-TERRAFORM-STATE-BUCKET"` with your bucket name
@@ -152,6 +158,7 @@ vim main.tf  # or code main.tf, nano main.tf, etc.
 > **⚠️ WARNING**: Do NOT run `terraform apply` with placeholder values. This will cause deployment failures and may create resources with incorrect configurations.
 
 **Choose ElasticSearch sizing based on your data volume:**
+
 - **Small** (< 100GB): Use commented "Small" configuration
 - **Medium** (100GB-1TB): Use default configuration (already uncommented)
 - **Large** (1TB-5TB): Uncomment "Large" configuration
@@ -208,6 +215,7 @@ curl -I https://data.YOUR-COMPANY.com  # Should return 200 OK
 #### Daily Operations
 
 **Health Checks (5 minutes daily)**
+
 ```bash
 # Check infrastructure status
 terraform refresh
@@ -223,6 +231,7 @@ aws es describe-elasticsearch-domain --domain-name your-stack-name
 #### Weekly Maintenance
 
 **Backup Verification (10 minutes weekly)**
+
 ```bash
 # Verify RDS automated backups
 aws rds describe-db-snapshots --db-instance-identifier your-stack-name
@@ -232,6 +241,7 @@ aws es describe-elasticsearch-domain --domain-name your-stack-name
 ```
 
 **Security Updates (15 minutes weekly)**
+
 ```bash
 # Check for Terraform module updates
 # Visit: https://github.com/quiltdata/iac/releases
@@ -244,6 +254,7 @@ aws es describe-elasticsearch-domain --domain-name your-stack-name
 #### Monthly Maintenance
 
 **Capacity Planning (20 minutes monthly)**
+
 ```bash
 # Check ElasticSearch storage usage
 aws cloudwatch get-metric-statistics \
@@ -273,6 +284,7 @@ aws cloudwatch get-metric-statistics \
 **When to Scale**: When storage utilization > 80%
 
 **Step 1: Plan the Scaling**
+
 ```bash
 # Current configuration check
 terraform show | grep search_volume_size
@@ -282,6 +294,7 @@ terraform show | grep search_volume_size
 ```
 
 **Step 2: Update Configuration**
+
 ```bash
 # Edit main.tf
 vim main.tf
@@ -294,6 +307,7 @@ terraform plan -out=tfplan
 ```
 
 **Step 3: Apply During Maintenance Window**
+
 ```bash
 # Schedule during low-usage period
 # Scaling causes temporary performance impact
@@ -307,6 +321,7 @@ aws es describe-elasticsearch-domain --domain-name your-stack-name
 #### Database Scaling
 
 **Vertical Scaling (Instance Size)**
+
 ```bash
 # Edit main.tf
 # Update db_instance_class
@@ -317,6 +332,7 @@ terraform apply tfplan  # Causes brief downtime
 ```
 
 **Storage Scaling**
+
 ```bash
 # RDS storage scales automatically if enabled
 # Check current storage
@@ -328,6 +344,7 @@ aws rds describe-db-instances --db-instance-identifier your-stack-name
 #### Backup Procedures
 
 **Database Backup**
+
 ```bash
 # Create manual snapshot
 aws rds create-db-snapshot \
@@ -336,6 +353,7 @@ aws rds create-db-snapshot \
 ```
 
 **Configuration Backup**
+
 ```bash
 # Backup Terraform state
 aws s3 cp s3://YOUR-TERRAFORM-STATE-BUCKET/quilt/terraform.tfstate \
@@ -348,6 +366,7 @@ tar -czf quilt-config-backup-$(date +%Y%m%d).tar.gz *.tf *.yml
 #### Recovery Procedures
 
 **Database Recovery**
+
 ```bash
 # List available snapshots
 aws rds describe-db-snapshots --db-instance-identifier your-stack-name
@@ -362,6 +381,7 @@ aws rds describe-db-snapshots --db-instance-identifier your-stack-name
 #### CloudWatch Alarms
 
 **ElasticSearch Monitoring**
+
 ```bash
 # Create storage utilization alarm
 aws cloudwatch put-metric-alarm \
@@ -379,6 +399,7 @@ aws cloudwatch put-metric-alarm \
 ```
 
 **RDS Monitoring**
+
 ```bash
 # Create CPU utilization alarm
 aws cloudwatch put-metric-alarm \
@@ -402,6 +423,7 @@ aws cloudwatch put-metric-alarm \
 **Symptoms**: Terraform apply fails with database parameter errors
 
 **Solution**:
+
 ```bash
 # Check current RDS version
 aws rds describe-db-instances --db-instance-identifier your-stack-name
@@ -420,6 +442,7 @@ aws rds modify-db-instance \
 **Symptoms**: "ValidationException: A change/update is in progress"
 
 **Solution**:
+
 ```bash
 # Check domain status
 aws es describe-elasticsearch-domain --domain-name your-stack-name
@@ -433,6 +456,7 @@ aws es describe-elasticsearch-domain --domain-name your-stack-name
 **Symptoms**: Certificate remains in "Pending Validation" status
 
 **Solution**:
+
 ```bash
 # Check DNS validation records
 aws acm describe-certificate --certificate-arn your-cert-arn
@@ -445,18 +469,21 @@ dig _validation-record.data.YOUR-COMPANY.com CNAME
 ### Security Best Practices
 
 #### Access Control
+
 1. **Use IAM roles** instead of access keys where possible
 2. **Enable MFA** for all administrative accounts
 3. **Rotate credentials** regularly (quarterly)
 4. **Use least privilege** principle for all permissions
 
 #### Network Security
+
 1. **Use internal ALB** for VPN-only access when possible
 2. **Configure WAF** with appropriate geofencing
 3. **Enable VPC Flow Logs** for network monitoring
 4. **Use private subnets** for all internal services
 
 #### Data Protection
+
 1. **Enable encryption at rest** for all storage services
 2. **Use SSL/TLS** for all data in transit
 3. **Configure CloudTrail** for audit logging
@@ -465,6 +492,7 @@ dig _validation-record.data.YOUR-COMPANY.com CNAME
 ### Cost Optimization
 
 #### Regular Cost Reviews
+
 ```bash
 # Check monthly costs by service
 aws ce get-cost-and-usage \
@@ -480,6 +508,7 @@ aws ce get-cost-and-usage \
 ```
 
 #### Optimization Strategies
+
 1. **Use Reserved Instances** for production workloads
 2. **Right-size instances** based on actual usage
 3. **Implement lifecycle policies** for S3 storage
@@ -488,16 +517,19 @@ aws ce get-cost-and-usage \
 ### Support and Escalation
 
 #### Internal Escalation Path
+
 1. **Level 1**: Cloud team member (daily operations)
 2. **Level 2**: Senior cloud engineer (scaling, troubleshooting)
 3. **Level 3**: Cloud architect (design changes, major issues)
 
 #### External Support
+
 1. **Quilt Support**: Contact your account manager for application issues
 2. **AWS Support**: Use your AWS support plan for infrastructure issues
 3. **Community**: GitHub issues for module-related problems
 
 #### Emergency Contacts
+
 - **Cloud Team Lead**: [contact information]
 - **On-call Engineer**: [contact information]
 - **Quilt Account Manager**: [contact information]
@@ -507,6 +539,7 @@ aws ce get-cost-and-usage \
 > **📖 Additional Documentation**: For comprehensive enterprise installation guidance, refer to the official documentation at [docs.quilt.bio](https://docs.quilt.bio). This Terraform module complements the standard installation process with Infrastructure as Code automation.
 
 ### Required Tools
+
 - **[Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)** >= 1.10.0
 - **AWS CLI** >= 2.0 configured with appropriate permissions
 - **Git** for version control and configuration management
@@ -515,7 +548,9 @@ aws ce get-cost-and-usage \
 ### Required Resources
 
 #### CloudFormation Template
+
 Quilt provides Terraform-compatible CloudFormation templates via email:
+
 - **Initial Installation**: Template delivered in your installation welcome email from Quilt
 - **Platform Updates**: Updated templates sent regularly via platform update emails
 - **Template Location**: Save the template as `quilt-template.yml` in your project directory
@@ -523,6 +558,7 @@ Quilt provides Terraform-compatible CloudFormation templates via email:
 - **Template Validation**: Verify template integrity before deployment
 
 #### AWS Infrastructure Requirements
+
 - **AWS Account** with administrative permissions or specific IAM policies (see [AWS Permissions](#aws-permissions))
 - **AWS Region** selection based on data residency and compliance requirements
 - **SSL Certificate** in AWS Certificate Manager for HTTPS access
@@ -532,6 +568,7 @@ Quilt provides Terraform-compatible CloudFormation templates via email:
 #### Network Requirements
 
 **For Internet-Facing Deployments:**
+
 - Public subnets in at least 2 Availability Zones for load balancer
 - Private subnets in at least 2 Availability Zones for application services
 - Isolated subnets in at least 2 Availability Zones for database and search
@@ -539,12 +576,14 @@ Quilt provides Terraform-compatible CloudFormation templates via email:
 - NAT Gateways for private subnet internet access
 
 **For Internal/VPN-Only Deployments:**
+
 - Private subnets in at least 2 Availability Zones for application services and load balancer
 - Isolated subnets in at least 2 Availability Zones for database and search
 - VPC Endpoints for AWS service access (S3, ECR, CloudWatch, etc.)
 - VPN or Direct Connect for user access
 
 **Security Groups:**
+
 - Application Load Balancer security group (port 443 from users)
 - Application services security group (port 80 from ALB)
 - Database security group (port 5432 from application)
@@ -553,16 +592,19 @@ Quilt provides Terraform-compatible CloudFormation templates via email:
 #### Capacity Planning
 
 **Minimum Requirements:**
+
 - **Database**: db.t3.small (2 vCPU, 2GB RAM) for development
 - **ElasticSearch**: 1x m6g.large.elasticsearch (2 vCPU, 8GB RAM, 512GB storage) for development
 - **Application**: ECS Fargate tasks (0.5 vCPU, 1GB RAM per task)
 
 **Production Recommendations:**
+
 - **Database**: db.t3.medium or larger (2+ vCPU, 4+ GB RAM) with Multi-AZ
 - **ElasticSearch**: 2x m6g.xlarge.elasticsearch (4 vCPU, 16GB RAM, 1TB+ storage) with zone awareness
 - **Application**: Multiple ECS Fargate tasks across availability zones
 
 **Storage Considerations:**
+
 - **Database Storage**: 100GB minimum, auto-scaling enabled
 - **ElasticSearch Storage**: Size based on data volume (see [Rightsize Your Search Domain](#rightsize-your-search-domain))
 - **Application Logs**: CloudWatch Logs with appropriate retention policies
@@ -570,6 +612,7 @@ Quilt provides Terraform-compatible CloudFormation templates via email:
 ### AWS Permissions
 
 #### Required IAM Permissions
+
 The deploying user or role needs the following AWS permissions:
 
 ```json
@@ -618,7 +661,9 @@ The deploying user or role needs the following AWS permissions:
 ```
 
 #### Service-Linked Roles
+
 Ensure the following AWS service-linked roles exist (created automatically if missing):
+
 - `AWSServiceRoleForElasticLoadBalancing`
 - `AWSServiceRoleForECS`
 - `AWSServiceRoleForRDS`
@@ -627,18 +672,21 @@ Ensure the following AWS service-linked roles exist (created automatically if mi
 ### Security Considerations
 
 #### Network Security
+
 - **VPC Flow Logs**: Enable for network monitoring and security analysis
 - **Security Groups**: Follow principle of least privilege
 - **NACLs**: Additional layer of network security (optional)
 - **WAF**: Web Application Firewall for additional protection (configured in CloudFormation)
 
 #### Data Protection
+
 - **Encryption at Rest**: Enabled for RDS, ElasticSearch, and S3
 - **Encryption in Transit**: TLS 1.2+ for all communications
 - **Key Management**: AWS KMS for encryption key management
 - **Backup Encryption**: All backups encrypted with KMS
 
 #### Access Control
+
 - **IAM Roles**: Use IAM roles instead of access keys where possible
 - **MFA**: Multi-factor authentication for administrative access
 - **Audit Logging**: CloudTrail enabled for all API calls
@@ -647,11 +695,13 @@ Ensure the following AWS service-linked roles exist (created automatically if mi
 ### Compliance Considerations
 
 #### Data Residency
+
 - Choose AWS region based on data residency requirements
 - Consider AWS Local Zones for specific geographic requirements
 - Review AWS compliance certifications for your region
 
 #### Regulatory Compliance
+
 - **SOC 2**: AWS infrastructure is SOC 2 compliant
 - **GDPR**: Configure data retention and deletion policies
 - **HIPAA**: Use HIPAA-eligible AWS services if handling PHI
@@ -660,12 +710,14 @@ Ensure the following AWS service-linked roles exist (created automatically if mi
 ### Monitoring and Observability
 
 #### Required Monitoring
+
 - **CloudWatch Metrics**: Infrastructure and application metrics
 - **CloudWatch Logs**: Application and infrastructure logs
 - **CloudWatch Alarms**: Proactive alerting for issues
 - **AWS X-Ray**: Distributed tracing (optional)
 
 #### Recommended Monitoring
+
 - **AWS Config**: Configuration compliance monitoring
 - **AWS GuardDuty**: Threat detection
 - **AWS Security Hub**: Centralized security findings
@@ -677,7 +729,7 @@ Ensure the following AWS service-linked roles exist (created automatically if mi
 
 Your project structure should look like this:
 
-```
+```text
 quilt_stack/
 ├── main.tf
 ├── variables.tf          # Optional: for sensitive variables
@@ -758,6 +810,7 @@ terraform apply tfplan
 | api_endpoint       | For API Gateway when `create_new_vpc = false` | n/a                                      |
 
 #### Example VPC Endpoint for API Gateway
+
 This endpoint must be reachable by your VPN clients.
 
 ```hcl
@@ -833,16 +886,19 @@ address (a license endpoint, a partner firewall, a SaaS IP allowlist) must be
 updated, or it breaks silently.
 
 ### Profile
+
 You may wish to set a specific AWS profile before executing `terraform`
 commands.
 
 ```sh
 export AWS_PROFILE=your-aws-profile
 ```
+
 > We discourage the use of `provider.profile` in team environments
 > where profile names may differ across users and machines.
 
 ### Rightsize your search domain
+
 Your primary consideration is the _total_ data node disk size.
 If you multiply your average document size (likely a function of the number of
 [deep-indexed](https://docs.quiltdata.com/catalog/searchquery#indexing) documents
@@ -864,6 +920,7 @@ but requires time and may reduce quality of service during the blue/green update
 Below are known-good search sizes that you can set on the `quilt` module.
 
 #### Small
+
 ```hcl
 search_dedicated_master_enabled = false
 search_zone_awareness_enabled = false
@@ -873,6 +930,7 @@ search_volume_size = 512
 ```
 
 #### Medium (default)
+
 ```hcl
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled = true
@@ -882,6 +940,7 @@ search_volume_size = 1024
 ```
 
 #### Large
+
 ```hcl
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled = true
@@ -892,6 +951,7 @@ search_volume_type = "gp3"
 ```
 
 #### X-Large
+
 ```hcl
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled = true
@@ -903,6 +963,7 @@ search_volume_iops = 16000
 ```
 
 #### XX-Large
+
 ```hcl
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled = true
@@ -914,6 +975,7 @@ search_volume_iops = 18750
 ```
 
 #### XXX-Large
+
 ```hcl
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled = true
@@ -926,6 +988,7 @@ search_volume_throughput = 1187
 ```
 
 #### XXXX-Large
+
 ```hcl
 search_dedicated_master_enabled = true
 search_zone_awareness_enabled = true
@@ -938,25 +1001,28 @@ search_volume_throughput = 1187
 ```
 
 ## Deploying and updating Quilt
+
 As a rule, `terraform apply` is sufficient to both deploy and update Quilt.
 
 ### Verify the plan
+
 Before calling `apply` read `terraform plan` carefully to ensure that it does
 not inadvertently destroy and recreate the stack. The following modifications
 are known to cause issues (see [examples/main.tf](examples/main.tf) for context).
 
-* Modifying `local.name`.
-* Modifying `local.build_file_path`.
-* Modifying `quilt.template_file`.
+- Modifying `local.name`.
+- Modifying `local.build_file_path`.
+- Modifying `quilt.template_file`.
 
 And for older versions of Terraform and customers whose usage predates the present
 module:
 
-* Modifying `template_url=` (in older versions of Terraform).
+- Modifying `template_url=` (in older versions of Terraform).
 
-# Terraform cheat sheet
+## Terraform cheat sheet
 
-## Initialize
+### Initialize
+
 ```sh
 terraform init
 ```
@@ -967,69 +1033,80 @@ If for instance you change the provider pinning you may need to `-upgrade`:
 terraform init -upgrade
 ```
 
-## Lint
-```
+### Lint
+
+```sh
 terraform fmt
 ```
 
-## Validate
+### Validate
 
-```
+```sh
 terraform validate
 ```
 
-## Test
+### Test
 
 Module tests are plan-only and mock the AWS provider, so they need no AWS
 credentials and create no infrastructure. Requires Terraform >= 1.7 (for
 `mock_provider`). Run from a module or test-wrapper directory, e.g.
 `modules/vpc` or `modules/quilt/tests/smoke`:
 
-```
+```sh
 terraform init -backend=false
 terraform test
 ```
 
-## Plan
-```
+### Plan
+
+```sh
 terraform plan -out tfplan
 ```
 
-## Apply
+### Apply
+
 If the plan is what you want:
-```
+
+```sh
 terraform apply tfplan
 ```
 
-## Output sensitive values
+### Output sensitive values
+
 Sensitive values must be named in order to display on the command line:
-```
+
+```sh
 terraform output admin_password
 ```
 
-## State
+### State
 
-### Inspect
-```
+#### Inspect
+
+```sh
 terraform state list
 ```
 
 Or, to show a specific entity:
-```
+
+```sh
 terraform state show 'thing.from.list'
 ```
 
-### Refresh
-```
+#### Refresh
+
+```sh
 terraform refresh
 ```
 
-## Destroy
-```
+### Destroy
+
+```sh
 terraform destroy
 ```
 
-## Routine updates
+### Routine updates
+
 1. Start with a clean commit of the previous apply in your Quilt Terraform folder
 (nothing uncommitted).
 1. In your `main.tf` file, do the following:
@@ -1045,15 +1122,19 @@ terraform destroy
 1. [Apply](#apply).
 1. Commit the [appropriate files](#check-these-files-in).
 
-## Git version control
-### Check these files in
-* `*.tf`
-* `terraform.lock.hcl`
-* Your Quilt `build_file`
+### Git version control
 
-### Ignore these files
+#### Check these files in
+
+- `*.tf`
+- `terraform.lock.hcl`
+- Your Quilt `build_file`
+
+#### Ignore these files
+
 You may wish to create a `.gitignore` file similar to the following:
-```
+
+```text
 .terraform
 tfplan
 ```
@@ -1062,15 +1143,15 @@ tfplan
 > [remote state](https://developer.hashicorp.com/terraform/language/state/remote)
 > so that no passwords are checked into version control.
 
-# Known issues
+## Known issues
 
-##  invalid error message
+### invalid error message
 
 Due to how Terraform evaluates (or fails to evaluate) arguments in a precondition
 (e.g. `user_security_group = aws_security_group.lb_security_group.id`) you may
 see the following error message. Provide a static string instead of a dynamic value.
 
-```
+```text
 │   27:     condition     = !local.configuration_error
 │     ├────────────────
 │     │ local.configuration_error is true
@@ -1081,7 +1162,7 @@ see the following error message. Provide a static string instead of a dynamic va
 Provide a static string instead (e.g. `user_security_group = "123"`) and you should
 receive a more informative message similar to the following:
 
-```
+```text
 │ In order to use an existing VPC (create_new_vpc == false) correct the following attributes:
 │ ❌ api_endpoint (required if var.internal == true, else must be null)
 │ ✅ create_new_vpc == false
@@ -1093,9 +1174,9 @@ receive a more informative message similar to the following:
 │ ✅ vpc_id (required)
 ```
 
-## RDS InvalidParameterCombination
+### RDS InvalidParameterCombination
 
-> ```
+> ```text
 > InvalidParameterCombination: Cannot upgrade postgres from 11.X to 15.Y
 > ```
 
@@ -1110,8 +1191,9 @@ to automatically upgrade to 15.5 (without any manual steps).
 Engine version changes are applied _during the next maintenance window_,
 therefore you may not see them immediately in AWS Console.
 
-## Elasticsearch ValidationException
-> ```
+### Elasticsearch ValidationException
+
+> ```text
 > Error: updating Elasticsearch Domain (arn:aws:es:foo:bar/baz) config:
 > ValidationException: A change/update is in progress. Please wait for it to
 > complete before requesting another change.
@@ -1133,6 +1215,7 @@ provider "aws" {
 }
 ```
 
-# References
+## References
+
 1. [Terraform: AWS Provider Tutorial](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/aws-build)
 1. [Terraform: Basic CLI Features](https://developer.hashicorp.com/terraform/cli/commands)
