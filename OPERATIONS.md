@@ -20,16 +20,16 @@ This document provides comprehensive operational procedures for cloud teams mana
 
 - [ ] Backup verification (10 min) - [Instructions](#backup-verification-10-minutes)
 - [ ] Security updates (15 min) - [Instructions](#security-updates-15-minutes)
-<!-- TODO: no "Capacity review" section exists yet; see https://github.com/quiltdata/iac/issues/95 -->
-<!-- markdownlint-disable-next-line link-fragments -->
+  <!-- TODO: no "Capacity review" section exists yet; see https://github.com/quiltdata/iac/issues/95 -->
+  <!-- markdownlint-disable-next-line link-fragments -->
 - [ ] Capacity review (10 min) - [Instructions](#capacity-monitoring)
 
 ### Monthly Checklist
 
 - [ ] Capacity planning (20 min) - [Instructions](#capacity-planning-20-minutes)
 - [ ] Cost review (15 min) - [Instructions](#cost-optimization-recommendations)
-<!-- TODO: no "Security audit" section exists yet; see https://github.com/quiltdata/iac/issues/95 -->
-<!-- markdownlint-disable-next-line link-fragments -->
+  <!-- TODO: no "Security audit" section exists yet; see https://github.com/quiltdata/iac/issues/95 -->
+  <!-- markdownlint-disable-next-line link-fragments -->
 - [ ] Security audit (30 min) - [Instructions](#security-audit)
 
 ## Installation Procedures

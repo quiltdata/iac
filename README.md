@@ -10,17 +10,20 @@ Deploy and maintain Quilt stacks with Terraform using this comprehensive Infrast
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
 - [Rightsize Your Search Domain](#rightsize-your-search-domain)
-<!-- TODO(#95): the entries below point to README sections that don't exist yet;
-     the table-of-contents restructure is tracked separately. -->
-<!-- markdownlint-disable link-fragments -->
+  <!-- TODO: the five entries below link to README sections that don't exist
+       yet; see https://github.com/quiltdata/iac/issues/95 -->
+  <!-- markdownlint-disable-next-line link-fragments -->
 - [Database Configuration](#database-configuration)
+  <!-- markdownlint-disable-next-line link-fragments -->
 - [Network Configuration](#network-configuration)
+  <!-- markdownlint-disable-next-line link-fragments -->
 - [CloudFormation Parameters](#cloudformation-parameters)
+  <!-- markdownlint-disable-next-line link-fragments -->
 - [Complete Variable Reference](#complete-variable-reference)
+  <!-- markdownlint-disable-next-line link-fragments -->
 - [Deployment Examples](#deployment-examples)
-- [Troubleshooting](#troubleshooting)
-- [Terraform Commands Reference](#terraform-commands-reference)
-<!-- markdownlint-enable link-fragments -->
+- [Troubleshooting](#troubleshooting-common-issues)
+- [Terraform Commands Reference](#terraform-cheat-sheet)
 
 ## Cloud Team Operations Guide
 
