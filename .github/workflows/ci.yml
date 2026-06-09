@@ -23,10 +23,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      # Globs and rules come from .markdownlint-cli2.yaml. The version is pinned
-      # so a new markdownlint release can't change rules and break CI without a
-      # repo change; bump it deliberately.
-      - run: npx --yes markdownlint-cli2@0.22.1
+      # Globs and rules come from .markdownlint-cli2.yaml. npm ci installs the
+      # exact tree from package-lock.json, so no markdownlint (or transitive)
+      # release can change rules or break CI without a repo change; bump the
+      # version deliberately via package.json.
+      - run: npm ci
+      - run: npx --no-install markdownlint-cli2
 
   validate:
     runs-on: ubuntu-latest

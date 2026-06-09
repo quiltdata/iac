@@ -18,3 +18,9 @@ config:
 # truth for which files are linted.
 globs:
   - "**/*.{md,markdown}"
+# markdownlint-cli2 has no default exclusions, so vendored trees must be
+# ignored explicitly: `terraform init` vendors registry modules (and their
+# READMEs) under .terraform/, and npm installs under node_modules/.
+ignores:
+  - "**/.terraform/**"
+  - "**/node_modules/**"
