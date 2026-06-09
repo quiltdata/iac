@@ -1,4 +1,5 @@
-## Description <!-- markdownlint-disable-line first-line-heading -->
+<!-- markdownlint-disable-file first-line-heading -->
+## Description
 
 ## TODO
 
