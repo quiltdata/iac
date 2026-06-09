@@ -10,10 +10,17 @@ Deploy and maintain Quilt stacks with Terraform using this comprehensive Infrast
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
 - [Rightsize Your Search Domain](#rightsize-your-search-domain)
-- [Deploying and Updating Quilt](#deploying-and-updating-quilt)
-- [Terraform Cheat Sheet](#terraform-cheat-sheet)
-- [Known Issues](#known-issues)
-- [References](#references)
+<!-- TODO(#95): the entries below point to README sections that don't exist yet;
+     the table-of-contents restructure is tracked separately. -->
+<!-- markdownlint-disable link-fragments -->
+- [Database Configuration](#database-configuration)
+- [Network Configuration](#network-configuration)
+- [CloudFormation Parameters](#cloudformation-parameters)
+- [Complete Variable Reference](#complete-variable-reference)
+- [Deployment Examples](#deployment-examples)
+- [Troubleshooting](#troubleshooting)
+- [Terraform Commands Reference](#terraform-commands-reference)
+<!-- markdownlint-enable link-fragments -->
 
 ## Cloud Team Operations Guide
 
