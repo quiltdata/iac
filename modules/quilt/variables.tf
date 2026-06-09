@@ -29,6 +29,28 @@ variable "internal" {
   description = "If true create an inward ELBv2, else create an internet-facing ELBv2."
 }
 
+variable "enable_transit_gateway" {
+  type        = bool
+  default     = false
+  description = "Route private subnet egress through a Transit Gateway instead of NAT gateways. Only supported when create_new_vpc == true. When true, transit_gateway_id is required, and NAT gateways and the IPv6 egress-only gateway are disabled. (Toggle is a separate bool so transit_gateway_id may be a value known only after apply, e.g. a TGW created in the same configuration.)"
+}
+
+variable "transit_gateway_id" {
+  type        = string
+  default     = null
+  description = "Transit Gateway ID for private subnet egress. Required when enable_transit_gateway == true; may be a computed value (e.g. a TGW created in the same configuration)."
+  validation {
+    condition     = var.transit_gateway_id == null || can(regex("^tgw-[0-9a-f]+$", var.transit_gateway_id))
+    error_message = "transit_gateway_id must be null or a valid Transit Gateway ID (e.g. tgw-0123456789abcdef0)."
+  }
+}
+
+variable "transit_gateway_ipv6_egress" {
+  type        = bool
+  default     = false
+  description = "When enable_transit_gateway is true, also route IPv6 (::/0) egress through the Transit Gateway. Set true only if the Transit Gateway carries IPv6 egress: pointing ::/0 at a TGW that can't route IPv6 black-holes the traffic and stalls clients without Happy Eyeballs (e.g. Python requests/urllib3) on the connection timeout. Left false (default), the VPC has no IPv6 default route, so IPv6 attempts fail immediately and clients use IPv4 with no delay. No effect when enable_transit_gateway is false."
+}
+
 variable "db_snapshot_identifier" {
   type        = string
   nullable    = true

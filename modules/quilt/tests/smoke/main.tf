@@ -66,14 +66,32 @@ variable "user_subnets" {
   default = null
 }
 
+variable "enable_transit_gateway" {
+  type    = bool
+  default = false
+}
+
+variable "transit_gateway_id" {
+  type    = string
+  default = null
+}
+
+variable "transit_gateway_ipv6_egress" {
+  type    = bool
+  default = false
+}
+
 # New inputs added to the quilt module must be threaded through here, or the
 # smoke coverage silently narrows (the new input is never exercised).
 module "quilt" {
   source = "../../"
 
-  name          = "quilt-test"
-  parameters    = {}
-  template_file = "${path.module}/fixtures/quilt.yaml"
+  name                        = "quilt-test"
+  parameters                  = {}
+  template_file               = "${path.module}/fixtures/quilt.yaml"
+  enable_transit_gateway      = var.enable_transit_gateway
+  transit_gateway_id          = var.transit_gateway_id
+  transit_gateway_ipv6_egress = var.transit_gateway_ipv6_egress
 
   create_new_vpc      = var.create_new_vpc
   internal            = var.internal

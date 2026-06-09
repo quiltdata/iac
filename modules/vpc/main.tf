@@ -17,6 +17,7 @@ locals {
     "user_security_group (required)" : var.existing_user_security_group != null,
     "user_subnets (required if var.internal == true and var.create_new_vpc == false, else must be null)" : (var.internal && !var.create_new_vpc) == (var.existing_user_subnets != null)
     "api_endpoint (required if var.internal == true, else must be null)" : var.internal == (var.existing_api_endpoint != null),
+    "enable_transit_gateway == false (TGW egress requires create_new_vpc == true)" : var.enable_transit_gateway == false,
   }
   new_network_requires = {
     "create_new_vpc == true" : var.create_new_vpc == true,
@@ -31,6 +32,11 @@ locals {
   existing_network_valid = alltrue(values(local.existing_network_requires))
   new_network_valid      = alltrue(values(local.new_network_requires))
   configuration_error    = !local.existing_network_valid && !local.new_network_valid
+
+  # TGW egress is gated on the bool (not transit_gateway_id != null) so the
+  # resource counts stay known at plan time even when transit_gateway_id is a
+  # computed value (e.g. a TGW created in the same configuration).
+  transit_gateway_enabled = local.new_network_valid && var.enable_transit_gateway
 
   azs          = slice(data.aws_availability_zones.available.names, 0, 2)
   subnet_cidrs = [for k, v in local.azs : cidrsubnet(var.cidr, 1, k)]
@@ -71,8 +77,52 @@ module "vpc" {
 
   enable_dns_hostnames   = true
   enable_dns_support     = true
-  enable_nat_gateway     = true
-  one_nat_gateway_per_az = true
+  enable_nat_gateway     = !var.enable_transit_gateway
+  one_nat_gateway_per_az = !var.enable_transit_gateway
+  create_egress_only_igw = !var.enable_transit_gateway
+}
+
+resource "aws_ec2_transit_gateway_vpc_attachment" "egress" {
+  count = local.transit_gateway_enabled ? 1 : 0
+
+  # Intra subnets only host the attachment ENIs (they have no internet route).
+  # The egress default routes go in the private route tables below — don't move
+  # this to private_subnets.
+  subnet_ids         = module.vpc.intra_subnets
+  transit_gateway_id = var.transit_gateway_id
+  vpc_id             = module.vpc.vpc_id
+  ipv6_support       = var.transit_gateway_ipv6_egress ? "enable" : "disable"
+
+  tags = {
+    Name = "${var.name}-egress"
+  }
+
+  lifecycle {
+    precondition {
+      condition     = var.transit_gateway_id != null
+      error_message = "transit_gateway_id is required when enable_transit_gateway is true."
+    }
+  }
+}
+
+resource "aws_route" "private_tgw_ipv4_egress" {
+  count = local.transit_gateway_enabled ? length(module.vpc.private_route_table_ids) : 0
+
+  route_table_id         = module.vpc.private_route_table_ids[count.index]
+  destination_cidr_block = "0.0.0.0/0"
+  transit_gateway_id     = var.transit_gateway_id
+
+  depends_on = [aws_ec2_transit_gateway_vpc_attachment.egress]
+}
+
+resource "aws_route" "private_tgw_ipv6_egress" {
+  count = local.transit_gateway_enabled && var.transit_gateway_ipv6_egress ? length(module.vpc.private_route_table_ids) : 0
+
+  route_table_id              = module.vpc.private_route_table_ids[count.index]
+  destination_ipv6_cidr_block = "::/0"
+  transit_gateway_id          = var.transit_gateway_id
+
+  depends_on = [aws_ec2_transit_gateway_vpc_attachment.egress]
 }
 
 // Module name no longer accurate (see description); changing name causes tf apply to fail

@@ -182,3 +182,187 @@ run "existing_vpc_missing_inputs_is_rejected" {
   # create_new_vpc = false without the required existing_* inputs is incomplete.
   expect_failures = [output.configuration_error]
 }
+
+# --- Transit Gateway egress mode --------------------------------------------
+
+run "new_vpc_with_transit_gateway" {
+  command = plan
+
+  variables {
+    create_new_vpc               = true
+    internal                     = false
+    enable_transit_gateway       = true
+    transit_gateway_id           = "tgw-00000000000000000"
+    existing_vpc_id              = null
+    existing_api_endpoint        = null
+    existing_intra_subnets       = null
+    existing_private_subnets     = null
+    existing_public_subnets      = null
+    existing_user_security_group = null
+    existing_user_subnets        = null
+  }
+
+  # A new VPC with enable_transit_gateway is the supported TGW egress mode and
+  # must plan cleanly.
+  assert {
+    condition     = !strcontains(output.configuration_error, "❌")
+    error_message = "A new VPC with transit_gateway_id must satisfy every requirement"
+  }
+
+  # The TGW attachment and the IPv4 default egress route must be planned,
+  # pointed at the supplied gateway.
+  assert {
+    condition     = length(aws_ec2_transit_gateway_vpc_attachment.egress) == 1
+    error_message = "Exactly one TGW VPC attachment must be created"
+  }
+
+  assert {
+    condition     = aws_ec2_transit_gateway_vpc_attachment.egress[0].transit_gateway_id == "tgw-00000000000000000"
+    error_message = "The TGW attachment must target the supplied transit_gateway_id"
+  }
+
+  assert {
+    condition     = length(aws_route.private_tgw_ipv4_egress) > 0
+    error_message = "IPv4 default egress routes to the TGW must be planned"
+  }
+
+  # IPv6 egress via the TGW is opt-in (transit_gateway_ipv6_egress, default
+  # false). With it off, no ::/0 route is created and the attachment does not
+  # advertise IPv6 support, so IPv6 traffic is not black-holed at the TGW.
+  assert {
+    condition     = length(aws_route.private_tgw_ipv6_egress) == 0
+    error_message = "No IPv6 egress route should be planned when transit_gateway_ipv6_egress is false"
+  }
+
+  assert {
+    condition     = aws_ec2_transit_gateway_vpc_attachment.egress[0].ipv6_support == "disable"
+    error_message = "The TGW attachment must not advertise IPv6 support when transit_gateway_ipv6_egress is false"
+  }
+}
+
+run "new_vpc_with_transit_gateway_ipv6_egress" {
+  command = plan
+
+  variables {
+    create_new_vpc               = true
+    internal                     = false
+    enable_transit_gateway       = true
+    transit_gateway_id           = "tgw-00000000000000000"
+    transit_gateway_ipv6_egress  = true
+    existing_vpc_id              = null
+    existing_api_endpoint        = null
+    existing_intra_subnets       = null
+    existing_private_subnets     = null
+    existing_public_subnets      = null
+    existing_user_security_group = null
+    existing_user_subnets        = null
+  }
+
+  # Opting in routes the IPv6 default route through the TGW and enables IPv6
+  # support on the attachment.
+  assert {
+    condition     = length(aws_route.private_tgw_ipv6_egress) > 0
+    error_message = "IPv6 egress routes to the TGW must be planned when transit_gateway_ipv6_egress is true"
+  }
+
+  assert {
+    condition     = aws_ec2_transit_gateway_vpc_attachment.egress[0].ipv6_support == "enable"
+    error_message = "The TGW attachment must advertise IPv6 support when transit_gateway_ipv6_egress is true"
+  }
+}
+
+run "existing_vpc_with_transit_gateway_is_rejected" {
+  command = plan
+
+  variables {
+    create_new_vpc               = false
+    internal                     = false
+    enable_transit_gateway       = true
+    transit_gateway_id           = "tgw-00000000000000000"
+    existing_vpc_id              = "vpc-00000000000000000"
+    existing_api_endpoint        = null
+    existing_intra_subnets       = ["subnet-intra-a", "subnet-intra-b"]
+    existing_private_subnets     = ["subnet-priv-a", "subnet-priv-b"]
+    existing_public_subnets      = ["subnet-pub-a", "subnet-pub-b"]
+    existing_user_security_group = "sg-00000000000000000"
+    existing_user_subnets        = null
+  }
+
+  # enable_transit_gateway is only supported with create_new_vpc = true;
+  # combining it with an existing VPC must fail fast rather than silently
+  # ignore the request.
+  expect_failures = [output.configuration_error]
+}
+
+run "transit_gateway_enabled_without_id_is_rejected" {
+  command = plan
+
+  variables {
+    create_new_vpc               = true
+    internal                     = false
+    enable_transit_gateway       = true
+    transit_gateway_id           = null
+    existing_vpc_id              = null
+    existing_api_endpoint        = null
+    existing_intra_subnets       = null
+    existing_private_subnets     = null
+    existing_public_subnets      = null
+    existing_user_security_group = null
+    existing_user_subnets        = null
+  }
+
+  # enable_transit_gateway = true requires a transit_gateway_id; the attachment
+  # precondition must reject a null id.
+  expect_failures = [aws_ec2_transit_gateway_vpc_attachment.egress]
+}
+
+run "transit_gateway_id_invalid_format_is_rejected" {
+  command = plan
+
+  variables {
+    create_new_vpc               = true
+    internal                     = false
+    enable_transit_gateway       = true
+    transit_gateway_id           = "not-a-tgw-id"
+    existing_vpc_id              = null
+    existing_api_endpoint        = null
+    existing_intra_subnets       = null
+    existing_private_subnets     = null
+    existing_public_subnets      = null
+    existing_user_security_group = null
+    existing_user_subnets        = null
+  }
+
+  # A malformed transit_gateway_id must be rejected by the variable validation.
+  expect_failures = [var.transit_gateway_id]
+}
+
+run "transit_gateway_id_without_enable_is_noop" {
+  command = plan
+
+  variables {
+    create_new_vpc               = true
+    internal                     = false
+    enable_transit_gateway       = false
+    transit_gateway_id           = "tgw-00000000000000000"
+    existing_vpc_id              = null
+    existing_api_endpoint        = null
+    existing_intra_subnets       = null
+    existing_private_subnets     = null
+    existing_public_subnets      = null
+    existing_user_security_group = null
+    existing_user_subnets        = null
+  }
+
+  # transit_gateway_id is the value, enable_transit_gateway is the toggle: an id
+  # set without enabling the mode is a no-op — no attachment, no TGW routes.
+  assert {
+    condition     = length(aws_ec2_transit_gateway_vpc_attachment.egress) == 0
+    error_message = "No TGW attachment should be created when enable_transit_gateway is false"
+  }
+
+  assert {
+    condition     = length(aws_route.private_tgw_ipv4_egress) == 0 && length(aws_route.private_tgw_ipv6_egress) == 0
+    error_message = "No TGW egress routes should be created when enable_transit_gateway is false"
+  }
+}

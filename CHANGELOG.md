@@ -18,6 +18,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+- [Added] Transit Gateway egress mode for new VPCs: set `enable_transit_gateway = true` (+ `transit_gateway_id`) to route private-subnet egress through a Transit Gateway instead of NAT gateways; IPv6 egress is opt-in via `transit_gateway_ipv6_egress`. See [Transit Gateway egress](README.md#transit-gateway-egress) ([#115](https://github.com/quiltdata/iac/pull/115))
+
 ## [1.7.2] - 2026-06-08
 
 - [Fixed] Bump `modules/cnames` AWS provider constraint from `~> 5.0` to `~> 6.0` so it resolves alongside the `vpc` module's `aws >= 6.28` requirement — using `quilt` + `cnames` in one root previously failed `terraform init` ([#117](https://github.com/quiltdata/iac/pull/117))
