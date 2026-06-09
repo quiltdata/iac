@@ -812,9 +812,13 @@ accordingly if more than one Quilt stack shares a TGW (the default is
 `10.0.0.0/16`).
 
 **IPv6** egress through the TGW is opt-in (`transit_gateway_ipv6_egress`,
-default `false`). Enable it only if your TGW actually carries IPv6 egress;
-otherwise leave it off — IPv6 then has no default route and falls back to IPv4,
-rather than being black-holed at a TGW that can't route it.
+default `false`). The VPC is dual-stack, so set this `true` **only if your TGW
+actually carries IPv6 egress**: pointing `::/0` at a TGW that can't route IPv6
+black-holes those packets, and clients without Happy Eyeballs (e.g. Python's
+`requests`/`urllib3`) then stall on the connection timeout before falling back
+to IPv4. Left `false`, the new VPC has no IPv6 default route, so an IPv6
+attempt fails immediately (`ENETUNREACH`) and the client uses IPv4 with no
+delay.
 
 **Reversibility:** removing `enable_transit_gateway` (or setting it `false`)
 restores the NAT gateways and IPv6 egress-only IGW. Toggling it on or off for an

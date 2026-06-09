@@ -42,7 +42,7 @@ variable "transit_gateway_id" {
 variable "transit_gateway_ipv6_egress" {
   type        = bool
   default     = false
-  description = "When enable_transit_gateway is true, also route the private subnets' IPv6 default route (::/0) through the Transit Gateway. Leave false unless the Transit Gateway is configured for IPv6 egress; otherwise IPv6 traffic would be black-holed (with no route, IPv4 still falls back cleanly). No effect when enable_transit_gateway is false."
+  description = "When enable_transit_gateway is true, also route IPv6 (::/0) egress through the Transit Gateway. Set true only if the Transit Gateway carries IPv6 egress: pointing ::/0 at a TGW that can't route IPv6 black-holes the traffic and stalls clients without Happy Eyeballs (e.g. Python requests/urllib3) on the connection timeout. Left false (default), the VPC has no IPv6 default route, so IPv6 attempts fail immediately and clients use IPv4 with no delay. No effect when enable_transit_gateway is false."
 }
 
 variable "existing_vpc_id" {
