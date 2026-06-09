@@ -5,7 +5,8 @@ config:
   line-length: false
   # Bold-as-heading: the docs deliberately use bold text as inline labels.
   no-emphasis-as-heading: false
-  # Table pipe spacing: cosmetic; tables render correctly either way.
+  # Table column style: enforces consistent cell padding across tables;
+  # cosmetic, tables render correctly either way.
   table-column-style: false
   # Duplicate headings: the CHANGELOG repeats Added/Changed/Fixed per release,
   # which is the Keep a Changelog convention. Only flag duplicates under the
