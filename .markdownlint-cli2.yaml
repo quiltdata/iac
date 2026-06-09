@@ -13,8 +13,8 @@ config:
   # same parent heading.
   no-duplicate-heading:
     siblings_only: true
-# Lint every Markdown file in the repo. The CI workflow sets a matching glob
-# on the action (whose default is non-recursive and would otherwise override
-# this), so local markdownlint-cli2 runs and CI lint the same files.
+# Lint every Markdown file in the repo. Both local runs and CI invoke
+# markdownlint-cli2 with no glob arguments, so this is the single source of
+# truth for which files are linted.
 globs:
   - "**/*.{md,markdown}"

@@ -23,11 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      # Rules come from .markdownlint-cli2.yaml. The action's default glob is
-      # non-recursive and overrides the config's, so set it here to match.
-      - uses: DavidAnson/markdownlint-cli2-action@v23
-        with:
-          globs: "**/*.{md,markdown}"
+      # Globs and rules come from .markdownlint-cli2.yaml. The version is pinned
+      # so a new markdownlint release can't change rules and break CI without a
+      # repo change; bump it deliberately.
+      - run: npx --yes markdownlint-cli2@0.22.1
 
   validate:
     runs-on: ubuntu-latest
