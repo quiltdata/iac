@@ -1,4 +1,4 @@
-## Description
+## Description <!-- markdownlint-disable-line first-line-heading -->
 
 ## TODO
 
