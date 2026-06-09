@@ -38,7 +38,7 @@ variable "enable_transit_gateway" {
 variable "transit_gateway_id" {
   type        = string
   default     = null
-  description = "Transit Gateway ID for private subnet egress when creating a new VPC. Required when enable_transit_gateway == true; may be a computed value (e.g. a TGW created in the same configuration)."
+  description = "Transit Gateway ID for private subnet egress. Required when enable_transit_gateway == true; may be a computed value (e.g. a TGW created in the same configuration)."
   validation {
     condition     = var.transit_gateway_id == null || can(regex("^tgw-[0-9a-f]+$", var.transit_gateway_id))
     error_message = "transit_gateway_id must be null or a valid Transit Gateway ID (e.g. tgw-0123456789abcdef0)."

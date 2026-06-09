@@ -33,6 +33,11 @@ locals {
   new_network_valid      = alltrue(values(local.new_network_requires))
   configuration_error    = !local.existing_network_valid && !local.new_network_valid
 
+  # TGW egress is gated on the bool (not transit_gateway_id != null) so the
+  # resource counts stay known at plan time even when transit_gateway_id is a
+  # computed value (e.g. a TGW created in the same configuration).
+  transit_gateway_enabled = local.new_network_valid && var.enable_transit_gateway
+
   azs          = slice(data.aws_availability_zones.available.names, 0, 2)
   subnet_cidrs = [for k, v in local.azs : cidrsubnet(var.cidr, 1, k)]
 }
@@ -78,11 +83,11 @@ module "vpc" {
 }
 
 resource "aws_ec2_transit_gateway_vpc_attachment" "egress" {
-  # Gate on the bool, not on transit_gateway_id != null: count must be known at
-  # plan time, and transit_gateway_id may be a computed value (e.g. a TGW
-  # created in the same configuration).
-  count = local.new_network_valid && var.enable_transit_gateway ? 1 : 0
+  count = local.transit_gateway_enabled ? 1 : 0
 
+  # Intra subnets only host the attachment ENIs (they have no internet route).
+  # The egress default routes go in the private route tables below — don't move
+  # this to private_subnets.
   subnet_ids         = module.vpc.intra_subnets
   transit_gateway_id = var.transit_gateway_id
   vpc_id             = module.vpc.vpc_id
@@ -101,7 +106,7 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "egress" {
 }
 
 resource "aws_route" "private_tgw_ipv4_egress" {
-  count = local.new_network_valid && var.enable_transit_gateway ? length(module.vpc.private_route_table_ids) : 0
+  count = local.transit_gateway_enabled ? length(module.vpc.private_route_table_ids) : 0
 
   route_table_id         = module.vpc.private_route_table_ids[count.index]
   destination_cidr_block = "0.0.0.0/0"
@@ -111,7 +116,7 @@ resource "aws_route" "private_tgw_ipv4_egress" {
 }
 
 resource "aws_route" "private_tgw_ipv6_egress" {
-  count = local.new_network_valid && var.enable_transit_gateway && var.transit_gateway_ipv6_egress ? length(module.vpc.private_route_table_ids) : 0
+  count = local.transit_gateway_enabled && var.transit_gateway_ipv6_egress ? length(module.vpc.private_route_table_ids) : 0
 
   route_table_id              = module.vpc.private_route_table_ids[count.index]
   destination_ipv6_cidr_block = "::/0"

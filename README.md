@@ -823,7 +823,12 @@ delay.
 **Reversibility:** removing `enable_transit_gateway` (or setting it `false`)
 restores the NAT gateways and IPv6 egress-only IGW. Toggling it on or off for an
 already-deployed VPC recreates/destroys NAT gateways and their Elastic IPs and
-briefly interrupts egress, so do it in a maintenance window.
+briefly interrupts egress, so do it in a maintenance window. Either direction
+also **changes the stack's public egress IP** — disabling releases the NAT
+Elastic IPs (AWS won't hand the same ones back), and enabling sends egress out
+through the TGW's NAT instead — so anything that allowlists Quilt's egress
+address (a license endpoint, a partner firewall, a SaaS IP allowlist) must be
+updated, or it breaks silently.
 
 ### Profile
 You may wish to set a specific AWS profile before executing `terraform`
