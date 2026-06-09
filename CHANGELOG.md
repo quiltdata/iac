@@ -18,7 +18,7 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
-- [Added] CI job that lints top-level Markdown docs with markdownlint-cli2, configured via `.markdownlint-cli2.yaml` ([#PR](https://github.com/quiltdata/iac/pull/PR))
+- [Added] CI job that lints top-level Markdown docs with markdownlint-cli2, configured via `.markdownlint-cli2.yaml` ([#123](https://github.com/quiltdata/iac/pull/123))
 - [Fixed] Broken table-of-contents and cross-reference links in README and OPERATIONS docs ([#95](https://github.com/quiltdata/iac/issues/95))
 
 ## [1.8.0] - 2026-06-09
