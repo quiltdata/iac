@@ -18,6 +18,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+## [1.8.0] - 2026-06-09
+
 - [Added] Transit Gateway egress mode for new VPCs: set `enable_transit_gateway = true` (+ `transit_gateway_id`) to route private-subnet egress through a Transit Gateway instead of NAT gateways; IPv6 egress is opt-in via `transit_gateway_ipv6_egress`. See [Transit Gateway egress](README.md#transit-gateway-egress) ([#115](https://github.com/quiltdata/iac/pull/115))
 
 ## [1.7.2] - 2026-06-08
@@ -100,7 +102,8 @@ Ensure your Quilt stack is upgraded to version 1.66 or later *before* upgrading 
 
 - [Added] Add changelog ([#74](https://github.com/quiltdata/iac/pull/74))
 
-[Unreleased]: https://github.com/quiltdata/iac/compare/1.7.2...HEAD
+[Unreleased]: https://github.com/quiltdata/iac/compare/1.8.0...HEAD
+[1.8.0]: https://github.com/quiltdata/iac/releases/tag/1.8.0
 [1.7.2]: https://github.com/quiltdata/iac/releases/tag/1.7.2
 [1.7.1]: https://github.com/quiltdata/iac/releases/tag/1.7.1
 [1.7.0]: https://github.com/quiltdata/iac/releases/tag/1.7.0
