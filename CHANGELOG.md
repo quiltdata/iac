@@ -38,6 +38,7 @@ Optional release notice.
 ## [1.6.0] - 2026-02-24
 
 If you rely on the default `search_instance_type` / `search_dedicated_master_type`:
+
 - Upgrading from a version prior to 1.5.0 will fail on `terraform apply`. Upgrade to 1.5.0 first.
 - If you have reserved m5 instances, pin the instance types explicitly to keep using them.
 
