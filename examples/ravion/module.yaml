@@ -1,0 +1,111 @@
+# Ravion module definition for `modules/quilt`.
+#
+# This wraps modules/quilt (and modules/cnames) from this repo UNMODIFIED —
+# no forked Terraform, no vendored CloudFormation template. Ravion drives the
+# standard root-config pattern (`provider`, `module "quilt"`, `parameters`)
+# through a typed, form-fillable interface.
+#
+# Field names/types follow Ravion's module-definition conventions as of the
+# evaluation referenced in issue #126. Validate against the current Ravion
+# module-schema docs before publishing to a Ravion catalog, since the schema
+# is owned by Ravion, not this repo.
+
+name: quilt
+description: >-
+  Deploy the Quilt data platform (catalog, registry, search, and supporting
+  infrastructure) into a connected AWS account via CloudFormation.
+version: "1.0.0"
+
+# Root config this module definition drives. Pinned to a released tag of
+# this repo; unmodified from modules/quilt's own interface.
+source:
+  repo: github.com/quiltdata/iac
+  path: examples/ravion
+  ref: "1.8.0"
+
+# The CloudFormation template is fetched at plan/apply time from this
+# project's existing published per-release S3 artifact — never committed
+# here. `template_url` is resolved to a local path and handed to
+# modules/quilt's `template_file` input.
+template:
+  fetch: url
+  url_input: template_url
+
+inputs:
+  name:
+    type: string
+    description: Stack name (<=20 chars, lowercase alphanumeric + hyphens).
+    required: true
+
+  template_url:
+    type: string
+    description: >-
+      URL of the published Quilt CloudFormation template for the desired
+      release (e.g. an S3 artifact URL from this project's release process).
+    required: true
+
+  catalog_domain:
+    type: string
+    description: >-
+      Public hostname for the Quilt catalog (e.g. data.example.com). The
+      registry and s3-proxy hostnames are derived from this value as
+      `<sub>-registry.<rest>` and `<sub>-s3-proxy.<rest>`.
+    required: true
+
+  admin_email:
+    type: string
+    description: Initial admin account email address.
+    required: true
+
+  sizing:
+    type: string
+    description: Named ElasticSearch/DB sizing profile.
+    enum: [small, medium, large, xlarge]
+    default: medium
+
+  internal:
+    type: bool
+    description: If true, deploy an internal (VPN-only) load balancer.
+    default: false
+
+  create_new_vpc:
+    type: bool
+    description: If true, provision a new VPC; if false, use vpc_ref.
+    default: true
+
+  vpc_ref:
+    type: ref
+    description: >-
+      Reference to a Ravion-managed VPC module. Required when
+      create_new_vpc is false; ignored otherwise.
+    required: false
+
+  # Typed references — Ravion resolves these to outputs from other modules
+  # (in the same or a different connected AWS account) instead of requiring
+  # a hand-copied ARN/zone ID.
+  certificate_ref:
+    type: ref
+    description: >-
+      Reference to a Ravion-managed ACM certificate module. The certificate
+      MUST cover all three derived hostnames (catalog, registry, s3-proxy);
+      Ravion should validate SAN coverage against the derived hostname list
+      before allowing apply.
+    required: true
+
+  dns_ref:
+    type: ref
+    description: >-
+      Reference to a Ravion-managed DNS/hosted-zone module (modules/cnames
+      or equivalent) that will receive the catalog/registry/s3-proxy CNAME
+      records once the stack's load balancer DNS name is known. May live in
+      a different connected AWS account than this module (the common case
+      when the deploying account doesn't own the domain) — see README.md.
+    required: true
+
+outputs:
+  admin_password:
+    sensitive: true
+  db_password:
+    sensitive: true
+  quilt_url: {}
+  load_balancer_dns: {}
