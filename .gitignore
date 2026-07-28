@@ -3,3 +3,4 @@
 .terraform.lock.hcl
 tfplan
 node_modules
+examples/ravion/.quilt-template-*.yaml
