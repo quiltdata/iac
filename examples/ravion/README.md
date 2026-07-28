@@ -61,6 +61,17 @@ are wired in automatically rather than hand-copied between teams. This is a
 supported Ravion pattern, not a workaround — call it out explicitly when
 onboarding a customer whose deploying and domain-owning accounts differ.
 
+## Provisioning script
+
+[`scripts/provision-quilt.sh`](scripts/provision-quilt.sh) wraps the three
+`ravion module create` calls needed to stand up a deployment — the
+`rvn-route53` reference, the `rvn-acm-certificate` covering all three derived
+hostnames, and the `quilt-catalog` instance that `$ref`s both — into one
+command, threading the `minst_…` instance ids between them so nobody has to
+hand-copy them. Run it with `--dry-run` first to see the exact commands it
+would issue; `--dns-instance-id` / `--cert-instance-id` let you reuse
+already-applied instances instead of creating new ones.
+
 ## In-place updates
 
 Changing a typed input in Ravion (e.g. `sizing`, `catalog_domain`) re-plans
