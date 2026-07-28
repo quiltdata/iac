@@ -1,0 +1,199 @@
+# Ravion module definition for `modules/quilt`.
+#
+# This wraps modules/quilt (and modules/cnames) from this repo UNMODIFIED —
+# no forked Terraform, no vendored CloudFormation template. Ravion drives the
+# standard root-config pattern (`provider`, `module "quilt"`, `parameters`)
+# through a typed, form-fillable interface.
+#
+# Shape verified against a live Ravion org (v0.2.11, 2026-07-28): this file's
+# structure — `inputs` as an array, `$ref:<type>` syntax, `mapped_inputs` for
+# pulling a referenced module's outputs, no top-level `outputs` key — was
+# registered via `ravion module definition create` + `ravion module version
+# create --config <this file, converted to JSON>` and schema-rendered
+# successfully. See ../../../09-blog-deploying-quilt-via-ravion.md in the
+# 260723-ravion evaluation project for the exact commands and the wrong
+# shape this replaces (a `name`/`source`/`template`/flat-map-`inputs`/
+# `outputs` DSL that doesn't correspond to any real Ravion schema key).
+#
+# `name` (module definition name), `type` (module type identifier, e.g.
+# `quilt-catalog`), `version`, and `description` are NOT config keys — they
+# are supplied as flags to `ravion module definition create` / `ravion
+# module version create`, not fields in this file. The `source.ref` /
+# `template.*` keys from the previous draft don't exist in Ravion's schema
+# either: which release of `modules/quilt` this wraps is pinned by the
+# `branch`/`base_path` a definition's `stack.pipelines.defaults.input` points
+# at (see below), and the CloudFormation template is fetched from
+# `template_url` inside `main.tf` itself (a `data "http"` + `local_file`
+# pair — `modules/quilt`'s `template_file` input requires a local path, not
+# a URL, since it's uploaded to S3 via `filemd5()`).
+
+inputs:
+  - id: name
+    type: string
+    label: Stack name
+    description: Stack name (<=20 chars, lowercase alphanumeric + hyphens).
+    required: true
+
+  - id: template_url
+    type: string
+    label: CloudFormation template URL
+    description: >-
+      URL of the published Quilt CloudFormation template for the desired
+      release (e.g. an S3 artifact URL from this project's release process).
+      Fetched at plan/apply time and written to a local path — see main.tf.
+    required: true
+
+  - id: catalog_domain
+    type: string
+    label: Catalog domain
+    description: >-
+      Public hostname for the Quilt catalog (e.g. data.example.com). The
+      registry and s3-proxy hostnames are derived from this value as
+      `<sub>-registry.<rest>` and `<sub>-s3-proxy.<rest>`. A certificate
+      covering only this host is not enough — see the `certificate` ref
+      below.
+    required: true
+
+  - id: admin_email
+    type: string
+    label: Admin email
+    description: Initial admin account email address.
+    required: true
+
+  - id: sizing
+    type: string
+    label: Sizing
+    description: Named ElasticSearch/DB sizing profile.
+    default: medium
+    values:
+      - label: Small
+        value: small
+      - label: Medium
+        value: medium
+      - label: Large
+        value: large
+      - label: X-Large
+        value: xlarge
+
+  - id: internal
+    type: boolean
+    label: Internal (VPN-only) load balancer
+    description: If true, deploy an internal (VPN-only) load balancer.
+    default: false
+
+  - id: create_new_vpc
+    type: boolean
+    label: Create new VPC
+    description: If true, provision a new VPC; if false, use the vpc reference.
+    default: true
+
+  - id: aws_account_id
+    type: string
+    label: AWS Account
+    description: Account the Quilt stack is deployed into.
+    required: true
+    values: "$values:ravion/aws_accounts"
+
+  - id: aws_region
+    type: string
+    label: Region
+    required: true
+    values: "$values:aws/regions"
+
+  - id: execution_environment_id
+    type: string
+    label: Execution environment
+    description: >-
+      Overrides the environment's default execution environment for the
+      Terraform runner. Optional.
+    values: "$values:ravion/execution_environments"
+
+  # Typed references — Ravion resolves these against another module
+  # instance's outputs (in the same or a different connected AWS account)
+  # instead of a hand-copied ARN/zone ID. A ref's outputs are only reachable
+  # through its own `mapped_inputs` list (`<< ref.stack.output.x >>` there);
+  # referencing `ref.*` anywhere else in this file is rejected by the API.
+  - id: certificate
+    type: "$ref:rvn-acm-certificate"
+    label: TLS certificate
+    description: >-
+      Reference to a Ravion-managed ACM certificate module. The certificate
+      MUST cover all three derived hostnames (catalog, registry, s3-proxy) —
+      set that certificate module's own `domains` input to all three; this
+      definition cannot derive them into a sibling module for you.
+    required: true
+    mapped_inputs:
+      - id: certificate_arn
+        label: Certificate ARN
+        type: string
+        default: "<< ref.stack.output.certificate_arn >>"
+
+  - id: dns
+    type: "$ref:rvn-route53"
+    label: DNS hosted zone
+    description: >-
+      Reference to a Ravion-managed Route 53 module that will receive the
+      catalog/registry/s3-proxy records once the stack's load balancer DNS
+      name is known. May live in a different connected AWS account than
+      this module (the common case when the deploying account doesn't own
+      the domain) — see README.md.
+    required: true
+    mapped_inputs:
+      - id: zone_id
+        label: Zone ID
+        type: string
+        default: "<< ref.stack.output.zone_id >>"
+
+  # Optional: bring your own VPC instead of create_new_vpc. NOTE: the
+  # rvn-aws-network output field name below (`vpc_id`) is a best-guess by
+  # convention, not independently verified the way certificate_arn/zone_id
+  # were (those were confirmed live against applied rvn-acm-certificate /
+  # rvn-route53 instances in the 260723-ravion eval; no rvn-aws-network
+  # instance was ever applied in that eval to check against). Confirm
+  # against `ravion module schema rvn-aws-network`'s outputs before relying
+  # on this in production.
+  - id: vpc
+    type: "$ref:rvn-aws-network"
+    label: Existing VPC
+    description: >-
+      Reference to a Ravion-managed VPC module. Required when
+      create_new_vpc is false; ignored otherwise.
+    required: false
+    mapped_inputs:
+      - id: vpc_id
+        label: VPC ID
+        type: string
+        default: "<< ref.stack.output.vpc_id >>"
+
+# No top-level `outputs` key — Terraform outputs (quilt_url,
+# load_balancer_dns, admin_password, db_password) are exposed automatically
+# as `stack.output.*` once main.tf declares them as `output "..."` blocks.
+
+stack:
+  type: opentofu
+  pipelines:
+    defaults:
+      variant: standard
+      input:
+        repo: "https://github.com/quiltdata/iac.git"
+        branch: "add-ravion-support-126" # pin to a released tag before publishing, e.g. "1.8.0"
+        base_path: examples/ravion
+        aws_account_id: "<< module.input.aws_account_id >>"
+        aws_region: "<< module.input.aws_region >>"
+        execution_environment_id: "<< module.input.execution_environment_id || defaults.execution_environment_id >>"
+        tool: opentofu
+        terraform_variables:
+          name: "<< module.input.name >>"
+          template_url: "<< module.input.template_url >>"
+          catalog_domain: "<< module.input.catalog_domain >>"
+          admin_email: "<< module.input.admin_email >>"
+          sizing: "<< module.input.sizing >>"
+          internal: "<< module.input.internal >>"
+          create_new_vpc: "<< module.input.create_new_vpc >>"
+          vpc_id: "<< module.input.vpc_id >>"
+          certificate_arn: "<< module.input.certificate_arn >>"
+          zone_id: "<< module.input.zone_id >>"
+    change:
+      pipeline_id: "<< defaults.change_pipeline_id >>"
+    destroy:
+      pipeline_id: "<< defaults.destroy_pipeline_id >>"

@@ -18,6 +18,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+- [Added] `examples/ravion/` — a Ravion (IDP) module definition wrapping `modules/quilt`/`modules/cnames` unmodified, with typed `$ref` composition for certificate + DNS and derived catalog/registry/s3-proxy hostname coverage. See [examples/ravion/README.md](examples/ravion/README.md) ([#126](https://github.com/quiltdata/iac/issues/126))
+
 ## [1.8.0] - 2026-06-09
 
 - [Added] Transit Gateway egress mode for new VPCs: set `enable_transit_gateway = true` (+ `transit_gateway_id`) to route private-subnet egress through a Transit Gateway instead of NAT gateways; IPv6 egress is opt-in via `transit_gateway_ipv6_egress`. See [Transit Gateway egress](README.md#transit-gateway-egress) ([#115](https://github.com/quiltdata/iac/pull/115))
