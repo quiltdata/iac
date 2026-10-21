@@ -149,13 +149,11 @@ inputs:
         type: string
         default: "<< ref.stack.output.zone_id >>"
 
-  # Optional: bring your own VPC instead of create_new_vpc. NOTE: the
-  # rvn-aws-network output field name below (`vpc_id`) is a best-guess by
-  # convention, not independently verified the way certificate_arn/zone_id
-  # were (those were confirmed live against applied rvn-acm-certificate /
-  # rvn-route53 instances). Confirm
-  # against `ravion module schema rvn-aws-network`'s outputs before relying
-  # on this in production.
+  # Optional: bring your own VPC instead of create_new_vpc. `vpc_id` is
+  # rvn-aws-network's documented stack output, per Ravion's docs:
+  # https://www.ravion.com/docs/modules/output-references
+  # https://www.ravion.com/docs/module-definitions/catalog/rvn-aws-alb
+  # (rvn-aws-alb maps its own $ref:rvn-aws-network the same way).
   - id: vpc
     type: "$ref:rvn-aws-network"
     label: Existing VPC
