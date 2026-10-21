@@ -10,6 +10,7 @@
 terraform {
   required_version = ">= 1.10.0"
   required_providers {
+    aws   = { source = "hashicorp/aws" }
     http  = { source = "hashicorp/http" }
     local = { source = "hashicorp/local" }
   }
@@ -83,6 +84,30 @@ variable "certificate_arn" {
 variable "zone_id" {
   type        = string
   description = "Route53 hosted zone ID, resolved by Ravion from the dns ref."
+}
+
+# Optional: role in the domain-owning account, for when the Route53 zone is
+# not in the deploying account. The ACM certificate must still live in the
+# deploying account/region, next to the load balancer.
+variable "dns_role_arn" {
+  type        = string
+  default     = null
+  description = "IAM role to assume for Route53 writes when the zone is in another account."
+}
+
+# Credentials for the deploying account come from the Ravion runner's
+# environment.
+provider "aws" {}
+
+provider "aws" {
+  alias = "dns"
+
+  dynamic "assume_role" {
+    for_each = var.dns_role_arn == null || var.dns_role_arn == "" ? [] : [var.dns_role_arn]
+    content {
+      role_arn = assume_role.value
+    }
+  }
 }
 
 locals {
@@ -170,6 +195,9 @@ module "quilt" {
 # Ravion-connected account than the one hosting module.quilt — see README.
 module "cnames" {
   source = "github.com/quiltdata/iac//modules/cnames?ref=1.8.0"
+  providers = {
+    aws = aws.dns
+  }
 
   lb_dns_name    = module.quilt.stack.outputs.LoadBalancerDNSName
   quilt_web_host = var.catalog_domain

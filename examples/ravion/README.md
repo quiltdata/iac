@@ -15,7 +15,7 @@ in [`examples/main.tf`](../main.tf).
 
 - **`module.yaml`** declares the handful of typed inputs a deploy actually
   needs (name, catalog domain, sizing, network mode, admin email) instead of
-  raw HCL, plus two `$ref` inputs — `certificate_ref` and `dns_ref` — that
+  raw HCL, plus two `$ref` inputs — `certificate` and `dns` — that
   Ravion resolves against other Ravion-managed modules rather than requiring
   a hand-copied certificate ARN or hosted-zone ID.
 - **`main.tf`** receives those resolved values as plain Terraform variables
@@ -24,8 +24,8 @@ in [`examples/main.tf`](../main.tf).
 - **The CloudFormation template is never committed here.** `module.yaml`'s
   `template_url` input points at the template for the desired Quilt release
   (e.g. one of this project's existing published per-release S3 artifacts);
-  Ravion fetches it at plan/apply time and hands the resulting local path to
-  `template_file`. Nothing generated or internal is checked into this repo.
+  `main.tf` fetches it at plan/apply time (`data "http"` + `local_file`) and
+  hands the resulting local path to `template_file`. Nothing generated or internal is checked into this repo.
 
 ## Hostname / certificate coverage
 
@@ -37,8 +37,9 @@ siblings:
 - `<sub>-s3-proxy.<rest>` — the S3 proxy
 
 `main.tf` derives all three into `local.hostnames` (and exposes them as the
-`hostnames` output). Ravion should validate that the certificate resolved
-via `certificate_ref` covers all three SANs before allowing `apply` — a
+`hostnames` output), and `scripts/provision-quilt.sh` requests the
+`rvn-acm-certificate` with all three as its `domains`. If you reference an
+existing certificate instead, make sure it covers all three SANs — a
 certificate that only covers the catalog host will deploy a stack whose
 registry or s3-proxy endpoint has no valid TLS.
 
@@ -47,13 +48,17 @@ registry or s3-proxy endpoint has no valid TLS.
 The common case for larger customers is that the AWS account deploying the
 stack does **not** own the domain. In that setup:
 
-- The **certificate** module (ACM, DNS-validated) runs in the account that
-  owns the Route53 zone.
-- The **DNS** module (`modules/cnames`) also runs in that same
-  domain-owning account, since it writes into the hosted zone.
+- The **certificate** (`rvn-acm-certificate`) must live in the **deploying**
+  account and region, next to the load balancer (ACM certificates can't be
+  shared across accounts). Its DNS validation records go into the
+  domain-owning account's zone.
+- The **DNS** zone (`rvn-route53`) lives in the domain-owning account.
+  `main.tf` writes the catalog/registry/s3-proxy CNAMEs into it via
+  `modules/cnames` using an `aws.dns` provider that assumes `dns_role_arn`
+  in that account (leave it empty when the zone is in the deploying account).
 - The **Quilt stack** (`module.yaml` / `main.tf` in this directory) runs in
   the deploying account, and references the certificate and DNS modules via
-  `certificate_ref` / `dns_ref`.
+  `certificate` / `dns`.
 
 Ravion's typed `$ref` module-composition mechanism resolves outputs across
 these Ravion-connected accounts, so the certificate ARN and CNAME records

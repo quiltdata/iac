@@ -10,10 +10,7 @@
 # pulling a referenced module's outputs, no top-level `outputs` key — was
 # registered via `ravion module definition create` + `ravion module version
 # create --config <this file, converted to JSON>` and schema-rendered
-# successfully. See ../../../09-blog-deploying-quilt-via-ravion.md in the
-# 260723-ravion evaluation project for the exact commands and the wrong
-# shape this replaces (a `name`/`source`/`template`/flat-map-`inputs`/
-# `outputs` DSL that doesn't correspond to any real Ravion schema key).
+# successfully.
 #
 # `name` (module definition name), `type` (module type identifier, e.g.
 # `quilt-catalog`), `version`, and `description` are NOT config keys — they
@@ -100,6 +97,14 @@ inputs:
     required: true
     values: "$values:aws/regions"
 
+  - id: dns_role_arn
+    type: string
+    label: DNS account role ARN
+    description: >-
+      IAM role in the domain-owning AWS account that the runner assumes to
+      write the catalog/registry/s3-proxy CNAMEs. Leave empty when the
+      hosted zone lives in the deploying account.
+
   - id: execution_environment_id
     type: string
     label: Execution environment
@@ -148,8 +153,7 @@ inputs:
   # rvn-aws-network output field name below (`vpc_id`) is a best-guess by
   # convention, not independently verified the way certificate_arn/zone_id
   # were (those were confirmed live against applied rvn-acm-certificate /
-  # rvn-route53 instances in the 260723-ravion eval; no rvn-aws-network
-  # instance was ever applied in that eval to check against). Confirm
+  # rvn-route53 instances). Confirm
   # against `ravion module schema rvn-aws-network`'s outputs before relying
   # on this in production.
   - id: vpc
@@ -193,6 +197,7 @@ stack:
           vpc_id: "<< module.input.vpc_id >>"
           certificate_arn: "<< module.input.certificate_arn >>"
           zone_id: "<< module.input.zone_id >>"
+          dns_role_arn: "<< module.input.dns_role_arn >>"
     change:
       pipeline_id: "<< defaults.change_pipeline_id >>"
     destroy:

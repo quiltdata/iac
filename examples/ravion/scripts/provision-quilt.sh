@@ -2,9 +2,7 @@
 #
 # Provisions a Quilt deployment through Ravion end to end: the Route 53 DNS
 # reference, the multi-SAN ACM certificate, and the quilt-catalog instance
-# that $refs both. See ../../../09-blog-deploying-quilt-via-ravion.md (Step 4
-# and Step 5) in the 260723-ravion evaluation project for the manual version
-# of these three `ravion module create` calls this replaces.
+# that $refs both, replacing three hand-run `ravion module create` calls.
 #
 # Quilt's public hostname contract is the catalog host plus two derived
 # siblings (<sub>-registry.<rest> / <sub>-s3-proxy.<rest>>) — see main.tf's
