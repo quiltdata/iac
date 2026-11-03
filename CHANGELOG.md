@@ -2,11 +2,9 @@
 
 ## Policy
 
-**Comprehensiveness**: Include all notable changes (features, fixes, breaking changes, documentation).
+**Comprehensiveness**: Include all notable changes (features, fixes, breaking changes). Documentation-only changes get no entry.
 **Conciseness**: Keep entries brief - one line per change when possible.
 **Clarity**: Focus on impact and outcome, not implementation details.
-
-For documentation PRs: List all major additions but avoid redundant detail. Group related changes.
 
 <!-- template:
 ## [Unreleased] - YYYY-MM-DD
