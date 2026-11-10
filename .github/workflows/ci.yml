@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.10.0"
+          terraform_wrapper: false
+      - run: terraform fmt -check -recursive -diff
+
+  markdownlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      # Globs and rules come from .markdownlint-cli2.yaml. npm ci installs the
+      # exact tree from package-lock.json, so no markdownlint (or transitive)
+      # release can change rules or break CI without a repo change; bump the
+      # version deliberately via package.json.
+      - run: npm ci
+      - run: npx --no-install markdownlint-cli2
+
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir:
+          - modules/cnames
+          - modules/db
+          - modules/search
+          - modules/vpc
+          - modules/quilt
+    defaults:
+      run:
+        working-directory: ${{ matrix.dir }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.10.0"
+          terraform_wrapper: false
+      # -backend=false: validate needs init for provider/module schemas but no backend or cloud credentials.
+      - run: terraform init -backend=false
+      - run: terraform validate -no-color
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir:
+          - modules/vpc
+          - modules/quilt/tests/smoke
+    defaults:
+      run:
+        working-directory: ${{ matrix.dir }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.10.0"
+          terraform_wrapper: false
+      # The tests mock the AWS provider, so no backend or cloud credentials are needed.
+      - run: terraform init -backend=false
+      - run: terraform test -no-color

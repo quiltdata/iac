@@ -1,0 +1,26 @@
+# markdownlint-cli2 configuration. See https://github.com/DavidAnson/markdownlint
+# for the full rule reference.
+config:
+  # Line length: prose, tables, and long links routinely exceed any fixed width.
+  line-length: false
+  # Bold-as-heading: the docs deliberately use bold text as inline labels.
+  no-emphasis-as-heading: false
+  # Table column style: enforces consistent cell padding across tables;
+  # cosmetic, tables render correctly either way.
+  table-column-style: false
+  # Duplicate headings: the CHANGELOG repeats Added/Changed/Fixed per release,
+  # which is the Keep a Changelog convention. Only flag duplicates under the
+  # same parent heading.
+  no-duplicate-heading:
+    siblings_only: true
+# Lint every Markdown file in the repo. Both local runs and CI invoke
+# markdownlint-cli2 with no glob arguments, so this is the single source of
+# truth for which files are linted.
+globs:
+  - "**/*.{md,markdown}"
+# markdownlint-cli2 has no default exclusions, so vendored trees must be
+# ignored explicitly: `terraform init` vendors registry modules (and their
+# READMEs) under .terraform/, and npm installs under node_modules/.
+ignores:
+  - "**/.terraform/**"
+  - "**/node_modules/**"

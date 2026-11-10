@@ -1,5 +1,6 @@
 module "db_accessor_security_group" {
-  source = "terraform-aws-modules/security-group/aws"
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 5.0"
 
   name        = "${var.identifier}-db-accessor"
   description = "For resources that need access to DB"
@@ -14,7 +15,8 @@ module "db_accessor_security_group" {
 }
 
 module "db_security_group" {
-  source = "terraform-aws-modules/security-group/aws"
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 5.0"
 
   name        = "${var.identifier}-db"
   description = "For DB resources"
@@ -30,7 +32,7 @@ module "db_security_group" {
 
 module "db" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "< 6.0.0"
+  version = "~> 5.0"
 
   identifier = var.identifier
 
@@ -39,7 +41,7 @@ module "db" {
   engine                      = "postgres"
   allow_major_version_upgrade = true
   auto_minor_version_upgrade  = false
-  engine_version              = "15.15"
+  engine_version              = "15.18"
   storage_type                = "gp2"
   allocated_storage           = 100
   storage_encrypted           = true

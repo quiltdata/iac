@@ -9,7 +9,7 @@ This document provides comprehensive documentation for all variables available i
 | Variable | Type | Description | Validation |
 |----------|------|-------------|------------|
 | `name` | `string` | Name for VPC, DB, CloudFormation stack, and resource prefix | ≤20 chars, lowercase alphanumeric + hyphens |
-| `template_file` | `string` | Path to local CloudFormation template file | Must be a valid file path |
+| `template_file` | `string` | Path to local CloudFormation template file (pass `null` only with `terraform destroy`) | Required for `plan`/`apply`; pass `null` with `terraform destroy` |
 | `parameters` | `map(any)` | CloudFormation stack parameters | See [CloudFormation Parameters](#cloudformation-parameters) |
 | `internal` | `bool` | Create internal ALB (true) or internet-facing ALB (false) | - |
 
@@ -26,6 +26,9 @@ This document provides comprehensive documentation for all variables available i
 | `user_subnets` | `list(string)` | `null` | ALB subnet IDs (exactly 2 required for internal ALB with existing VPC) |
 | `user_security_group` | `string` | `null` | Security group ID for ALB access (required for existing VPC) |
 | `api_endpoint` | `string` | `null` | VPC endpoint ID for API Gateway (required for internal ALB with existing VPC) |
+| `enable_transit_gateway` | `bool` | `false` | Route private-subnet egress through a Transit Gateway instead of NAT gateways (`create_new_vpc = true` only). Disables NAT + the IPv6 egress-only IGW; requires `transit_gateway_id`. See [Transit Gateway egress](README.md#transit-gateway-egress). |
+| `transit_gateway_id` | `string` | `null` | Transit Gateway to attach to (required when `enable_transit_gateway = true`). May be a value known only after apply (e.g. a TGW created in the same configuration). |
+| `transit_gateway_ipv6_egress` | `bool` | `false` | Also route IPv6 (`::/0`) egress through the TGW. Leave off unless the TGW carries IPv6 egress, otherwise IPv6 traffic would be black-holed. |
 
 ### Database Configuration Variables
 
@@ -182,6 +185,7 @@ The `parameters` map configures the Quilt application. Here are all available pa
 ## Configuration Examples by Use Case
 
 ### Development Environment
+
 ```hcl
 # Minimal cost configuration
 db_instance_class               = "db.t3.micro"
@@ -195,6 +199,7 @@ search_volume_size             = 512
 ```
 
 ### Production Environment
+
 ```hcl
 # High availability configuration
 db_instance_class               = "db.t3.medium"
@@ -209,6 +214,7 @@ search_volume_type             = "gp3"
 ```
 
 ### Enterprise Environment
+
 ```hcl
 # High performance configuration
 db_instance_class               = "db.r5.xlarge"
@@ -226,21 +232,25 @@ search_volume_iops             = 18750
 ## Variable Validation Rules
 
 ### Name Validation
+
 - Must be ≤20 characters
 - Lowercase alphanumeric characters and hyphens only
 - Used as prefix for AWS resource names
 
 ### Network Validation
+
 - CIDR blocks must allow ≥256 IP addresses (≤/24)
 - Subnet lists must contain exactly 2 subnet IDs when specified
 - VPC endpoints required for internal deployments with existing VPC
 
 ### ElasticSearch Validation
+
 - `search_volume_iops` must be ≥3000 when specified
 - `search_volume_throughput` must be 125-1000 MiB/s for gp3 volumes
 - Master node count should be odd (3 or 5) for proper quorum
 
 ### Database Validation
+
 - `db_network_type` must be "IPV4" or "DUAL"
 - Multi-AZ recommended for production environments
 - Deletion protection recommended for production databases
@@ -248,6 +258,7 @@ search_volume_iops             = 18750
 ## Common Configuration Patterns
 
 ### Internet-Facing with New VPC
+
 ```hcl
 internal       = false
 create_new_vpc = true
@@ -256,6 +267,7 @@ cidr          = "10.0.0.0/16"
 ```
 
 ### Internal with Existing VPC
+
 ```hcl
 internal            = true
 create_new_vpc      = false
@@ -268,6 +280,7 @@ api_endpoint        = "vpce-existing"
 ```
 
 ### High-Performance ElasticSearch
+
 ```hcl
 search_instance_type    = "m6g.4xlarge.elasticsearch"
 search_instance_count   = 4

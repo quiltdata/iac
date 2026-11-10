@@ -2,11 +2,9 @@
 
 ## Policy
 
-**Comprehensiveness**: Include all notable changes (features, fixes, breaking changes, documentation).
+**Comprehensiveness**: Include all notable changes (features, fixes, breaking changes). Documentation-only changes get no entry.
 **Conciseness**: Keep entries brief - one line per change when possible.
 **Clarity**: Focus on impact and outcome, not implementation details.
-
-For documentation PRs: List all major additions but avoid redundant detail. Group related changes.
 
 <!-- template:
 ## [Unreleased] - YYYY-MM-DD
@@ -18,9 +16,27 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+## [1.8.0] - 2026-06-09
+
+- [Added] Transit Gateway egress mode for new VPCs: set `enable_transit_gateway = true` (+ `transit_gateway_id`) to route private-subnet egress through a Transit Gateway instead of NAT gateways; IPv6 egress is opt-in via `transit_gateway_ipv6_egress`. See [Transit Gateway egress](README.md#transit-gateway-egress) ([#115](https://github.com/quiltdata/iac/pull/115))
+
+## [1.7.2] - 2026-06-08
+
+- [Fixed] Bump `modules/cnames` AWS provider constraint from `~> 5.0` to `~> 6.0` so it resolves alongside the `vpc` module's `aws >= 6.28` requirement — using `quilt` + `cnames` in one root previously failed `terraform init` ([#117](https://github.com/quiltdata/iac/pull/117))
+
+## [1.7.1] - 2026-06-04
+
+- [Fixed] Pin every registry module with `~>` so an upstream major can't silently break `terraform plan`/`apply` — resolves the `security-group` v6.0.0 break and constrains the rest (`security-group`/`rds` → `~> 5.0`, `vpc` → `~> 6.0`) ([#110](https://github.com/quiltdata/iac/pull/110), [#112](https://github.com/quiltdata/iac/pull/112))
+
+## [1.7.0] - 2026-05-28
+
+- [Added] `template_file` may now be set to `null` for `terraform destroy`; apply still requires a real path. ([#105](https://github.com/quiltdata/iac/pull/105))
+- [Changed] Update Postgres to 15.18 ([#108](https://github.com/quiltdata/iac/pull/108))
+
 ## [1.6.0] - 2026-02-24
 
 If you rely on the default `search_instance_type` / `search_dedicated_master_type`:
+
 - Upgrading from a version prior to 1.5.0 will fail on `terraform apply`. Upgrade to 1.5.0 first.
 - If you have reserved m5 instances, pin the instance types explicitly to keep using them.
 
@@ -85,7 +101,11 @@ Ensure your Quilt stack is upgraded to version 1.66 or later *before* upgrading 
 
 - [Added] Add changelog ([#74](https://github.com/quiltdata/iac/pull/74))
 
-[Unreleased]: https://github.com/quiltdata/iac/compare/1.6.0...HEAD
+[Unreleased]: https://github.com/quiltdata/iac/compare/1.8.0...HEAD
+[1.8.0]: https://github.com/quiltdata/iac/releases/tag/1.8.0
+[1.7.2]: https://github.com/quiltdata/iac/releases/tag/1.7.2
+[1.7.1]: https://github.com/quiltdata/iac/releases/tag/1.7.1
+[1.7.0]: https://github.com/quiltdata/iac/releases/tag/1.7.0
 [1.6.0]: https://github.com/quiltdata/iac/releases/tag/1.6.0
 [1.5.0]: https://github.com/quiltdata/iac/releases/tag/1.5.0
 [1.4.0]: https://github.com/quiltdata/iac/releases/tag/1.4.0

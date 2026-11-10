@@ -14,6 +14,10 @@ module "vpc" {
   cidr     = var.cidr
   internal = var.internal
 
+  enable_transit_gateway      = var.enable_transit_gateway
+  transit_gateway_id          = var.transit_gateway_id
+  transit_gateway_ipv6_egress = var.transit_gateway_ipv6_egress
+
   create_new_vpc               = var.create_new_vpc
   existing_api_endpoint        = var.api_endpoint
   existing_vpc_id              = var.vpc_id
@@ -80,6 +84,7 @@ resource "aws_s3_bucket_versioning" "cft_bucket_versioning" {
 }
 
 resource "aws_s3_object" "cft" {
+  count  = var.template_file != null ? 1 : 0
   bucket = aws_s3_bucket.cft_bucket.id
   key    = local.template_key
   source = var.template_file
@@ -139,5 +144,9 @@ resource "aws_cloudformation_stack" "stack" {
     ignore_changes = [
       on_failure,
     ]
+    precondition {
+      condition     = var.template_file != null
+      error_message = "template_file is required for plan/apply. Pass null only with terraform destroy."
+    }
   }
 }

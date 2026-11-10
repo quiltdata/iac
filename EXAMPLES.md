@@ -149,7 +149,7 @@ terraform {
     key            = "quilt/prod/terraform.tfstate"
     region         = "YOUR-AWS-REGION"
     encrypt        = true
-    dynamodb_table = "terraform-locks"
+    use_lockfile   = true
   }
 }
 
@@ -651,7 +651,7 @@ terraform {
     key            = "quilt/prod/terraform.tfstate"
     region         = "YOUR-AWS-REGION"
     encrypt        = true
-    dynamodb_table = "terraform-locks"
+    use_lockfile   = true
   }
 }
 
