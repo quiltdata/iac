@@ -81,6 +81,12 @@ variable "transit_gateway_ipv6_egress" {
   default = false
 }
 
+# null selects the module's default.
+variable "marketplace_product_code" {
+  type    = string
+  default = null
+}
+
 # New inputs added to the quilt module must be threaded through here, or the
 # smoke coverage silently narrows (the new input is never exercised).
 module "quilt" {
@@ -92,6 +98,7 @@ module "quilt" {
   enable_transit_gateway      = var.enable_transit_gateway
   transit_gateway_id          = var.transit_gateway_id
   transit_gateway_ipv6_egress = var.transit_gateway_ipv6_egress
+  marketplace_product_code    = var.marketplace_product_code
 
   create_new_vpc      = var.create_new_vpc
   internal            = var.internal
@@ -121,4 +128,8 @@ module "cnames" {
 # wrapper exists.
 output "stack_name" {
   value = module.quilt.stack.name
+}
+
+output "stack_tags" {
+  value = module.quilt.stack.tags
 }

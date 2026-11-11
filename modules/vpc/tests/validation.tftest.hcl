@@ -200,6 +200,7 @@ run "new_vpc_with_transit_gateway" {
     existing_public_subnets      = null
     existing_user_security_group = null
     existing_user_subnets        = null
+    tags                         = { "aws-apn-id-730278974607" = "pc:1xn1f7bxkj2dc16ak28s0dbgk" }
   }
 
   # A new VPC with enable_transit_gateway is the supported TGW egress mode and
@@ -219,6 +220,14 @@ run "new_vpc_with_transit_gateway" {
   assert {
     condition     = aws_ec2_transit_gateway_vpc_attachment.egress[0].transit_gateway_id == "tgw-00000000000000000"
     error_message = "The TGW attachment must target the supplied transit_gateway_id"
+  }
+
+  assert {
+    condition = aws_ec2_transit_gateway_vpc_attachment.egress[0].tags == tomap({
+      "aws-apn-id-730278974607" = "pc:1xn1f7bxkj2dc16ak28s0dbgk"
+      Name                      = "quilt-test-egress"
+    })
+    error_message = "The TGW attachment must carry the module's tags alongside its Name"
   }
 
   assert {

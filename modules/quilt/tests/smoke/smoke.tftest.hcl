@@ -30,6 +30,36 @@ run "new_vpc_plans" {
     condition     = output.stack_name == "quilt-test"
     error_message = "The CloudFormation stack must be named after var.name"
   }
+  assert {
+    condition     = try(output.stack_tags["aws-apn-id-730278974607"], null) == "pc:1xn1f7bxkj2dc16ak28s0dbgk"
+    error_message = "The stack must carry the partner tag with paygo's product code by default"
+  }
+}
+
+run "stack_partner_tag_takes_caller_product_code" {
+  command = plan
+  variables {
+    create_new_vpc           = true
+    internal                 = false
+    marketplace_product_code = "f5d6l3y7x2yy2fcm0uxr9gglh"
+  }
+  assert {
+    condition     = try(output.stack_tags["aws-apn-id-730278974607"], null) == "pc:f5d6l3y7x2yy2fcm0uxr9gglh"
+    error_message = "The partner tag must carry the caller's product code"
+  }
+}
+
+run "empty_product_code_omits_partner_tag" {
+  command = plan
+  variables {
+    create_new_vpc           = true
+    internal                 = false
+    marketplace_product_code = ""
+  }
+  assert {
+    condition     = try(output.stack_tags["aws-apn-id-730278974607"], null) == null
+    error_message = "An empty product code must omit the partner tag"
+  }
 }
 
 run "new_vpc_transit_gateway_plans" {

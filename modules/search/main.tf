@@ -5,6 +5,7 @@ module "search_accessor_security_group" {
   name        = "${var.domain_name}-search-accessor"
   description = "For resources that need access to search cluster"
   vpc_id      = var.vpc_id
+  tags        = var.tags
 
   egress_with_source_security_group_id = [
     {
@@ -21,6 +22,7 @@ module "search_security_group" {
   name        = "${var.domain_name}-search"
   description = "For search cluster resources"
   vpc_id      = var.vpc_id
+  tags        = var.tags
 
   ingress_with_source_security_group_id = [
     {
@@ -68,4 +70,6 @@ resource "aws_elasticsearch_domain" "search" {
     subnet_ids         = var.zone_awareness_enabled ? var.subnet_ids : slice(var.subnet_ids, 0, 1)
     security_group_ids = [module.search_security_group.security_group_id]
   }
+
+  tags = var.tags
 }

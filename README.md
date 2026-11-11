@@ -895,6 +895,27 @@ through the TGW's NAT instead — so anything that allowlists Quilt's egress
 address (a license endpoint, a partner firewall, a SaaS IP allowlist) must be
 updated, or it breaks silently.
 
+### Partner Revenue Measurement tag
+
+The module tags the CloudFormation stack, which passes its tags on to the
+stack's resources, and every resource it creates with
+`aws-apn-id-730278974607 = "pc:<product code>"`. The tag attributes the
+stack's AWS usage to Quilt through
+[AWS Partner Revenue Measurement](https://docs.aws.amazon.com/PRM/latest/aws-prm-onboarding-guide/what-is-service.html).
+The product code defaults to that of Quilt's pay-as-you-go AWS Marketplace
+listing; if you subscribe to another Quilt listing, set its code:
+
+```hcl
+module "quilt" {
+  # ...
+  marketplace_product_code = "YOUR-PRODUCT-CODE"
+}
+```
+
+Set the code here, not in the provider's `default_tags`: the module's value
+overrides a `default_tags` value for the same key. An empty string omits the
+module's tag.
+
 ### Profile
 
 You may wish to set a specific AWS profile before executing `terraform`

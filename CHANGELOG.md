@@ -16,6 +16,10 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+Upgrading adds the tag below to the existing stack, VPC, database and search resources in place, replacing none of them.
+
+- [Added] Tag the CloudFormation stack and every resource the module creates for AWS Partner Revenue Measurement, with the product code set by `marketplace_product_code` (default: pay-as-you-go). See [Partner Revenue Measurement tag](README.md#partner-revenue-measurement-tag) ([#133](https://github.com/quiltdata/iac/pull/133))
+
 ## [1.8.0] - 2026-06-09
 
 - [Added] Transit Gateway egress mode for new VPCs: set `enable_transit_gateway = true` (+ `transit_gateway_id`) to route private-subnet egress through a Transit Gateway instead of NAT gateways; IPv6 egress is opt-in via `transit_gateway_ipv6_egress`. See [Transit Gateway egress](README.md#transit-gateway-egress) ([#115](https://github.com/quiltdata/iac/pull/115))

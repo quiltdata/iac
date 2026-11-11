@@ -41,3 +41,10 @@ variable "deletion_protection" {
   type     = bool
   nullable = false
 }
+
+variable "tags" {
+  type        = map(string)
+  nullable    = false
+  default     = {}
+  description = "Tags for every resource this module creates"
+}

@@ -5,6 +5,7 @@ module "db_accessor_security_group" {
   name        = "${var.identifier}-db-accessor"
   description = "For resources that need access to DB"
   vpc_id      = var.vpc_id
+  tags        = var.tags
 
   egress_with_source_security_group_id = [
     {
@@ -21,6 +22,7 @@ module "db_security_group" {
   name        = "${var.identifier}-db"
   description = "For DB resources"
   vpc_id      = var.vpc_id
+  tags        = var.tags
 
   ingress_with_source_security_group_id = [
     {
@@ -64,4 +66,6 @@ module "db" {
 
   backup_retention_period = 7
   deletion_protection     = var.deletion_protection
+
+  tags = var.tags
 }
