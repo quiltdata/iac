@@ -897,23 +897,27 @@ updated, or it breaks silently.
 
 ### Partner Revenue Measurement tag
 
-The module tags the CloudFormation stack, which passes its tags on to the
-stack's resources, and every resource it creates with
-`aws-apn-id-730278974607 = "pc:<product code>"`. The tag attributes the
-stack's AWS usage to Quilt through
-[AWS Partner Revenue Measurement](https://docs.aws.amazon.com/PRM/latest/aws-prm-onboarding-guide/what-is-service.html).
-The product code defaults to that of Quilt's pay-as-you-go AWS Marketplace
-listing; if you subscribe to another Quilt listing, set its code:
+A Quilt stack's AWS usage is attributed to Quilt through
+[AWS Partner Revenue Measurement](https://docs.aws.amazon.com/PRM/latest/aws-prm-onboarding-guide/what-is-service.html)
+by the tag `aws-apn-id-730278974607 = "pc:<product code>"`. The CloudFormation
+template applies it to the stack's own resources; this module applies it to
+the resources it creates (VPC, database, search domain and the rest), not to
+the stack itself.
+
+Both default to the product code of Quilt's pay-as-you-go AWS Marketplace
+listing. If your template variant carries another listing's code, set the same
+code here so both carry one value:
 
 ```hcl
 module "quilt" {
   # ...
-  marketplace_product_code = "YOUR-PRODUCT-CODE"
+  marketplace_product_code = "YOUR-PRODUCT-CODE" # bare code, without "pc:"
 }
 ```
 
-Set the code here, not in the provider's `default_tags`: the module's value
-overrides a `default_tags` value for the same key. An empty string omits the
+Do not put the `aws-apn-id-730278974607` key in your provider's
+`default_tags`: those also reach the CloudFormation stack, which copies them
+onto the template's resources. An empty `marketplace_product_code` omits the
 module's tag.
 
 ### Profile

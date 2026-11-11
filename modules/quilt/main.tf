@@ -116,7 +116,6 @@ resource "aws_cloudformation_stack" "stack" {
   ]
   capabilities      = ["CAPABILITY_NAMED_IAM"]
   notification_arns = var.stack_notification_arns
-  tags              = local.tags
 
   parameters = merge(
     var.parameters,

@@ -68,9 +68,9 @@ This document provides comprehensive documentation for all variables available i
 
 ### Tagging Variables
 
-| Variable | Type | Default | Description |
-|----------|------|---------|-------------|
-| `marketplace_product_code` | `string` | `"1xn1f7bxkj2dc16ak28s0dbgk"` (pay-as-you-go) | Quilt AWS Marketplace product code for the [Partner Revenue Measurement tag](README.md#partner-revenue-measurement-tag); `""` omits the tag. |
+| Variable | Type | Default | Description | Validation |
+|----------|------|---------|-------------|------------|
+| `marketplace_product_code` | `string` | `"1xn1f7bxkj2dc16ak28s0dbgk"` (pay-as-you-go) | Quilt AWS Marketplace product code for the [Partner Revenue Measurement tag](README.md#partner-revenue-measurement-tag) on the resources the module creates; `""` omits the tag. | Bare code (lowercase letters and digits, no `pc:` prefix) or `""` |
 
 ## CloudFormation Parameters
 

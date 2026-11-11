@@ -16,9 +16,9 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
-Upgrading adds the tag below to the existing stack, VPC, database and search resources in place, replacing none of them.
+Upgrading adds the tag below to the existing VPC, database and search resources in place, replacing none of them. If your template variant carries a product code other than pay-as-you-go's, set `marketplace_product_code` to it.
 
-- [Added] Tag the CloudFormation stack and every resource the module creates for AWS Partner Revenue Measurement, with the product code set by `marketplace_product_code` (default: pay-as-you-go). See [Partner Revenue Measurement tag](README.md#partner-revenue-measurement-tag) ([#133](https://github.com/quiltdata/iac/pull/133))
+- [Added] Tag every resource the module creates for AWS Partner Revenue Measurement, with the product code set by `marketplace_product_code` (default: pay-as-you-go); the CloudFormation template tags the stack's own resources. See [Partner Revenue Measurement tag](README.md#partner-revenue-measurement-tag) ([#133](https://github.com/quiltdata/iac/pull/133))
 
 ## [1.8.0] - 2026-06-09
 
