@@ -90,3 +90,10 @@ variable "existing_user_subnets" {
     error_message = "Must contain 2 string ids or be null."
   }
 }
+
+variable "tags" {
+  type        = map(string)
+  nullable    = false
+  default     = {}
+  description = "Tags for every resource this module creates"
+}

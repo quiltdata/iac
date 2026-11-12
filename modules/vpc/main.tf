@@ -80,6 +80,8 @@ module "vpc" {
   enable_nat_gateway     = !var.enable_transit_gateway
   one_nat_gateway_per_az = !var.enable_transit_gateway
   create_egress_only_igw = !var.enable_transit_gateway
+
+  tags = var.tags
 }
 
 resource "aws_ec2_transit_gateway_vpc_attachment" "egress" {
@@ -93,9 +95,9 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "egress" {
   vpc_id             = module.vpc.vpc_id
   ipv6_support       = var.transit_gateway_ipv6_egress ? "enable" : "disable"
 
-  tags = {
+  tags = merge(var.tags, {
     Name = "${var.name}-egress"
-  }
+  })
 
   lifecycle {
     precondition {
@@ -138,6 +140,8 @@ module "api_gateway_security_group" {
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["https-443-tcp", "http-80-tcp"]
+
+  tags = var.tags
 }
 
 module "vpc_endpoints" {
@@ -162,4 +166,6 @@ module "vpc_endpoints" {
       create              = var.internal
     },
   }
+
+  tags = var.tags
 }

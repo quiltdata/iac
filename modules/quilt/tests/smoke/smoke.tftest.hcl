@@ -30,6 +30,30 @@ run "new_vpc_plans" {
     condition     = output.stack_name == "quilt-test"
     error_message = "The CloudFormation stack must be named after var.name"
   }
+  # The template tags the stack's own resources; a stack-level tag would be a
+  # second writer of the same key on them.
+  assert {
+    condition     = try(output.stack_tags["aws-apn-id-730278974607"], null) == null
+    error_message = "The stack must not carry the partner tag"
+  }
+}
+
+# Targets the module itself, since expect_failures can name only the root's
+# variables.
+run "pc_prefixed_product_code_is_rejected" {
+  command = plan
+  module {
+    source = "../.."
+  }
+  variables {
+    name                     = "quilt-test"
+    parameters               = {}
+    template_file            = "fixtures/quilt.yaml"
+    internal                 = false
+    create_new_vpc           = true
+    marketplace_product_code = "pc:1xn1f7bxkj2dc16ak28s0dbgk"
+  }
+  expect_failures = [var.marketplace_product_code]
 }
 
 run "new_vpc_transit_gateway_plans" {

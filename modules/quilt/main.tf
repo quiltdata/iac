@@ -5,6 +5,11 @@ terraform {
 locals {
   template_key = "quilt.yaml"
   template_url = "https://${aws_s3_bucket.cft_bucket.bucket_regional_domain_name}/${local.template_key}"
+
+  # AWS Partner Revenue Measurement attribution; 730278974607 is Quilt's Partner Central account.
+  tags = var.marketplace_product_code == "" ? {} : {
+    "aws-apn-id-730278974607" = "pc:${var.marketplace_product_code}"
+  }
 }
 
 module "vpc" {
@@ -26,6 +31,8 @@ module "vpc" {
   existing_public_subnets      = var.public_subnets
   existing_user_security_group = var.user_security_group
   existing_user_subnets        = var.user_subnets
+
+  tags = local.tags
 }
 
 module "db" {
@@ -42,6 +49,8 @@ module "db" {
   instance_class      = var.db_instance_class
   multi_az            = var.db_multi_az
   deletion_protection = var.db_deletion_protection
+
+  tags = local.tags
 }
 
 module "search" {
@@ -63,6 +72,8 @@ module "search" {
   volume_type              = var.search_volume_type
   volume_iops              = var.search_volume_iops
   volume_throughput        = var.search_volume_throughput
+
+  tags = local.tags
 }
 
 resource "random_password" "admin_password" {
@@ -74,6 +85,8 @@ resource "aws_s3_bucket" "cft_bucket" {
 
   # Nothing valuable in this bucket, so make the cleanup easier.
   force_destroy = true
+
+  tags = local.tags
 }
 
 resource "aws_s3_bucket_versioning" "cft_bucket_versioning" {
@@ -89,6 +102,7 @@ resource "aws_s3_object" "cft" {
   key    = local.template_key
   source = var.template_file
   etag   = filemd5(var.template_file)
+  tags   = local.tags
 }
 
 resource "aws_cloudformation_stack" "stack" {

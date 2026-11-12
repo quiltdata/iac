@@ -245,3 +245,14 @@ variable "on_failure" {
   type        = string
   default     = "ROLLBACK"
 }
+
+variable "marketplace_product_code" {
+  type        = string
+  nullable    = false
+  default     = "1xn1f7bxkj2dc16ak28s0dbgk"
+  description = "Quilt AWS Marketplace product code for the AWS Partner Revenue Measurement tag (default: pay-as-you-go); \"\" omits the tag."
+  validation {
+    condition     = can(regex("^[a-z0-9]*$", var.marketplace_product_code))
+    error_message = "marketplace_product_code must be a bare product code (lowercase letters and digits, no \"pc:\" prefix) or \"\"."
+  }
+}

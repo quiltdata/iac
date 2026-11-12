@@ -66,6 +66,12 @@ This document provides comprehensive documentation for all variables available i
 | `delete_timeout` | `string` | `"1h30m"` | CloudFormation stack deletion timeout |
 | `on_failure` | `string` | `"ROLLBACK"` | CloudFormation failure action |
 
+### Tagging Variables
+
+| Variable | Type | Default | Description | Validation |
+|----------|------|---------|-------------|------------|
+| `marketplace_product_code` | `string` | `"1xn1f7bxkj2dc16ak28s0dbgk"` (pay-as-you-go) | Quilt AWS Marketplace product code for the [Partner Revenue Measurement tag](README.md#partner-revenue-measurement-tag) on the resources the module creates; `""` omits the tag. | Bare code (lowercase letters and digits, no `pc:` prefix) or `""` |
+
 ## CloudFormation Parameters
 
 The `parameters` map configures the Quilt application. Here are all available parameters:
@@ -140,6 +146,7 @@ The `parameters` map configures the Quilt application. Here are all available pa
 | `existing_public_subnets` | `list(string)` | Existing public subnet IDs | Exactly 2 subnets |
 | `existing_user_security_group` | `string` | Existing security group for ALB access | - |
 | `existing_user_subnets` | `list(string)` | Existing subnets for ALB | Exactly 2 subnets |
+| `tags` | `map(string)` | Tags for every resource the module creates (default `{}`) | - |
 
 ## Database Module Variables (`modules/db`)
 
@@ -153,6 +160,7 @@ The `parameters` map configures the Quilt application. Here are all available pa
 | `multi_az` | `bool` | Enable Multi-AZ |
 | `network_type` | `string` | Network type (`"IPV4"` or `"DUAL"`) |
 | `deletion_protection` | `bool` | Enable deletion protection |
+| `tags` | `map(string)` | Tags for every resource the module creates (default `{}`) |
 
 ## Search Module Variables (`modules/search`)
 
@@ -172,6 +180,7 @@ The `parameters` map configures the Quilt application. Here are all available pa
 | `volume_size` | `number` | EBS volume size (GiB) | - |
 | `volume_throughput` | `number` | EBS throughput (MiB/s) | - |
 | `volume_type` | `string` | EBS volume type | - |
+| `tags` | `map(string)` | Tags for every resource the module creates (default `{}`) | - |
 
 ## CNAMES Module Variables (`modules/cnames`)
 
