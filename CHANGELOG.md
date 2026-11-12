@@ -16,6 +16,8 @@ Optional release notice.
 
 ## [Unreleased] - YYYY-MM-DD
 
+## [1.9.0] - 2026-11-11
+
 Upgrading adds the tag below to the existing VPC, database and search resources in place, replacing none of them. If your template variant carries a product code other than pay-as-you-go's, set `marketplace_product_code` to it.
 
 - [Added] Tag every resource the module creates for AWS Partner Revenue Measurement, with the product code set by `marketplace_product_code` (default: pay-as-you-go); the CloudFormation template tags the stack's own resources. See [Partner Revenue Measurement tag](README.md#partner-revenue-measurement-tag) ([#133](https://github.com/quiltdata/iac/pull/133))
@@ -105,7 +107,8 @@ Ensure your Quilt stack is upgraded to version 1.66 or later *before* upgrading 
 
 - [Added] Add changelog ([#74](https://github.com/quiltdata/iac/pull/74))
 
-[Unreleased]: https://github.com/quiltdata/iac/compare/1.8.0...HEAD
+[Unreleased]: https://github.com/quiltdata/iac/compare/1.9.0...HEAD
+[1.9.0]: https://github.com/quiltdata/iac/releases/tag/1.9.0
 [1.8.0]: https://github.com/quiltdata/iac/releases/tag/1.8.0
 [1.7.2]: https://github.com/quiltdata/iac/releases/tag/1.7.2
 [1.7.1]: https://github.com/quiltdata/iac/releases/tag/1.7.1
